@@ -1,9 +1,24 @@
 using UnityEngine;
 
+/// <summary>
+/// Player movement controller for Soledar.
+/// Run, variable-height jump with coyote time + jump buffering, wall slide,
+/// wall jump, and dash with a ghost trail — all fed by PlayerInputReader
+/// (Unity Input System, keyboard + gamepad).
+///
+/// IMPORTANT: public field names below are serialized in the scene/prefab.
+/// Do NOT rename them (moveSpeed, jumpForce, coyoteTime, ...) without checking
+/// what exists in Assets/Scenes/TestScene.unity and Assets/Prefabs/Player.
+///
+/// Tunables live in the Inspector. Movement values are preserved from the
+/// original prototype so the current feel is unchanged.
+///
+/// Lives on the Player GameObject.
+/// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
+[DisallowMultipleComponent]
 public class PlayerMovement : MonoBehaviour
 {
-
     /* ===================== MOVEMENT ===================== */
     [Header("Movement")]
     public float moveSpeed = 6f;
@@ -26,13 +41,6 @@ public class PlayerMovement : MonoBehaviour
     public float dashDuration = 0.2f;
     public float dashCooldown = 0.5f;
 
-    /* ===================== ATTACK ===================== */
-    [Header("Attack")]
-    public Transform attackPoint;
-    public float attackRange = 0.5f;
-    public LayerMask enemyLayer;
-    public float attackCooldown = 0.3f;
-
     /* ===================== CHECKS ===================== */
     [Header("Checks")]
     public Transform groundCheck;
@@ -47,7 +55,7 @@ public class PlayerMovement : MonoBehaviour
 
     /* ===================== PRIVATE ===================== */
     private Rigidbody2D rb;
-    private float moveInput;
+    private PlayerInputReader input;
     private PlayerHealth playerHealth;
 
     private float coyoteCounter;
@@ -62,9 +70,16 @@ public class PlayerMovement : MonoBehaviour
     private float originalGravity;
 
     private float ghostTimer;
-    private float attackCooldownTimer;
 
-    private int facingDirection = 1; // 1 = right, -1 = left
+    /* ===================== PUBLIC STATE ===================== */
+    /// <summary>1 = facing right, -1 = facing left. Drives attack direction and sprite flips.</summary>
+    public int FacingDirection { get; private set; } = 1;
+
+    public bool IsWallSliding { get { return isWallSliding; } }
+    public bool IsDashing { get { return isDashing; } }
+
+    /// <summary>Cached PlayerHealth reference (may be null — guarded everywhere).</summary>
+    public PlayerHealth Health { get { return playerHealth; } }
 
     /* ===================== UNITY ===================== */
 
@@ -74,59 +89,76 @@ public class PlayerMovement : MonoBehaviour
         originalGravity = rb.gravityScale;
         playerHealth = GetComponent<PlayerHealth>();
 
+        input = GetComponent<PlayerInputReader>();
+        if (input == null)
+        {
+            Debug.LogError(
+                "[PlayerMovement] PlayerInputReader is missing on the Player GameObject. " +
+                "Run 'Tools > Soledar > Setup Phase 1 Scene' to configure the player, " +
+                "or add a PlayerInputReader component manually.",
+                this);
+            enabled = false;
+            return;
+        }
+
+        if (playerHealth == null)
+            Debug.LogWarning("[PlayerMovement] No PlayerHealth on this GameObject — knockback stun handling is disabled.", this);
+
+        if (groundCheck == null || wallCheck == null)
+            Debug.LogError(
+                "[PlayerMovement] groundCheck or wallCheck is not assigned. " +
+                "Run 'Tools > Soledar > Setup Phase 1 Scene' with the TestScene open.",
+                this);
     }
 
     void Update()
     {
-        /* -------- INPUT -------- */
-        moveInput = Input.GetAxisRaw("Horizontal");
-
-        if (moveInput > 0) facingDirection = 1;
-        else if (moveInput < 0) facingDirection = -1;
-
-        UpdateAttackPointPosition();
-
         /* -------- TIMERS -------- */
         coyoteCounter -= Time.deltaTime;
         jumpBufferCounter -= Time.deltaTime;
         dashCooldownTimer -= Time.deltaTime;
         wallJumpLockCounter -= Time.deltaTime;
-        attackCooldownTimer -= Time.deltaTime;
+
+        if (playerHealth != null && playerHealth.IsDead)
+            return; // frozen during the respawn sequence
+
+        /* -------- INPUT (Unity Input System via PlayerInputReader) -------- */
+        float moveInput = input.MoveInput.x;
+
+        if (moveInput > 0) FacingDirection = 1;
+        else if (moveInput < 0) FacingDirection = -1;
 
         /* -------- GROUND CHECK -------- */
         if (IsGrounded())
             coyoteCounter = coyoteTime;
 
-        /* -------- JUMP INPUT -------- */
-        if (Input.GetKeyDown(KeyCode.Space))
+        /* -------- JUMP INPUT (buffered) -------- */
+        if (input.JumpWasPressed)
             jumpBufferCounter = jumpBufferTime;
 
         /* -------- DASH INPUT -------- */
-        if (Input.GetKeyDown(KeyCode.LeftShift) && dashCooldownTimer <= 0 && !isDashing)
+        if (input.DashWasPressed && dashCooldownTimer <= 0 && !isDashing)
             StartDash();
 
-        /* -------- ATTACK INPUT -------- */
-        if (Input.GetKeyDown(KeyCode.J) && attackCooldownTimer <= 0)
-        {
-            Attack();
-            attackCooldownTimer = attackCooldown;
-        }
-
-        HandleWallSlide();
+        HandleWallSlide(moveInput);
         HandleJump();
         HandleDash();
     }
 
     void FixedUpdate()
-{
-    if (!isDashing && wallJumpLockCounter <= 0 && !playerHealth.IsStunned)
     {
-        rb.linearVelocity = new Vector2(
-            moveInput * moveSpeed,
-            rb.linearVelocity.y
-        );
+        if (playerHealth != null && playerHealth.IsDead)
+            return;
+
+        if (!isDashing && wallJumpLockCounter <= 0 && (playerHealth == null || !playerHealth.IsStunned))
+        {
+            float moveInput = input.MoveInput.x;
+            rb.linearVelocity = new Vector2(
+                moveInput * moveSpeed,
+                rb.linearVelocity.y
+            );
+        }
     }
-}
 
     /* ===================== JUMP ===================== */
 
@@ -142,7 +174,7 @@ public class PlayerMovement : MonoBehaviour
         if (jumpBufferCounter > 0 && isWallSliding)
         {
             rb.linearVelocity = new Vector2(
-                -facingDirection * wallJumpForce.x,
+                -FacingDirection * wallJumpForce.x,
                 wallJumpForce.y
             );
             wallJumpLockCounter = wallJumpLockTime;
@@ -152,9 +184,9 @@ public class PlayerMovement : MonoBehaviour
 
     /* ===================== WALL ===================== */
 
-    void HandleWallSlide()
+    void HandleWallSlide(float moveInput)
     {
-        if (IsTouchingWall() && !IsGrounded() && moveInput == facingDirection)
+        if (IsTouchingWall() && !IsGrounded() && moveInput == FacingDirection)
         {
             isWallSliding = true;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, -wallSlideSpeed);
@@ -182,7 +214,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (dashTime > 0)
         {
-            rb.linearVelocity = new Vector2(facingDirection * dashSpeed, 0);
+            rb.linearVelocity = new Vector2(FacingDirection * dashSpeed, 0);
 
             ghostTimer -= Time.deltaTime;
             if (ghostTimer <= 0)
@@ -202,56 +234,58 @@ public class PlayerMovement : MonoBehaviour
 
     void CreateDashGhost()
     {
-        GameObject ghost = Instantiate(
-            dashGhostPrefab,
-            transform.position,
-            transform.rotation
-        );
+        if (dashGhostPrefab == null)
+        {
+            Debug.LogWarning("[PlayerMovement] dashGhostPrefab is not assigned — dash trail disabled. " +
+                             "Run 'Tools > Soledar > Setup Phase 1 Scene' to wire it.", this);
+            return;
+        }
+
+        SpriteRenderer playerSR = GetComponent<SpriteRenderer>();
+        if (playerSR == null) return;
+
+        GameObject ghost = Instantiate(dashGhostPrefab, transform.position, transform.rotation);
 
         SpriteRenderer ghostSR = ghost.GetComponent<SpriteRenderer>();
-        SpriteRenderer playerSR = GetComponent<SpriteRenderer>();
-
-        ghostSR.sprite = playerSR.sprite;
-        ghostSR.flipX = playerSR.flipX;
+        if (ghostSR != null)
+        {
+            ghostSR.sprite = playerSR.sprite;
+            ghostSR.flipX = playerSR.flipX;
+        }
 
         Destroy(ghost, 0.25f);
     }
 
-    /* ===================== ATTACK ===================== */
+    /* ===================== STATE RESET ===================== */
 
-    void UpdateAttackPointPosition()
+    /// <summary>
+    /// Clears all transient movement state (active dash, buffers, timers) and
+    /// restores gravity. Called by PlayerRespawn after teleporting the player,
+    /// so a death mid-dash cannot leave gravityScale stuck at zero.
+    /// </summary>
+    public void ResetState()
     {
-        if (attackPoint == null) return;
+        isDashing = false;
+        dashTime = 0f;
+        dashCooldownTimer = 0f;
+        coyoteCounter = 0f;
+        jumpBufferCounter = 0f;
+        wallJumpLockCounter = 0f;
+        ghostTimer = 0f;
+        isWallSliding = false;
 
-        Vector3 pos = attackPoint.localPosition;
-        pos.x = Mathf.Abs(pos.x) * facingDirection;
-        attackPoint.localPosition = pos;
-    }
-
-    void Attack()
-{
-    Collider2D[] enemiesHit = Physics2D.OverlapCircleAll(
-        attackPoint.position,
-        attackRange,
-        enemyLayer
-    );
-
-    foreach (Collider2D enemy in enemiesHit)
-    {
-        EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
-        if (enemyHealth != null)
+        if (rb != null)
         {
-            Vector2 knockbackDir = Vector2.right * facingDirection;
-            enemyHealth.TakeDamage(1, knockbackDir);
+            rb.linearVelocity = Vector2.zero;
+            rb.gravityScale = originalGravity;
         }
     }
-}
-
 
     /* ===================== CHECKS ===================== */
 
     bool IsGrounded()
     {
+        if (groundCheck == null) return false;
         return Physics2D.Raycast(
             groundCheck.position,
             Vector2.down,
@@ -262,9 +296,10 @@ public class PlayerMovement : MonoBehaviour
 
     bool IsTouchingWall()
     {
+        if (wallCheck == null) return false;
         return Physics2D.Raycast(
             wallCheck.position,
-            Vector2.right * facingDirection,
+            Vector2.right * FacingDirection,
             checkDistance,
             groundLayer
         );
@@ -288,14 +323,8 @@ public class PlayerMovement : MonoBehaviour
             Gizmos.color = Color.blue;
             Gizmos.DrawLine(
                 wallCheck.position,
-                wallCheck.position + Vector3.right * facingDirection * checkDistance
+                wallCheck.position + Vector3.right * FacingDirection * checkDistance
             );
-        }
-
-        if (attackPoint != null)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(attackPoint.position, attackRange);
         }
     }
 }
