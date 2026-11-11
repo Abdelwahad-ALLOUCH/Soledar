@@ -1,41 +1,54 @@
 using UnityEngine;
 
 /// <summary>
-/// Light attack with the Ashen Khoumya (Phase 1: single horizontal slash).
-/// Split out of PlayerMovement so Phase 2 combos, directional attacks and
-/// hit-stop extend this component instead of growing the movement controller.
+/// Soledar's Ashen Khoumya combat (Phase 2).
 ///
-/// Behaviour preserved from the original prototype:
-///   - OverlapCircle on the "Enemy" layer at attackPoint
-///   - 1 damage + horizontal knockback in the facing direction
-///   - attackCooldown gate
+/// Three-hit combo driven by AttackComboData:
+///   step 0 — quick horizontal slash
+///   step 1 — diagonal slash
+///   step 2 — powerful finisher
+/// Pressing attack again within the combo window advances to the next step.
+/// Holding Up/Down at the moment of an attack aims the slash upward/downward.
 ///
-/// Wiring (configured by Tools > Soledar > Setup Phase 1 Scene):
+/// Feel: hit-stop + camera shake fire ONLY when a step connects.
+/// Rules preserved from Phase 1: no attacking while stunned or dead.
+///
+/// Wiring (Phase 1/2 setup tool):
 ///   - Lives on the Player GameObject.
-///   - attackPoint: child Transform "AttackPoint" (flips with facing direction).
-///   - enemyLayer: the "Enemy" layer.
-///   - Requires PlayerMovement (facing) + PlayerInputReader (input) on the same object.
+///   - attackPoint: child Transform "AttackPoint" (flips with facing).
+///   - comboData: Assets/ScriptableObjects/Combat/KhoumyaCombo.asset.
+///   - shake: the Player's CameraShake component (same object).
 /// </summary>
 [DisallowMultipleComponent]
 public class PlayerAttack : MonoBehaviour
 {
-    [Header("Attack")]
+    [Header("Combo Data")]
+    [Tooltip("Assets/ScriptableObjects/Combat/KhoumyaCombo.asset")]
+    public AttackComboData comboData;
+
+    [Header("Fallback (used when no comboData assigned)")]
+    public int fallbackDamage = 1;
+    public float fallbackRange = 0.5f;
+
+    [Header("Wiring")]
     public Transform attackPoint;
-    public float attackRange = 0.5f;
     public LayerMask enemyLayer;
-    public float attackCooldown = 0.3f;
-    public int damage = 1;
 
     private PlayerMovement movement;
     private PlayerInputReader input;
     private PlayerHealth health;
-    private float cooldownTimer;
+    private CameraShake shake;
+
+    private int currentStep;               // next step to execute
+    private float recoveryTimer;
+    private float comboWindowTimer;
 
     void Awake()
     {
         movement = GetComponent<PlayerMovement>();
         input = GetComponent<PlayerInputReader>();
         health = GetComponent<PlayerHealth>();
+        shake = GetComponent<CameraShake>();
 
         if (movement == null)
             Debug.LogError("[PlayerAttack] PlayerMovement not found on this GameObject — facing direction cannot be resolved.", this);
@@ -46,16 +59,27 @@ public class PlayerAttack : MonoBehaviour
         if (attackPoint == null)
             Debug.LogError(
                 "[PlayerAttack] attackPoint is not assigned. Run 'Tools > Soledar > Setup Phase 1 Scene' " +
-                "with the TestScene open, or assign the child 'AttackPoint' Transform manually.",
-                this);
+                "with the TestScene open, or assign the child 'AttackPoint' Transform manually.", this);
+
+        if (comboData == null)
+            Debug.LogWarning(
+                "[PlayerAttack] No AttackComboData assigned — using fallback single attack. " +
+                "Run 'Tools > Soledar > Setup Phase 2 Combat & NPCs' to create and assign the combo.", this);
     }
 
     void Update()
     {
-        if (cooldownTimer > 0f)
-            cooldownTimer -= Time.deltaTime;
+        if (recoveryTimer > 0f)
+            recoveryTimer -= Time.deltaTime;
 
-        // Keep the slash in front of the player (behaviour preserved from prototype).
+        if (comboWindowTimer > 0f)
+        {
+            comboWindowTimer -= Time.deltaTime;
+            if (comboWindowTimer <= 0f)
+                currentStep = 0; // combo expired — reset to first slash
+        }
+
+        // Keep the slash in front of the player (behaviour preserved from Phase 1).
         if (attackPoint != null && movement != null)
         {
             Vector3 pos = attackPoint.localPosition;
@@ -65,40 +89,93 @@ public class PlayerAttack : MonoBehaviour
 
         if (movement == null || input == null || attackPoint == null) return;
         if (health != null && (health.IsDead || health.IsStunned))
-            return; // no attacking while dying or knocked back
-
-        if (input.AttackWasPressed && cooldownTimer <= 0f)
         {
-            DoAttack();
-            cooldownTimer = attackCooldown;
+            ResetCombo();
+            return;
         }
+
+        if (input.AttackWasPressed && recoveryTimer <= 0f)
+            PerformNextStep();
     }
 
-    private void DoAttack()
+    private void PerformNextStep()
     {
-        Collider2D[] enemiesHit = Physics2D.OverlapCircleAll(
-            attackPoint.position,
-            attackRange,
-            enemyLayer
-        );
+        AttackComboData.AttackStep step = ResolveStep();
+
+        int damage = step != null ? step.damage : fallbackDamage;
+        float range = step != null ? step.range : fallbackRange;
+
+        /* -------- direction: forward / up / down -------- */
+        Vector2 baseOrigin = attackPoint.position;
+        if (input.MoveInput.y > 0.5f)
+            baseOrigin += Vector2.up * range;          // strike above
+        else if (input.MoveInput.y < -0.5f)
+            baseOrigin += Vector2.down * range;        // strike below
+
+        /* -------- hit detection (instant, like the prototype) -------- */
+        Collider2D[] enemiesHit = Physics2D.OverlapCircleAll(baseOrigin, range, enemyLayer);
+        int hits = 0;
 
         foreach (Collider2D enemy in enemiesHit)
         {
             EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
-            if (enemyHealth != null)
-            {
-                Vector2 knockbackDir = Vector2.right * movement.FacingDirection;
-                enemyHealth.TakeDamage(damage, knockbackDir);
-            }
+            if (enemyHealth == null) continue;
+
+            Vector2 knockbackDir = Vector2.right * movement.FacingDirection *
+                                   (step != null ? step.knockbackMultiplier : 1f);
+            enemyHealth.TakeDamage(damage, knockbackDir, 1f);
+            hits++;
         }
+
+        /* -------- feedback: only when the attack connects -------- */
+        if (hits > 0 && step != null)
+        {
+            HitStopController.Freeze(step.hitStopDuration);
+            if (shake != null) shake.Shake(step.shakeForce);
+        }
+
+        /* -------- timing -------- */
+        if (step != null)
+        {
+            recoveryTimer = step.recoveryTime;
+            comboWindowTimer = step.recoveryTime + step.comboWindow;
+        }
+        else
+        {
+            recoveryTimer = 0.3f; // legacy fallback cadence
+        }
+
+        currentStep = (currentStep + 1) % Mathf.Max(1, StepCount());
+    }
+
+    private AttackComboData.AttackStep ResolveStep()
+    {
+        if (comboData == null || comboData.steps == null || comboData.steps.Length == 0)
+            return null;
+
+        return comboData.steps[Mathf.Clamp(currentStep, 0, comboData.steps.Length - 1)];
+    }
+
+    private int StepCount()
+    {
+        return comboData != null && comboData.steps != null ? comboData.steps.Length : 1;
+    }
+
+    private void ResetCombo()
+    {
+        currentStep = 0;
+        comboWindowTimer = 0f;
     }
 
     void OnDrawGizmosSelected()
     {
-        if (attackPoint != null)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(attackPoint.position, attackRange);
-        }
+        if (attackPoint == null) return;
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(attackPoint.position, fallbackRange);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(attackPoint.position + Vector3.up * fallbackRange, fallbackRange);
+        Gizmos.DrawWireSphere(attackPoint.position + Vector3.down * fallbackRange, fallbackRange);
     }
 }
