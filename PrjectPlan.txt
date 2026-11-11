@@ -1,0 +1,2078 @@
+SOLEDAR — Complete Game Development Blueprint
+Master project specification
+ Unity 6 LTS · 2D
+
+
+We're going to turn Soledar from a basic Unity prototype into a complete indie game concept inspired by the exploration, atmosphere and combat of Hollow Knight, but with its own identity rooted in Moroccan architecture, history, landscapes, folklore-inspired fantasy and visual culture.
+
+My recommendation: give your AI agent the specification below and ask it to develop the project in phases, testing every system before moving forward.
+
+One important distinction: don't ask an agent to generate the entire game in one operation. It should build a playable vertical slice first, then expand the world. That will prevent the kind of broken dependencies and physics issues we encountered earlier.
+
+1. Game identity
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+17
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SOLEDAR
+Echoes of a Forgotten Kingdom
+
+Genre: 2D Action Metroidvania / Dark Fantasy
+
+Engine: Unity 6 LTS (6000.3.4f1)
+
+Perspective: 2D side-scrolling
+
+Platform: PC first, with controller support and possible console releases later.
+
+Visual direction: Hand-drawn 2D environments, atmospheric lighting, expressive character animation and Moroccan-inspired architecture.
+
+The central concept
+The player controls Soledar, a mysterious masked wanderer carrying an ancient curved blade called the Ashen Khoumya.
+
+He explores a forgotten kingdom buried beneath centuries of sand, where abandoned medinas, ruined kasbahs, underground sanctuaries and forgotten civilizations remain.
+
+The kingdom is not simply abandoned. Something happened to it.
+
+The player gradually discovers that the kingdom's silence, its strange inhabitants and its decaying architecture are connected to an ancient event.
+What makes Soledar different?
+- Moroccan architecture is part of the actual level design, not just decorative textures.
+- Zellige patterns can represent magical mechanisms and ancient technology.
+- Different Moroccan-inspired regions have distinct gameplay mechanics.
+- Traditional instruments and atmospheric sound design create a unique identity.
+- The story is discovered through exploration, environmental details and NPC interactions.
+- The protagonist has an evolving combat and traversal system.
+
+2. Character design — Soledar
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+10
+
+
+
+
+
+
+
+
+
+
+
+Character appearance
+Element	Design
+Name	Soledar
+Body	Small, agile humanoid silhouette
+Cloak	Dark, torn, flowing cloak
+Mask	Ivory-colored mask with narrow eyes
+Symbol	Ancient crescent-shaped engraving
+Weapon	Ashen Khoumya
+Accessory	Small hanging lantern
+Main colors	Black, dark indigo, ivory
+Accent	Faded gold and amber
+
+Character animations
+The AI agent should implement these animation states:
+1. Idle — subtle breathing and cloak movement.
+2. Run — directional running animation.
+3. Jump — takeoff animation.
+4. Fall — falling animation.
+5. Land — landing impact.
+6. Wall slide — gripping a wall.
+7. Wall jump — pushing away from a wall.
+8. Dash — fast horizontal movement.
+9. Attack 1 — horizontal blade slash.
+10. Attack 2 — stronger diagonal slash.
+11. Attack 3 — finishing attack.
+12. Take damage — hit reaction.
+13. Death — character collapses or dissolves.
+14. Heal — lantern or magical energy animation.
+15. Interact — approaching and interacting with NPCs.
+Important: The character should be recognizable even as a completely black silhouette.
+
+3. World design — Moroccan-inspired kingdom
+The game world should be interconnected, with shortcuts, locked doors, hidden passages and abilities that unlock previously inaccessible areas.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+12
+
+
+
+
+
+
+
+
+
+
+
+Main regions
+
+
+
+
+
+
+
+
+
+
+01. The Sunken Medina
+Starting region
+- Narrow streets and interconnected rooftops.
+- Abandoned souks and hidden houses.
+- First enemies and NPCs.
+- First save point: Broken Riad.
+- Introduces movement and combat.
+
+
+
+
+
+
+
+
+
+
+
+
+
+02. The Crimson Kasbah
+- Massive fortress structures.
+- Vertical platforming.
+- Armored enemies and archers.
+- Ancient royal chambers.
+- First major boss.
+
+
+
+
+
+
+
+
+
+
+
+
+
+03. The Drowned Dunes
+- Desert ruins and buried temples.
+- Sandstorms and environmental hazards.
+- Underground tunnels.
+- Burrowing enemies.
+- Hidden ability upgrades.
+
+
+
+
+
+
+
+
+
+
+
+
+
+04. The Zellige Sanctum
+- Magical mosaic architecture.
+- Rotating platforms and puzzle rooms.
+- Ancient mechanisms.
+- Light and reflection puzzles.
+- Major magical ability.
+
+
+
+
+
+
+
+
+
+
+
+
+
+05. The Forgotten Cistern
+- Underground water systems.
+- Flooded corridors.
+- Aquatic creatures.
+- Swimming and underwater exploration.
+- Hidden historical records.
+
+
+
+
+
+
+
+
+
+
+
+
+
+06. The Silent Palace
+- Final major region.
+- Royal architecture and enormous halls.
+- Strongest enemies.
+- Story revelations.
+- Final boss and ending.
+
+
+
+World progression
+The world should not be a collection of disconnected levels.
+
+It should work like this:
+             Crimson Kasbah
+                    |
+                    |
+Sunken Medina — Zellige Sanctum
+                    |
+                    |
+              Drowned Dunes
+                    |
+                    |
+             Forgotten Cistern
+                    |
+                    |
+               Silent Palace
+
+
+This is an initial conceptual layout. The agent should design actual interconnected rooms, shortcuts, locked paths and backtracking routes.
+4. Gameplay mechanics
+The game should have a strong gameplay foundation before adding large amounts of content.
+4.1 Movement system
+The agent should preserve and improve the movement prototype already created.
+Mechanic	Description
+Walking	Smooth horizontal movement
+Running	Faster movement when needed
+Jumping	Variable-height jump
+Coyote time	Jump shortly after leaving a platform
+Jump buffer	Register jump input shortly before landing
+Wall slide	Slide down vertical surfaces
+Wall jump	Jump away from walls
+Dash	Fast directional movement
+Double jump	Unlockable ability
+Air dash	Dash while airborne
+Ledge detection	Prevent awkward platform interactions
+Knockback	Physical reaction to hits
+
+Movement requirements
+- Responsive controls.
+- Consistent physics.
+- No unwanted acceleration after a dash.
+- No infinite wall climbing.
+- Proper collision detection.
+- Separate ground and wall detection.
+- Controller and keyboard support.
+- Configurable movement values in the Inspector.
+4.2 Combat system
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+11
+
+
+
+
+
+
+
+
+
+
+
+Soledar uses the Ashen Khoumya.
+Basic attacks
+Attack	Description
+Light attack	Fast horizontal slash
+Heavy attack	Slower, stronger strike
+Upward attack	Attacks enemies above
+Downward attack	Attacks enemies below
+Dash attack	Attack during or after a dash
+Charged attack	Hold attack to charge power
+
+Combo system
+Implement a three-hit combo:
+1. First slash: quick horizontal attack.
+2. Second slash: diagonal attack.
+3. Third slash: powerful finishing attack.
+The player should be able to interrupt certain attacks with a dash, but not every attack should be cancellable.
+Combat features
+- Hitboxes and hurtboxes.
+- Enemy health.
+- Damage values.
+- Knockback.
+- Hit stun.
+- Invincibility frames.
+- Attack cooldown.
+- Hit detection.
+- Hit effects.
+- Enemy death animations.
+- Camera shake on powerful attacks.
+- Small hit-stop effect.
+- Audio feedback.
+Avoid making every attack an instant kill. Enemies should have different health and defensive properties.
+4.3 Special abilities
+These should be unlocked through exploration.
+
+
+
+
+
+
+
+
+
+
+Echo Dash
+
+A magical dash that leaves a fading trail of blue energy. Initially unlocks the basic dash.
+
+
+
+
+
+
+
+
+
+
+
+
+Wind of the Atlas
+
+Allows Soledar to perform a second jump in midair.
+
+
+
+
+
+
+
+
+
+
+
+
+Shadow Passage
+
+Allows Soledar to pass through specific magical barriers.
+
+
+
+
+
+
+
+
+
+
+
+
+Lantern of Remembrance
+
+Uses accumulated energy to restore health.
+
+
+
+
+
+
+
+
+
+
+
+
+Descent of Ash
+
+A powerful downward strike that breaks certain floors and damages nearby enemies.
+
+
+
+4.4 Health and healing
+Implement a health system based on masks rather than ordinary hearts.
+- Initial health: 5 masks.
+- Health upgrades increase maximum masks.
+- Taking damage removes one mask.
+- Healing restores one or more masks.
+- Temporary invincibility after receiving damage.
+- Death triggers a respawn sequence.
+- Healing consumes an energy resource.
+Later, add an upgrade system that allows players to improve maximum health.
+4.5 Energy system
+Introduce a resource called Echo Energy.
+
+The player collects energy by:
+- Hitting enemies.
+- Defeating bosses.
+- Discovering ancient objects.
+- Finding hidden energy fragments.
+Energy can be spent on:
+- Healing.
+- Magical attacks.
+- Special abilities.
+- Certain environmental mechanisms.
+
+5. Enemies and creatures
+Enemies should have different behavior, attack patterns and personalities.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+12
+
+
+
+
+
+
+
+
+
+
+
+Starting enemies
+Enemy	Behavior	Difficulty
+Dust Crawler	Crawls along platforms	Easy
+Medina Guard	Patrols and attacks with a blade	Easy
+Sand Stalker	Burrows and attacks unexpectedly	Medium
+Lost Soul	Floats and launches projectiles	Medium
+Kasbah Sentinel	Armored, slow and powerful	Hard
+Zellige Wraith	Teleports and uses magic	Hard
+Forgotten Knight	Advanced melee combat	Very hard
+
+Enemy AI requirements
+Every enemy should support:
+- Idle state.
+- Patrol state.
+- Detection range.
+- Chase state.
+- Attack state.
+- Damage reaction.
+- Knockback.
+- Death state.
+The AI should use configurable behavior and not depend on one enormous script.
+Enemy behavior example
+Idle
+  |
+  v
+Patrol
+  |
+  v
+Player detected?
+  |
+  +---- No ----> Continue patrol
+  |
+  +---- Yes ---> Chase
+                   |
+                   v
+              Attack range?
+                   |
+              +---- No ---> Chase
+              |
+              +---- Yes --> Attack
+                               |
+                               v
+                           Cooldown
+
+
+
+6. Boss battles
+Bosses should be memorable, with unique environments, music, mechanics and attack patterns.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+12
+
+
+
+
+
+
+
+
+
+
+
+Proposed bosses
+01. The Gatekeeper
+- First boss.
+- Large armored guardian.
+- Found at the end of the starting region.
+- Three basic attack patterns.
+- Teaches dodging and counterattacking.
+02. The Sand Sovereign
+- Ancient creature buried beneath the desert.
+- Creates sandstorms.
+- Burrows underground.
+- Attacks from multiple directions.
+03. The Mosaic Architect
+- Ancient magical construct.
+- Manipulates zellige tiles.
+- Creates temporary platforms.
+- Changes the arena during battle.
+04. The Drowned King
+- Aquatic boss.
+- Uses water currents and flooding.
+- Has underwater attack phases.
+05. The Silent Sultan
+- Final major antagonist.
+- Uses multiple combat phases.
+- Reveals the truth behind the kingdom.
+- Has different endings depending on the player's discoveries.
+Boss architecture
+Every boss should have:
+- Dedicated boss controller.
+- Health system.
+- Multiple phases.
+- Attack state machine.
+- Telegraph animations.
+- Damage windows.
+- Arena boundaries.
+- Boss health bar.
+- Intro sequence.
+- Death sequence.
+- Reward system.
+Don't implement bosses as simple enemies with more health.
+
+7. NPCs, dialogue and quests
+The world needs inhabitants who make it feel alive.
+NPC concepts
+NPC	Role
+The Old Cartographer	Sells maps
+The Lantern Keeper	Provides healing and upgrades
+The Silent Merchant	Sells items
+The Forgotten Scholar	Explains ancient history
+The Wandering Smith	Upgrades Soledar's weapon
+The Last Storyteller	Reveals hidden lore
+
+Dialogue system
+Implement:
+- Dialogue boxes.
+- Character names.
+- Multiple dialogue lines.
+- Typing effect.
+- Continue button.
+- Choice-based conversations.
+- Dialogue history.
+- NPC interaction prompts.
+- Quest triggers.
+Quest examples
+- Find a missing merchant.
+- Recover three ancient fragments.
+- Unlock a sealed Kasbah entrance.
+- Discover the origin of the Ashen Khoumya.
+- Find the lost inhabitants of the Medina.
+Side quests should reward the player with lore, currency, upgrades or new abilities.
+
+8. Moroccan culture and architecture
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+12
+
+
+
+
+
+
+
+
+
+
+
+This is one of the most important parts of the project.
+
+The game should have a recognizable Moroccan identity without turning the environment into a collection of random cultural decorations.
+Architecture
+Incorporate:
+- Traditional horseshoe arches.
+- Riads and interior courtyards.
+- Kasbahs and fortified villages.
+- Narrow medina streets.
+- Traditional wooden doors.
+- Carved plaster.
+- Geometric zellige patterns.
+- Decorative fountains.
+- Rooftop terraces.
+- Traditional market stalls.
+- Ancient water channels.
+Environment details
+- Hanging carpets and fabrics.
+- Lanterns.
+- Clay pots.
+- Traditional baskets.
+- Market merchandise.
+- Old wooden furniture.
+- Weathered walls.
+- Mosaic fountains.
+- Palm trees.
+- Desert vegetation.
+Regional inspiration
+Region	Visual inspiration
+Fes	Dense medina, intricate zellige and carved plaster
+Marrakech	Riads, courtyards and warm red architecture
+Aït Ben Haddou	Earthen kasbahs and fortified settlements
+Chefchaouen	Blue streets and mountain atmosphere
+Sahara	Sand dunes, ruins and desert settlements
+Souss	Earthy architecture, argan landscapes and regional patterns
+
+These should be artistic inspirations rather than exact real-world recreations.
+Cultural sound identity
+Use original compositions inspired by Moroccan musical traditions:
+- Oud.
+- Gimbri.
+- Bendir.
+- Qraqeb.
+- Ney.
+- Traditional percussion.
+- Ambient desert wind.
+- Water echoes.
+- Wooden doors and market ambience.
+Use original recordings or properly licensed samples. Avoid treating all Moroccan musical traditions as interchangeable.
+
+9. World interaction and environmental puzzles
+Exploration should be more than walking and fighting.
+Puzzle types
+1. Zellige puzzles: rotate tiles to complete a pattern.
+2. Lantern puzzles: direct light toward ancient mechanisms.
+3. Water puzzles: redirect water through channels.
+4. Door puzzles: discover symbols and combinations.
+5. Weight puzzles: activate mechanisms using objects.
+6. Sound puzzles: reproduce a musical sequence.
+7. Platform puzzles: activate moving platforms.
+8. Hidden wall puzzles: discover secret rooms.
+Environmental mechanics
+- Breakable walls.
+- Moving platforms.
+- Collapsing floors.
+- Elevators.
+- Locked doors.
+- Levers.
+- Hidden passages.
+- Traps.
+- Spikes.
+- Water currents.
+- Sandstorms.
+- Secret treasure rooms.
+Every puzzle should communicate its rules visually, rather than requiring random guessing.
+
+10. Map and exploration system
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+10
+
+
+
+
+
+
+
+
+
+
+
+Build a proper exploration system.
+Features
+- World map.
+- Region maps.
+- Discovered rooms.
+- Undiscovered rooms.
+- Player position indicator.
+- Save point indicators.
+- NPC indicators.
+- Boss room indicators.
+- Collectible indicators.
+- Custom map markers.
+Map progression
+The player initially has an incomplete map.
+
+They can discover maps through:
+- Cartographer NPCs.
+- Hidden map fragments.
+- Exploration.
+- Special rewards.
+Do not reveal the entire world from the beginning.
+
+11. Save system and checkpoints
+Introduce Forgotten Benches as the equivalent of save points.
+
+
+
+
+
+
+
+
+dar-al-andalus.com
+
+
+At a bench, the player can:
+- Save progress.
+- Restore health.
+- Update the respawn location.
+- Review discovered abilities.
+- Access certain inventory options.
+Save data
+Persist:
+- Player position or checkpoint.
+- Current health.
+- Maximum health.
+- Unlocked abilities.
+- Collected items.
+- Currency.
+- Defeated bosses.
+- Discovered rooms.
+- NPC quest progress.
+- World mechanisms.
+- Settings.
+Use versioned save data and validate it before loading.
+
+The save system should survive application restarts and handle corrupted or missing save files gracefully.
+
+12. Inventory, currency and upgrades
+Currency
+Introduce Ancient Dirhams as fictional in-world currency.
+
+Use them to purchase:
+- Maps.
+- Healing items.
+- Weapon upgrades.
+- Charms.
+- Ability upgrades.
+- Cosmetic items.
+Charms and relics
+Inspired by Moroccan geometry and historical craftsmanship.
+Relic	Effect
+Zellige Heart	Increases maximum health
+Desert Wind	Improves movement speed
+Lantern's Memory	Increases healing efficiency
+Atlas Stone	Improves defense
+Silent Blade	Increases attack damage
+Souk Coin	Increases currency collection
+Moon Fragment	Improves Echo Energy recovery
+
+Implement a limited number of charm slots so players must make meaningful choices.
+
+13. UI and menus
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+10
+
+
+
+
+
+
+
+
+
+
+
+Main menu
+- New Game.
+- Continue.
+- Load Game.
+- Settings.
+- Credits.
+- Exit.
+In-game HUD
+- Health masks.
+- Echo Energy meter.
+- Currency.
+- Ability indicators.
+- Interaction prompt.
+- Boss health bar.
+- Small notifications.
+Pause menu
+- Resume.
+- Inventory.
+- Map.
+- Abilities.
+- Quests.
+- Settings.
+- Return to main menu.
+Settings
+- Master volume.
+- Music volume.
+- SFX volume.
+- Resolution.
+- Fullscreen.
+- Graphics quality.
+- VSync.
+- Keyboard remapping.
+- Controller remapping.
+- Language.
+- Screen shake toggle.
+- Accessibility options.
+UI visual identity
+Use:
+- Dark backgrounds.
+- Faded gold borders.
+- Geometric Moroccan patterns.
+- Small lantern symbols.
+- Elegant serif headings.
+- Minimal text.
+- Subtle animations.
+The interface should remain readable and should not overwhelm gameplay.
+
+14. Audio and music
+Audio should be designed as part of the world, not added at the end.
+Music direction
+Region	Sound
+Sunken Medina	Quiet oud and atmospheric strings
+Crimson Kasbah	Low percussion and orchestral tension
+Drowned Dunes	Wind, distant drones and sparse instruments
+Zellige Sanctum	Echoing melodic patterns
+Forgotten Cistern	Deep water ambience
+Silent Palace	Emotional orchestral and traditional influences
+
+Sound effects
+- Sword attacks.
+- Dash.
+- Jump.
+- Landing.
+- Enemy movement.
+- Enemy death.
+- Player damage.
+- Healing.
+- Door opening.
+- Collectible pickup.
+- Bench interaction.
+- Water.
+- Wind.
+- Environmental mechanisms.
+Use spatial audio where appropriate. Sound should communicate nearby enemies, hidden mechanisms and environmental changes.
+
+15. Visual direction and art pipeline
+This is where Soledar should develop its own identity.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+15
+
+
+
+
+
+
+
+
+
+
+
+Art style
+Recommended combination:
+- Hand-painted backgrounds.
+- Detailed foreground architecture.
+- Animated environmental elements.
+- Strong character silhouettes.
+- Soft lighting.
+- Atmospheric fog.
+- Layered parallax.
+- Carefully selected color palettes.
+Rendering layers
+Every environment should have multiple visual layers:
+Background Far
+    |
+Background Architecture
+    |
+Background Decorations
+    |
+Gameplay Platforms
+    |
+Interactive Objects
+    |
+Player and Enemies
+    |
+Foreground Decorations
+    |
+Foreground Effects
+
+
+Animation requirements
+Use sprite-based animation for:
+- Characters.
+- Enemies.
+- Bosses.
+- Environmental objects.
+- Doors.
+- Traps.
+- Collectibles.
+Use particles and shaders for:
+- Dust.
+- Sand.
+- Magical energy.
+- Water.
+- Smoke.
+- Lantern glow.
+- Weapon trails.
+- Damage effects.
+Lighting
+Use Unity 2D lighting where appropriate:
+- Global ambient lighting.
+- Point lights for lanterns.
+- Local lights for magical objects.
+- Shadows from architectural structures.
+- Subtle light animation.
+- Region-specific color grading.
+Avoid making every object glow. Lighting should guide the player's attention.
+
+16. Technical architecture — Unity 6
+This section is especially important when giving the project to an AI coding agent.
+
+The agent must create maintainable systems rather than putting all gameplay logic into PlayerMovement.cs.
+Recommended Unity packages
+Package	Purpose
+Input System	Keyboard and controller input
+Cinemachine	Camera movement and effects
+2D Tilemap	Level construction
+2D Animation	Character animation and rigging
+2D Pixel Perfect (optional)	Pixel-art rendering
+Universal RP	2D lighting and rendering
+TextMeshPro	UI and dialogue
+Unity Test Framework	Automated testing
+
+Install compatible versions through Package Manager.
+Recommended project structure
+Assets/
+│
+├── Art/
+│   ├── Characters/
+│   │   ├── Soledar/
+│   │   ├── NPCs/
+│   │   ├── Enemies/
+│   │   └── Bosses/
+│   │
+│   ├── Environments/
+│   │   ├── Medina/
+│   │   ├── Kasbah/
+│   │   ├── Desert/
+│   │   ├── Zellige/
+│   │   └── Cistern/
+│   │
+│   ├── Backgrounds/
+│   ├── Effects/
+│   └── UI/
+│
+├── Animations/
+│   ├── Player/
+│   ├── Enemies/
+│   ├── Bosses/
+│   └── Environment/
+│
+├── Audio/
+│   ├── Music/
+│   ├── SFX/
+│   └── Ambient/
+│
+├── Materials/
+│
+├── Prefabs/
+│   ├── Player/
+│   ├── Enemies/
+│   ├── Bosses/
+│   ├── NPCs/
+│   ├── Environment/
+│   └── UI/
+│
+├── Scenes/
+│   ├── Bootstrap/
+│   ├── MainMenu/
+│   ├── TestScenes/
+│   ├── Medina/
+│   ├── Kasbah/
+│   ├── Desert/
+│   ├── Zellige/
+│   ├── Cistern/
+│   └── Palace/
+│
+├── Scripts/
+│   ├── Core/
+│   ├── Player/
+│   ├── Combat/
+│   ├── Enemies/
+│   ├── Bosses/
+│   ├── Health/
+│   ├── Abilities/
+│   ├── AI/
+│   ├── Interaction/
+│   ├── Inventory/
+│   ├── Quests/
+│   ├── Dialogue/
+│   ├── World/
+│   ├── SaveSystem/
+│   ├── UI/
+│   └── Audio/
+│
+├── ScriptableObjects/
+│   ├── Enemies/
+│   ├── Items/
+│   ├── Abilities/
+│   ├── Quests/
+│   └── Dialogue/
+│
+├── Tilemaps/
+│
+└── Settings/
+
+
+Architecture recommendations
+The agent should use:
+
+1. Component-based architecture
+
+Separate movement, health, combat, abilities, animation and interaction.
+
+2. ScriptableObjects
+
+Use data assets to configure:
+- Enemy statistics.
+- Weapon damage.
+- Ability costs.
+- Item descriptions.
+- Boss attack parameters.
+- Quest requirements.
+3. State machines
+
+Use explicit states for:
+- Player movement.
+- Player combat.
+- Enemy AI.
+- Boss behavior.
+- Dialogue interactions.
+4. Event-driven communication
+
+Use events for:
+- Player health changes.
+- Enemy death.
+- Boss defeat.
+- Currency changes.
+- Ability unlocks.
+- Quest completion.
+- UI updates.
+5. Scene management
+
+Use a Bootstrap scene and a controlled scene-loading system. Avoid having every scene independently initialize duplicate managers.
+Important technical rules
+- Use Unity 6-compatible APIs.
+- Use Rigidbody2D.linearVelocity consistently in Unity 6.
+- Read input in Update() and apply physics in FixedUpdate().
+- Do not mix physics movement with arbitrary Transform movement.
+- Use collision layers and masks consistently.
+- Avoid unnecessary FindObjectOfType calls.
+- Avoid hardcoded scene names throughout scripts.
+- Avoid duplicate singleton managers.
+- Never put all gameplay functionality in one script.
+- Provide null-reference checks and meaningful error messages.
+- Keep all Inspector references documented.
+- Make important parameters configurable.
+- Use object pooling for frequently spawned effects where beneficial.
+
+17. Camera system
+
+
+
+
+
+
+
+
+windowscentral.com
+
+
+Use Cinemachine to implement:
+- Smooth player follow.
+- Camera damping.
+- Vertical look-ahead.
+- Dead zones.
+- Room boundaries.
+- Camera transitions.
+- Boss arena framing.
+- Small camera shake.
+- Camera zoom during cinematic events.
+Camera behavior
+The camera should not follow the player mechanically at every pixel.
+
+It should:
+- Give the player space to see incoming obstacles.
+- Slightly anticipate movement.
+- Avoid excessive motion during combat.
+- Keep the player visible during jumps.
+- Respect room boundaries.
+- Frame bosses correctly.
+
+18. Performance and optimization
+Even though the game is initially PC-only, performance should be considered from the beginning.
+
+Requirements:
+- Target 60 FPS minimum.
+- Support different screen resolutions.
+- Avoid unnecessary Update loops.
+- Use object pooling for repeated effects.
+- Optimize particle systems.
+- Use appropriate texture compression.
+- Use sprite atlases where beneficial.
+- Avoid excessive real-time lights.
+- Optimize tilemap colliders.
+- Avoid excessive physics queries.
+- Use asynchronous scene loading where appropriate.
+- Profile CPU, GPU and memory usage.
+The agent should provide a performance test scene and report any significant bottlenecks.
+
+19. Accessibility and quality of life
+A good indie game should provide options for different players.
+
+Include:
+- Adjustable screen shake.
+- Adjustable audio.
+- Remappable controls.
+- Controller support.
+- Subtitles.
+- Dialogue speed settings.
+- Fullscreen/windowed mode.
+- Color and contrast considerations.
+- Optional reduced visual effects.
+- Clear attack indicators.
+- Pause functionality.
+Also include a tutorial system that teaches mechanics through gameplay rather than long instructions.
+
+20. Steam release preparation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+12
+
+
+
+
+
+
+
+
+
+
+
+Eventually, the game should include:
+Store presentation
+- Main capsule artwork.
+- Small capsule artwork.
+- Header artwork.
+- Library artwork.
+- Screenshots.
+- Gameplay trailer.
+- Logo.
+- Short description.
+- Full description.
+- Feature list.
+- System requirements.
+Release features
+- Steam achievements.
+- Steam Cloud saves.
+- Controller support.
+- Gamepad prompts.
+- Graphics settings.
+- Multiple save slots.
+- Localization support.
+Steamworks integration should be a later phase, not a prerequisite for the first playable prototype.
+
+21. Development roadmap
+This is the order I recommend giving your AI agent.
+Phase 1 — Foundation
+First priority
+Goal: A stable playable character.
+- [ ] Clean Unity project structure.
+- [ ] Player controller.
+- [ ] Movement and jumping.
+- [ ] Coyote time and jump buffer.
+- [ ] Wall slide and wall jump.
+- [ ] Dash and cooldown.
+- [ ] Attack system.
+- [ ] Health and damage.
+- [ ] Knockback.
+- [ ] Health UI.
+- [ ] Basic enemy.
+- [ ] Basic camera.
+- [ ] Keyboard and controller input.
+Deliverable: A fully playable character in a test environment.
+
+Phase 2 — Combat and interaction
+- [ ] Weapon combos.
+- [ ] Enemy health and AI.
+- [ ] Enemy attack patterns.
+- [ ] Damage animations.
+- [ ] Hit-stop and camera shake.
+- [ ] Interactable objects.
+- [ ] NPC interaction.
+- [ ] Dialogue system.
+- [ ] Player death and respawn.
+Deliverable: A playable combat prototype.
+
+Phase 3 — First region
+- [ ] Sunken Medina environment.
+- [ ] Tilemap construction.
+- [ ] Background and parallax.
+- [ ] Moroccan architectural assets.
+- [ ] Enemy placement.
+- [ ] Broken Riad hub.
+- [ ] First NPC.
+- [ ] First boss.
+- [ ] First checkpoint.
+- [ ] First ability unlock.
+Deliverable: A complete first region with beginning, middle and end.
+
+Phase 4 — Game systems
+- [ ] Save/load.
+- [ ] Inventory.
+- [ ] Currency.
+- [ ] Shop.
+- [ ] Charms and relics.
+- [ ] Quest system.
+- [ ] Map system.
+- [ ] Ability progression.
+- [ ] Settings.
+- [ ] Main menu.
+Deliverable: A functional game framework.
+
+Phase 5 — World expansion
+- [ ] Crimson Kasbah.
+- [ ] Drowned Dunes.
+- [ ] Zellige Sanctum.
+- [ ] Forgotten Cistern.
+- [ ] Silent Palace.
+- [ ] New enemy types.
+- [ ] New bosses.
+- [ ] Secret rooms.
+- [ ] Shortcuts and interconnected paths.
+Deliverable: A complete interconnected world.
+
+Phase 6 — Art and atmosphere
+- [ ] Final Soledar character sprites.
+- [ ] Enemy animations.
+- [ ] Boss animations.
+- [ ] Environment artwork.
+- [ ] Lighting.
+- [ ] Particles.
+- [ ] Sound effects.
+- [ ] Original soundtrack.
+- [ ] UI polish.
+Deliverable: A visually and audibly cohesive game.
+
+Phase 7 — Polish and release
+- [ ] Full playtesting.
+- [ ] Fix progression blockers.
+- [ ] Balance enemies and bosses.
+- [ ] Performance optimization.
+- [ ] Accessibility.
+- [ ] Localization.
+- [ ] Steam integration.
+- [ ] Build and distribution testing.
+Deliverable: A release candidate.
+
+22. How the AI agent should work
+This section is critical. An AI agent can generate a lot of code, but without development rules it can also destroy an existing project, create duplicate systems or leave scripts disconnected.
+
+Give it these rules.
+Agent development rules
+1. Inspect before modifying: Examine the existing Unity project, scripts, scenes, prefabs and components before making changes.
+2. Preserve working functionality: Do not unnecessarily replace existing movement, jumping, dash, attack, health or UI systems.
+3. Work incrementally: Complete one development phase at a time.
+4. Test every feature: Do not declare a feature complete just because its script compiles.
+5. Create complete systems: Scripts, prefabs, Inspector references, layers, animations and UI must all be configured.
+6. Avoid placeholder dependencies: If an asset is missing, create a temporary placeholder and clearly identify it.
+7. Keep a development log: Document completed features, outstanding tasks and known bugs.
+8. Use version control: Commit working milestones and avoid destructive changes.
+9. Document configuration: Explain which GameObjects need which components and references.
+10. Never silently skip requirements: Report anything that cannot be implemented or tested.
+23. Master prompt to give your AI agent
+The following is the main instruction I recommend giving your coding agent. It combines the game vision, technical requirements and development methodology.
+MASTER DEVELOPMENT PROMPT — SOLEDAR
+Complete 2D Metroidvania Game Development
+1. ROLE
+You are an expert Unity 6 game developer, gameplay programmer, technical artist, level designer, AI programmer and indie game production engineer.
+
+Your task is to help develop a complete, polished, original 2D Metroidvania game called SOLEDAR.
+
+You must work directly with the existing Unity project, creating and configuring scripts, prefabs, scenes, assets, systems and gameplay mechanics.
+
+Do not simply provide tutorials or isolated code snippets. Implement working features in the project wherever your environment and permissions allow.
+2. PROJECT CONFIGURATION
+- Game engine: Unity 6 LTS.
+- Exact current editor version: 6000.3.4f1.
+- Language: C#.
+- Genre: 2D Action Metroidvania / Dark Fantasy.
+- Platform: PC initially.
+- Input: Unity Input System.
+- Physics: Rigidbody2D and Collider2D.
+- Camera: Cinemachine.
+- Rendering: URP with 2D lighting where appropriate.
+- Resolution: Support common PC resolutions.
+- Target frame rate: 60 FPS.
+Use APIs compatible with the installed Unity version.
+3. GAME IDENTITY
+Game title: SOLEDAR.
+
+Subtitle: Echoes of a Forgotten Kingdom.
+
+The game follows Soledar, a mysterious masked wanderer exploring an ancient forgotten kingdom.
+
+The game takes inspiration from the exploration, combat, progression and atmosphere of Hollow Knight, while developing its own original mechanics, characters, lore, world and visual identity.
+
+The world is heavily inspired by Moroccan culture and architecture.
+
+Incorporate:
+- Traditional Moroccan medinas.
+- Kasbahs.
+- Riads.
+- Zellige mosaics.
+- Carved plaster.
+- Traditional wooden doors.
+- Lanterns.
+- Desert landscapes.
+- Ancient water systems.
+- Moroccan geometric patterns.
+- Traditional musical influences.
+These elements must influence level design, puzzles, atmosphere, architecture and gameplay, not simply appear as decorations.
+4. MAIN CHARACTER
+Character name: Soledar.
+
+Appearance:
+- Small humanoid silhouette.
+- Dark flowing cloak.
+- Ivory-colored mysterious mask.
+- Narrow glowing eyes.
+- Ancient crescent symbol.
+- Hanging lantern accessory.
+- Curved weapon called the Ashen Khoumya.
+Implement:
+- Idle.
+- Walk.
+- Run.
+- Jump.
+- Fall.
+- Land.
+- Wall slide.
+- Wall jump.
+- Dash.
+- Light attack.
+- Heavy attack.
+- Hit reaction.
+- Healing.
+- Death.
+- Interaction.
+5. PLAYER GAMEPLAY SYSTEMS
+Implement modular systems for:
+
+Movement:
+- Horizontal movement.
+- Jumping.
+- Coyote time.
+- Jump buffering.
+- Ground detection.
+- Wall detection.
+- Wall sliding.
+- Wall jumping.
+- Ledge detection.
+Abilities:
+- Dash.
+- Double jump.
+- Shadow passage.
+- Magical ground slam.
+- Healing ability.
+Combat:
+- Light attack.
+- Heavy attack.
+- Three-hit combo.
+- Upward attack.
+- Downward attack.
+- Dash attack.
+- Hitboxes and hurtboxes.
+- Damage.
+- Knockback.
+- Hit stun.
+- Invincibility frames.
+- Hit-stop.
+- Attack effects.
+Ensure attacks work in every direction supported by the combat system.
+6. HEALTH AND RESOURCES
+Implement:
+- Player health.
+- Health upgrades.
+- Mask-based health UI.
+- Damage feedback.
+- Invincibility.
+- Healing.
+- Death and respawn.
+- Echo Energy.
+- Energy regeneration.
+- Resource collection.
+Initial player health: 5 masks.
+7. ENEMY SYSTEM
+Create a modular enemy framework.
+
+Every enemy should support:
+- Idle.
+- Patrol.
+- Detection.
+- Chase.
+- Attack.
+- Damage.
+- Knockback.
+- Death.
+Create initial enemy types:
+- Dust Crawler.
+- Medina Guard.
+- Sand Stalker.
+- Lost Soul.
+- Kasbah Sentinel.
+- Zellige Wraith.
+- Forgotten Knight.
+Use reusable AI state machines and configurable enemy data.
+8. BOSS SYSTEM
+Create a reusable boss framework.
+
+Implement:
+- Boss health.
+- Multiple phases.
+- Attack patterns.
+- Telegraphs.
+- Damage windows.
+- Boss arenas.
+- Boss health UI.
+- Intro and death sequences.
+- Rewards.
+Initial bosses:
+1. The Gatekeeper.
+2. The Sand Sovereign.
+3. The Mosaic Architect.
+4. The Drowned King.
+5. The Silent Sultan.
+Each boss must have unique mechanics and attack patterns.
+9. WORLD DESIGN
+Build an interconnected Metroidvania world consisting of:
+1. The Sunken Medina.
+2. The Crimson Kasbah.
+3. The Drowned Dunes.
+4. The Zellige Sanctum.
+5. The Forgotten Cistern.
+6. The Silent Palace.
+Each region must contain:
+- Unique architecture.
+- Distinct atmosphere.
+- Enemies.
+- Environmental hazards.
+- Hidden passages.
+- Secrets.
+- NPCs.
+- Collectibles.
+- Checkpoints.
+- Progression gates.
+Implement interconnected rooms, shortcuts, locked paths and ability-based exploration.
+10. ENVIRONMENTAL INTERACTIONS
+Implement:
+- Breakable walls.
+- Moving platforms.
+- Levers.
+- Doors.
+- Traps.
+- Spikes.
+- Water systems.
+- Hidden passages.
+- Interactive mechanisms.
+- Zellige puzzles.
+- Lantern puzzles.
+- Sound puzzles.
+- Secret rooms.
+11. NPC AND QUEST SYSTEM
+Create:
+- Dialogue framework.
+- NPC interactions.
+- Dialogue choices.
+- Quest tracking.
+- Quest rewards.
+- Merchant system.
+- Shop interface.
+Initial NPCs:
+- Old Cartographer.
+- Lantern Keeper.
+- Silent Merchant.
+- Forgotten Scholar.
+- Wandering Smith.
+- Last Storyteller.
+12. INVENTORY AND PROGRESSION
+Implement:
+- Inventory.
+- Ancient Dirhams currency.
+- Collectibles.
+- Weapon upgrades.
+- Ability upgrades.
+- Charms.
+- Relics.
+- Health upgrades.
+- Energy upgrades.
+Initial relics:
+- Zellige Heart.
+- Desert Wind.
+- Lantern's Memory.
+- Atlas Stone.
+- Silent Blade.
+- Souk Coin.
+- Moon Fragment.
+Use ScriptableObjects for configurable items and abilities.
+13. MAP SYSTEM
+Implement:
+- World map.
+- Region maps.
+- Room discovery.
+- Unexplored rooms.
+- Player location.
+- Checkpoint locations.
+- NPC locations.
+- Boss locations.
+- Custom markers.
+The map should gradually reveal itself through exploration.
+14. SAVE SYSTEM
+Create a persistent save system.
+
+Save:
+- Player progress.
+- Checkpoint.
+- Health.
+- Abilities.
+- Currency.
+- Items.
+- Boss progress.
+- Discovered rooms.
+- Quest progress.
+- World state.
+- Settings.
+Support multiple save slots, save validation, versioning and recovery from corrupted saves.
+15. UI AND MENUS
+Create:
+- Main menu.
+- Continue.
+- New Game.
+- Load Game.
+- Pause menu.
+- Health masks.
+- Energy bar.
+- Currency display.
+- Boss health bar.
+- Inventory.
+- Map.
+- Quest menu.
+- Dialogue UI.
+- Shop UI.
+- Settings.
+Settings must include:
+- Audio.
+- Graphics.
+- Resolution.
+- Fullscreen.
+- Controls.
+- Keyboard remapping.
+- Controller remapping.
+- Accessibility.
+Use a consistent Moroccan-inspired geometric design language.
+16. AUDIO
+Create an audio management system.
+
+Support:
+- Background music.
+- Environmental ambience.
+- Combat sound effects.
+- Movement effects.
+- Enemy sounds.
+- Boss music.
+- UI sounds.
+- Interaction sounds.
+Use original compositions or properly licensed assets inspired by Moroccan musical traditions.
+17. ART AND VISUAL EFFECTS
+Implement:
+- Character animations.
+- Enemy animations.
+- Boss animations.
+- Environmental animations.
+- Particle systems.
+- Dash trails.
+- Weapon trails.
+- Hit effects.
+- Dust.
+- Sandstorms.
+- Fog.
+- Water.
+- Lantern lighting.
+- Magical effects.
+- Parallax backgrounds.
+Use a coherent hand-painted 2D art direction.
+
+Do not use copyrighted Hollow Knight assets or simply reproduce its characters, maps or artwork.
+18. TECHNICAL ARCHITECTURE
+Organize the code into independent modules.
+
+Recommended modules:
+- Core.
+- Player.
+- Movement.
+- Combat.
+- Health.
+- Enemies.
+- Bosses.
+- AI.
+- Abilities.
+- Inventory.
+- Quests.
+- Dialogue.
+- World.
+- SaveSystem.
+- UI.
+- Audio.
+Use:
+- ScriptableObjects.
+- Events.
+- State machines.
+- Reusable prefabs.
+- Component-based architecture.
+- Object pooling where beneficial.
+- Consistent naming conventions.
+Avoid:
+- Monolithic scripts.
+- Duplicate systems.
+- Hardcoded references.
+- Unnecessary dependencies.
+- Repeated scene searches.
+- Unhandled null references.
+19. DEVELOPMENT WORKFLOW
+Follow these development phases in order:
+
+Phase 1: Inspect the existing project and establish a stable foundation.
+
+Phase 2: Complete the player controller and movement systems.
+
+Phase 3: Complete combat, health, damage and enemy AI.
+
+Phase 4: Create the first playable region, The Sunken Medina.
+
+Phase 5: Implement the first boss and checkpoint.
+
+Phase 6: Implement save system, inventory, quests and progression.
+
+Phase 7: Implement the map, NPCs, dialogue and shops.
+
+Phase 8: Expand the world into the remaining regions.
+
+Phase 9: Implement final art, animations, lighting, audio and effects.
+
+Phase 10: Optimize, test and prepare the Steam release.
+20. STRICT DEVELOPMENT RULES
+1. Inspect the existing project before making changes.
+2. Preserve working functionality.
+3. Do not delete existing scenes or assets without permission.
+4. Do not replace working systems unnecessarily.
+5. Never create incomplete or disconnected features.
+6. Check for compilation errors after modifying scripts.
+7. Test each feature in Unity.
+8. Configure prefabs and Inspector references.
+9. Document all required layers, tags and components.
+10. Use version control and working milestones.
+11. Maintain a development log.
+12. Identify missing assets honestly.
+13. Never claim a feature is tested if it has not been tested.
+14. Do not move to the next phase while critical blockers remain.
+15. Prioritize gameplay and stability over visual polish.
+21. FIRST TASK
+Before implementing anything:
+1. Inspect the entire existing Unity project.
+2. Identify all existing scenes.
+3. Inspect PlayerMovement.cs.
+4. Inspect PlayerHealth.cs.
+5. Inspect EnemyHealth.cs.
+6. Inspect HealthUI.cs.
+7. Inspect all existing prefabs.
+8. Inspect the current Input System configuration.
+9. Inspect layers, tags and collision settings.
+10. Identify missing references and compilation errors.
+Produce a project audit.
+
+Then create a development plan that preserves all functioning features.
+
+Start with Phase 1 and do not attempt to generate the entire game in one operation.
+22. FINAL OBJECTIVE
+Deliver a complete, original, polished 2D Metroidvania game called SOLEDAR.
+
+The final product should have:
+- A memorable protagonist.
+- Responsive controls.
+- Satisfying combat.
+- Interesting bosses.
+- An interconnected world.
+- Meaningful exploration.
+- A rich Moroccan-inspired environment.
+- Original soundtrack and sound effects.
+- A compelling narrative.
+- Persistent progression.
+- A polished user interface.
+- Stable performance.
+- A tested PC release build.
+Your objective is not to create a collection of scripts. Your objective is to develop a cohesive, playable and commercially presentable indie game.
+
+
+
+
+
+24. Which AI agent should you use?
+For this project, I would prioritize an agent that can inspect your local Unity project, edit files, use the terminal and interact with the Unity Editor.
+
+
+
+
+
+
+
+
+
+
+Unity Editor
+
+The actual game engine. Your agent must be able to configure scenes, components, prefabs and physics, not just generate C# files.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Cursor
+
+Strong option for editing multiple scripts, understanding project structure and making coordinated code changes.
+
+Website: Cursor
+
+
+
+
+
+
+
+
+
+
+
+
+
+Claude Code
+
+Good for multi-file coding, terminal workflows, project analysis and implementing complex systems.
+
+Website: Claude Code
+
+
+
+
+
+
+
+
+
+
+
+
+
+GitHub Copilot
+
+Useful for code completion, agentic coding and development inside supported IDEs.
+
+Website: GitHub Copilot
+
+
+
+My recommendation: Use Cursor or Claude Code for the coding work, with Unity Editor open for actual testing. Don't assume a coding agent can verify gameplay merely by reading scripts.
+25. My recommendation: what Soledar should look like first
+Before building six regions, create a 15–30 minute vertical slice of the game.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+14
+
+
+
+
+
+
+
+
+
+
+
+The first playable release should contain:
+- Soledar with final basic character design.
+- One complete playable region.
+- Three normal enemies.
+- One mini-boss.
+- One major boss.
+- Three NPCs.
+- One merchant.
+- Two or three abilities.
+- A health and energy system.
+- One save point.
+- A small interconnected map.
+- A beginning and an ending for the demo.
+Vertical slice target
+This is enough to demonstrate the game's identity and determine whether its core gameplay is enjoyable.
+
+One final piece of advice: Don't let AI generate hundreds of placeholder scripts and call that a finished game. Ask it to make a small section genuinely playable, visually coherent and tested. Then expand it.
