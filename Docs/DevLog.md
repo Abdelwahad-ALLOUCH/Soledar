@@ -186,4 +186,98 @@ Setup: run `Setup Phase 1 Scene` then `Setup Phase 2 Combat & NPCs` (both green 
 
 ---
 
-*Next: Phase 3 — first real region (tilemap level, camera confiner, benches/checkpoints as real interactables, doors/keys groundwork).*
+## Phase 3 — First Region: "Medina Outskirts"
+
+### Scope delivered
+
+- [x] First real region as a **tilemap level** (Grid + Ground/Background tilemaps, composite collider)
+- [x] Placeholder tile art (generated sandstone ground + darker wall sprites; fixed the broken `GroundTile.asset` RuleTile reference)
+- [x] Camera confinement (CinemachineConfiner2D + region polygon)
+- [x] Forgotten Benches — real save points (E to rest: full heal + respawn point)
+- [x] Key → locked gate progression loop (Medina Gate + Medina Gate Key)
+- [x] Sealed Passage teaser (permanent gate = Phase 4+ region exit)
+- [x] Death pits (kill volumes that bypass i-frames)
+- [x] Enemy encounters placed from the Phase 2 prefabs
+
+### Region layout (96 × 22 tiles, all jumps respect apex ≈ 2.45 tiles)
+
+- **Plaza** (x 2–14): spawn, Old Cartographer NPC, DustCrawler_Plaza nearby, Bench_Plaza
+- **Teaching pit** (x 15–18): 2 deep, climbable out
+- **Step up** (x 25–30, y=4) → **Elevated street** (x 31–47, y=5): MedinaGuard_Street patrols; Bench_Street before it
+- **Key alcove** (x 35–37, top y=8, via stepping stone at x 38): Medina Gate Key floats there
+- **Medina Gate** (x 40–41, y 5–11): locked until the key; DustCrawler_InnerGate waits behind it
+- **Descend** (x 48–50 → y=4, then y=3)
+- **Dash gaps** (x 56–57 and x 71–72): open pits → death pit strip below (y −2.5, full width)
+- **Lower street** (x 58–70): DustCrawler_LowerStreet patrols between the gaps
+- **Climb** (platforms at x 73–74 y=5, x 76–77 y=7, x 79–80 y=9)
+- **City wall plateau** (x 82–93, top y=10): Bench_CityWall + **Sealed Passage** (x 86–87) — permanently locked region exit
+
+Death recovery: 3 benches; dying after resting respawns you at the last bench with full health.
+
+### New scripts
+
+| Script | Folder | Role |
+|--------|--------|------|
+| `ForgottenBench.cs` | Scripts/World | IInteractable: rest = full heal (`ResetHealth`) + `SetRespawnPoint(bench)`; prompt "Rest at …" |
+| `CollectibleKey.cs` | Scripts/World | Walk-over trigger pickup with idle bob; calls `targetDoor.Unlock(keyName)`; direct Door reference (no statics) |
+| `Door.cs` | Scripts/World | Solid gate on the **Ground layer** (blocks player + enemy probes); `Unlock()` disables collider + fades sprite; a gate with no key stays sealed |
+| `DeathPit.cs` | Scripts/World | Invisible trigger strip under the region; calls `PlayerHealth.Kill()` |
+| `PlayerHealth.Kill()` | Scripts/Player | New method: kills through i-frames (falling must always be lethal) |
+
+**Setup tool** — third menu item `Tools > Soledar > Setup Phase 3 Region (Medina Outskirts)` (requires Phases 1+2; idempotent):
+1. Creates placeholder tile sprites `Art/Placeholder/PlaceholderGround.png` + `PlaceholderWall.png` (64×64, sandstone + wall tints)
+2. Repairs `Assets/GroundTile.asset` (RuleTile) — its default sprite reference was broken (guid not found in the project); assigns the ground sprite
+3. Creates `Art/Placeholder/WallTile.asset` (new RuleTile, collider off) for the background layer
+4. Builds `Level` (Grid) with children `BackgroundTiles` (order −10, darker tint, no collider) and `GroundTiles` (order −5, layer **Ground**, TilemapCollider2D merged via CompositeCollider2D + static Rigidbody2D)
+5. Paints the region from the layout above (~950 solid tiles, 2112 background tiles)
+6. Disables superseded objects: old prototype `Ground` box + demo `Checkpoint` (replaced; reversible)
+7. Camera: adds `CinemachineConfiner2D` to `PlayerFollowCamera`, wires `CameraBounds` polygon (trigger-only, so falls aren't physically blocked) — region x 1..95, y 0..20
+8. Moves Player + SpawnPoint to the plaza (5, 3.6); repositions OldCartographer (9, 3.6)
+9. Places 3 Forgotten Benches, MedinaGate (+ key at the alcove), SealedPassage, DeathPit strip
+10. Enemies: reuses the two Phase 2 scene instances (`DustCrawler_Plaza`, `MedinaGuard_Street`), instantiates `DustCrawler_InnerGate` (behind the gate) and `DustCrawler_LowerStreet` from prefabs
+11. Saves the scene
+
+### Phase 3 test checklist (Play mode)
+
+Setup: run the Phase 1, 2, and 3 tools in order (each logs green COMPLETE).
+
+**Level & camera**
+- [ ] Region visible: sandstone floor, darker background walls, side walls; old test box and demo checkpoint gone
+- [ ] Camera confined: walk/jump/climb everywhere — screen never shows black voids beyond the region; smooth at edges
+- [ ] Teaching pit: fall in, jump out (2-deep)
+- [ ] No unjumpable obstacles: every step ≤ 2 tiles up, gaps crossable (run+jump, or dash)
+
+**Progression loop**
+- [ ] Medina Gate (dark red) blocks the elevated street; enemies can't cross either
+- [ ] Stepping stone (x 38) → hop onto the alcove → gold key bobs; walk into it → Console logs the pickup + gate unlocks and fades
+- [ ] After the gate: inner street enemy, descending steps
+- [ ] Sealed Passage on the plateau stays solid (no key exists)
+
+**Benches**
+- [ ] Prompt "E  Rest at Forgotten Bench" near all three benches
+- [ ] Rest: hearts refill instantly, Console logs the rest, respawn point moves (die afterwards → respawn at that bench, full health)
+
+**Death pits**
+- [ ] Fall into either dash gap → fade → respawn at the last checkpoint — even right after taking a hit (i-frames don't protect pits)
+- [ ] No invisible floor stops the fall (the camera-bounds polygon must not catch you)
+
+**Enemies in the region**
+- [ ] DustCrawler_Plaza patrols between the pit and the step; chases + lunges
+- [ ] MedinaGuard_Street holds the elevated street; walks under the key alcove without getting stuck
+- [ ] DustCrawler_InnerGate only reachable after opening the gate
+- [ ] DustCrawler_LowerStreet patrols between the two gaps without walking off
+- [ ] All enemies die to the 3-hit combo; killed enemies can be restored by re-running the Phase 3 tool or dragging from `Assets/Prefabs/Enemies`
+
+**Regression (Phase 1+2 re-check)**: hearts, respawn at plaza spawn, combo + hit-stop/shake, NPC dialogue near spawn.
+
+### Known issues / deferred (Phase 4+)
+
+- All visuals are placeholders (squares/tinted tiles) — real art in Phase 6.
+- Key/gate state is per-session (no persistence yet) — Phase 4 adds the save system (bench rest = save point).
+- The Sealed Passage is intentionally unopenable — becomes the Phase 4 region transition.
+- Background is a flat tinted wall — Moroccan pattern/parallax layers come with real art.
+- Enemy placements can be tuned by moving the instances; re-running the Phase 3 tool resets them to the designed spots.
+
+---
+
+*Next: Phase 4 — world structure & persistence (save system tied to benches, region transition through the sealed passage, map/progression groundwork, expanded NPC roles).*

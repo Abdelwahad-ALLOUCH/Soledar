@@ -154,6 +154,31 @@ public class PlayerHealth : MonoBehaviour
         if (OnHealthChanged != null) OnHealthChanged(CurrentHealth, maxHealth);
     }
 
+    /// <summary>
+    /// Kills the player, ignoring invincibility frames — used by death pits
+    /// and other inescapable hazards (falling must always be lethal).
+    /// </summary>
+    public void Kill()
+    {
+        if (IsDead) return;
+
+        CurrentHealth = 0;
+        IsInvincible = false;
+        IsStunned = false;
+        invincibilityTimer = 0f;
+        stunTimer = 0f;
+        flashTimer = 0f;
+
+        if (rb != null) rb.linearVelocity = Vector2.zero;
+
+        if (sprite != null && spriteBaseColorCached)
+            sprite.color = spriteBaseColor;
+
+        if (OnHealthChanged != null) OnHealthChanged(CurrentHealth, maxHealth);
+
+        Die();
+    }
+
     private void Die()
     {
         if (IsDead) return;

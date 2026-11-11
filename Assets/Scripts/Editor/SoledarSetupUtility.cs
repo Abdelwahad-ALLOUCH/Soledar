@@ -869,5 +869,545 @@ public static class SoledarSetupUtility
 
         return CreateUIText(name, parent, anchorMin, anchorMax, offsetMin, offsetMax, fontSize, alignment, color);
     }
+
+    /* ===================== Phase 3 ===================== */
+
+    private const string GroundTilePath = "Assets/GroundTile.asset";
+    private const string WallTileAssetPath = "Assets/Art/Placeholder/WallTile.asset";
+    private const string GroundSpritePath = "Assets/Art/Placeholder/PlaceholderGround.png";
+    private const string WallSpritePath = "Assets/Art/Placeholder/PlaceholderWall.png";
+    private const string CameraBoundsGOName = "CameraBounds";
+
+    private const int RegionWidth = 96;
+    private const int RegionHeight = 22;
+
+    /// <summary>
+    /// Builds the first region — "Medina Outskirts" — as a real tilemap level:
+    ///   * Left-to-right exploration: plaza → pit → elevated street (Medina
+    ///     Guard) → key alcove → locked Medina Gate → inner gate street →
+    ///     descending steps → dash gaps (death pits) → climb → city wall
+    ///     plateau with a bench and the sealed passage (Phase 4+ exit).
+    ///   * All jumps respect the player's real numbers: apex ~2.45 tiles
+    ///     (jumpForce 12, gravity scale 3), dash ~3.2 units.
+    ///   * Camera confined to the region (CinemachineConfiner2D).
+    /// Requires Phase 1 + 2 setup. Idempotent.
+    /// </summary>
+    [MenuItem("Tools/Soledar/Setup Phase 3 Region (Medina Outskirts)")]
+    public static void SetupPhase3()
+    {
+        Scene scene = EditorSceneManager.GetActiveScene();
+
+        /* ---------------- Guards ---------------- */
+        if (scene.path != TestScenePath)
+        {
+            Debug.LogError($"[SoledarSetup] Active scene is '{scene.path}'. Open '{TestScenePath}' first, then run this command again.");
+            return;
+        }
+
+        GameObject player = GameObject.Find("Player");
+        if (player == null || player.GetComponent<PlayerRespawn>() == null || player.GetComponent<PlayerInputReader>() == null)
+        {
+            Debug.LogError("[SoledarSetup] Phase 1 setup not detected. Run 'Tools > Soledar > Setup Phase 1 Scene' first.");
+            return;
+        }
+
+        if (AssetDatabase.LoadAssetAtPath<AttackComboData>(ComboAssetPath) == null)
+        {
+            Debug.LogError("[SoledarSetup] Phase 2 setup not detected (KhoumyaCombo asset missing). Run 'Tools > Soledar > Setup Phase 2 Combat & NPCs' first.");
+            return;
+        }
+
+        GameObject dustPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(DustCrawlerPrefabPath);
+        GameObject guardPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(MedinaGuardPrefabPath);
+        if (dustPrefab == null || guardPrefab == null)
+        {
+            Debug.LogError("[SoledarSetup] Enemy prefabs missing (Assets/Prefabs/Enemies). Run 'Tools > Soledar > Setup Phase 2 Combat & NPCs' first.");
+            return;
+        }
+
+        /* ---------------- 1. Placeholder tiles ---------------- */
+        EnsureFolder("Assets/Art/Placeholder");
+
+        Sprite groundSprite = EnsurePlaceholderSpriteVariant(GroundSpritePath,
+            new Color32(140, 122, 95, 255), new Color32(176, 154, 118, 255), new Color32(104, 90, 70, 255));
+        Sprite wallSprite = EnsurePlaceholderSpriteVariant(WallSpritePath,
+            new Color32(96, 86, 76, 255), new Color32(112, 102, 90, 255), new Color32(78, 70, 62, 255));
+        if (groundSprite == null || wallSprite == null)
+        {
+            Debug.LogError("[SoledarSetup] Placeholder ground/wall sprites could not be created — Phase 3 setup aborted.");
+            return;
+        }
+
+        RuleTile groundTile = EnsureGroundTile(groundSprite);
+        RuleTile wallTile = EnsureWallTile(wallSprite);
+        if (groundTile == null || wallTile == null)
+        {
+            Debug.LogError("[SoledarSetup] Tile assets could not be prepared — Phase 3 setup aborted.");
+            return;
+        }
+
+        /* ---------------- 2. Level grid + tilemaps ---------------- */
+        GameObject levelGO = GameObject.Find("Level");
+        if (levelGO == null)
+        {
+            levelGO = new GameObject("Level");
+            Undo.RegisterCreatedObjectUndo(levelGO, "Create Level");
+        }
+        if (levelGO.GetComponent<Grid>() == null)
+            levelGO.AddComponent<Grid>();
+
+        Tilemap background = GetOrCreateTilemap(levelGO.transform, "BackgroundTiles", wallTile,
+            new Color(0.55f, 0.52f, 0.5f, 1f), sortingOrder: -10, groundLayer: false);
+        Tilemap ground = GetOrCreateTilemap(levelGO.transform, "GroundTiles", groundTile,
+            Color.white, sortingOrder: -5, groundLayer: true);
+
+        PaintRegion(ground, background, groundTile, wallTile);
+
+        /* ---------------- 3. Retire superseded prototype objects ---------------- */
+        SetGameObjectActive(GameObject.Find("Ground"), false, "old prototype ground box (replaced by the tilemap region)");
+        SetGameObjectActive(GameObject.Find("Checkpoint"), false, "demo checkpoint (replaced by Forgotten Benches)");
+
+        /* ---------------- 4. Camera confiner ---------------- */
+        Collider2D boundsShape = EnsureCameraBounds();
+
+        GameObject vcamGO = GameObject.Find("PlayerFollowCamera");
+        if (vcamGO == null)
+        {
+            Debug.LogWarning("[SoledarSetup] PlayerFollowCamera not found — camera will not be confined. Run Phase 1 setup first.");
+        }
+        else
+        {
+            CinemachineConfiner2D confiner = vcamGO.GetComponent<CinemachineConfiner2D>();
+            if (confiner == null)
+            {
+                confiner = Undo.AddComponent<CinemachineConfiner2D>(vcamGO);
+                Debug.Log("[SoledarSetup] Added CinemachineConfiner2D to PlayerFollowCamera.");
+            }
+            SetObjectRef(confiner, "m_BoundingShape2D", boundsShape);
+            SetFloat(confiner, "m_Damping", 0.5f);
+        }
+
+        /* ---------------- 5. Region actors ---------------- */
+        // Player + spawn point at the plaza.
+        Vector3 regionSpawn = new Vector3(5f, 3.6f, 0f);
+        Undo.RecordObject(player.transform, "Move player to region spawn");
+        player.transform.position = regionSpawn;
+
+        GameObject spawn = GameObject.Find("SpawnPoint");
+        if (spawn == null)
+        {
+            spawn = new GameObject("SpawnPoint");
+            Undo.RegisterCreatedObjectUndo(spawn, "Create SpawnPoint");
+        }
+        Undo.RecordObject(spawn.transform, "Move SpawnPoint to region spawn");
+        spawn.transform.position = regionSpawn;
+
+        GameObject npc = GameObject.Find("OldCartographer");
+        if (npc != null)
+        {
+            Undo.RecordObject(npc.transform, "Move NPC into region");
+            npc.transform.position = new Vector3(9f, 3.6f, 0f);
+        }
+        else
+        {
+            Debug.LogWarning("[SoledarSetup] OldCartographer not found — run Phase 2 setup to place the NPC.");
+        }
+
+        // Forgotten Benches (E to rest: heal + set respawn).
+        PlaceBench("Bench_Plaza", new Vector3(12f, 3.35f, 0f));
+        PlaceBench("Bench_Street", new Vector3(29f, 4.35f, 0f));
+        PlaceBench("Bench_CityWall", new Vector3(83.5f, 10.35f, 0f));
+
+        // Key + gate progression loop.
+        Door gate = PlaceDoor("MedinaGate", new Vector3(40.5f, 8f, 0f),
+            new Vector2(2f, 6f), new Color(0.45f, 0.2f, 0.16f, 1f), locked: true);
+        PlaceKey("MedinaGateKey", new Vector3(36f, 8.6f, 0f), gate);
+
+        // Sealed passage on the plateau — region exit teaser (Phase 4+).
+        PlaceDoor("SealedPassage", new Vector3(86.5f, 12f, 0f),
+            new Vector2(2f, 4f), new Color(0.3f, 0.3f, 0.38f, 1f), locked: true);
+
+        // Death pit under the whole region (catches the two dash gaps).
+        PlaceDeathPit(new Vector2(47.5f, -2.5f), new Vector2(96f, 2f));
+
+        // Enemies: reuse the Phase 2 scene instances for the first two spots,
+        // instantiate the rest from the saved prefabs.
+        EnsureEnemyAt(dustPrefab, new[] { "DustCrawler", "DustCrawler_Plaza" }, "DustCrawler_Plaza", new Vector3(22f, 3.5f, 0f));
+        EnsureEnemyAt(guardPrefab, new[] { "MedinaGuard", "MedinaGuard_Street" }, "MedinaGuard_Street", new Vector3(32f, 5.5f, 0f));
+        EnsureEnemyAt(dustPrefab, new[] { "DustCrawler_InnerGate" }, "DustCrawler_InnerGate", new Vector3(46f, 5.5f, 0f));
+        EnsureEnemyAt(dustPrefab, new[] { "DustCrawler_LowerStreet" }, "DustCrawler_LowerStreet", new Vector3(66f, 3.5f, 0f));
+
+        /* ---------------- 6. Save ---------------- */
+        EditorSceneManager.MarkSceneDirty(scene);
+        if (EditorSceneManager.SaveScene(scene))
+            Debug.Log("[SoledarSetup] Phase 3 setup COMPLETE — the Medina Outskirts region is playable. Follow the Phase 3 checklist in Docs/DevLog.md.");
+        else
+            Debug.LogError("[SoledarSetup] Scene save failed — save manually (Ctrl+S).");
+    }
+
+    /* ===================== Phase 3 helpers ===================== */
+
+    private static void FillRect(bool[,] grid, int x0, int x1, int y0, int y1)
+    {
+        for (int y = y0; y <= y1; y++)
+            for (int x = x0; x <= x1; x++)
+                if (x >= 0 && x < RegionWidth && y >= 0 && y < RegionHeight)
+                    grid[x, y] = true;
+    }
+
+    private static void ClearRect(bool[,] grid, int x0, int x1, int y0, int y1)
+    {
+        for (int y = y0; y <= y1; y++)
+            for (int x = x0; x <= x1; x++)
+                if (x >= 0 && x < RegionWidth && y >= 0 && y < RegionHeight)
+                    grid[x, y] = false;
+    }
+
+    private static void PaintRegion(Tilemap ground, Tilemap background, RuleTile groundTile, RuleTile wallTile)
+    {
+        bool[,] solid = new bool[RegionWidth, RegionHeight];
+
+        /* Base street + side walls */
+        FillRect(solid, 1, 93, 0, 2);      // base ground, top surface y=3
+        FillRect(solid, 0, 1, 0, 21);      // left wall
+        FillRect(solid, 94, 95, 0, 21);    // right wall
+
+        /* Teaching pit (2 deep, climbable out) */
+        ClearRect(solid, 15, 18, 0, 2);
+        FillRect(solid, 15, 18, 0, 0);
+
+        /* Step up + elevated street (surfaces y=4, then y=5) */
+        FillRect(solid, 25, 30, 3, 3);
+        FillRect(solid, 31, 47, 3, 4);
+
+        /* Key alcove above the elevated street + stepping stone.
+           Clearance below the alcove is 2 tiles (player fits under);
+           reaching it: street y5 → stone top y7 → alcove top y8. */
+        FillRect(solid, 35, 37, 7, 7);
+        FillRect(solid, 38, 38, 6, 6);
+
+        /* Descend after the gate: y5 → y4 → y3 */
+        FillRect(solid, 48, 50, 3, 3);
+
+        /* Dash gaps (fall = death pit below) */
+        ClearRect(solid, 56, 57, 0, 2);
+        ClearRect(solid, 71, 72, 0, 2);
+
+        /* Climb to the city wall (each hop ≤ 2 tiles up) */
+        FillRect(solid, 73, 74, 4, 4);
+        FillRect(solid, 76, 77, 6, 6);
+        FillRect(solid, 79, 80, 8, 8);
+
+        /* City-wall plateau, top surface y=10 */
+        FillRect(solid, 82, 93, 0, 9);
+
+        ground.ClearAllTiles();
+        background.ClearAllTiles();
+
+        int painted = 0;
+        for (int y = 0; y < RegionHeight; y++)
+        {
+            for (int x = 0; x < RegionWidth; x++)
+            {
+                Vector3Int pos = new Vector3Int(x, y, 0);
+                background.SetTile(pos, wallTile);
+                if (solid[x, y])
+                {
+                    ground.SetTile(pos, groundTile);
+                    painted++;
+                }
+            }
+        }
+
+        Debug.Log($"[SoledarSetup] Painted '{ground.gameObject.name}': {painted} solid tiles; '{background.gameObject.name}': {RegionWidth * RegionHeight} background tiles.");
+    }
+
+    private static Tilemap GetOrCreateTilemap(Transform parent, string name, RuleTile tile,
+        Color color, int sortingOrder, bool groundLayer)
+    {
+        Transform existing = parent.Find(name);
+        GameObject go = existing != null ? existing.gameObject : new GameObject(name);
+        if (existing == null)
+        {
+            Undo.RegisterCreatedObjectUndo(go, "Create " + name);
+            go.transform.SetParent(parent, false);
+        }
+
+        go.layer = groundLayer ? LayerMask.NameToLayer("Ground") : 0;
+
+        Tilemap tilemap = go.GetComponent<Tilemap>();
+        if (tilemap == null) tilemap = go.AddComponent<Tilemap>();
+        tilemap.color = color;
+
+        TilemapRenderer renderer = go.GetComponent<TilemapRenderer>();
+        if (renderer == null) renderer = go.AddComponent<TilemapRenderer>();
+        renderer.sortingOrder = sortingOrder;
+
+        if (groundLayer)
+        {
+            // One merged collider for the whole ground: better physics queries
+            // and a single edge for the camera confiner / enemy probes.
+            TilemapCollider2D tileCollider = go.GetComponent<TilemapCollider2D>();
+            if (tileCollider == null) tileCollider = Undo.AddComponent<TilemapCollider2D>(go);
+            tileCollider.compositeOperation = Collider2D.CompositeOperation.Merge;
+
+            if (go.GetComponent<CompositeCollider2D>() == null)
+                Undo.AddComponent<CompositeCollider2D>(go); // adds a static Rigidbody2D automatically
+        }
+
+        return tilemap;
+    }
+
+    private static RuleTile EnsureGroundTile(Sprite groundSprite)
+    {
+        RuleTile tile = AssetDatabase.LoadAssetAtPath<RuleTile>(GroundTilePath);
+        if (tile == null)
+        {
+            Debug.LogError($"[SoledarSetup] RuleTile not found at '{GroundTilePath}'.");
+            return null;
+        }
+
+        SerializedObject so = new SerializedObject(tile);
+        SerializedProperty spriteProp = so.FindProperty("m_DefaultSprite");
+        if (spriteProp != null && spriteProp.objectReferenceValue == null)
+        {
+            spriteProp.objectReferenceValue = groundSprite;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(tile);
+            Debug.Log("[SoledarSetup] Repaired GroundTile's broken default sprite reference.");
+        }
+        return tile;
+    }
+
+    private static RuleTile EnsureWallTile(Sprite wallSprite)
+    {
+        RuleTile tile = AssetDatabase.LoadAssetAtPath<RuleTile>(WallTileAssetPath);
+        if (tile == null)
+        {
+            tile = ScriptableObject.CreateInstance<RuleTile>();
+            AssetDatabase.CreateAsset(tile, WallTileAssetPath);
+            Debug.Log($"[SoledarSetup] Created '{WallTileAssetPath}'.");
+        }
+
+        SerializedObject so = new SerializedObject(tile);
+        SerializedProperty spriteProp = so.FindProperty("m_DefaultSprite");
+        if (spriteProp != null && spriteProp.objectReferenceValue == null)
+            spriteProp.objectReferenceValue = wallSprite;
+        SerializedProperty colliderProp = so.FindProperty("m_DefaultColliderType");
+        if (colliderProp != null)
+            colliderProp.intValue = 0; // background tiles never collide
+        so.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(tile);
+        return tile;
+    }
+
+    /// <summary>Placeholder sprite with a base color, a lighter top band and darker strata.</summary>
+    private static Sprite EnsurePlaceholderSpriteVariant(string path, Color32 baseColor, Color32 topColor, Color32 edgeColor)
+    {
+        Sprite existing = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        if (existing != null) return existing;
+
+        const int size = 64;
+        Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+        Color32[] pixels = new Color32[size * size];
+
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                Color32 c = baseColor;
+                if (y >= size - 10) c = topColor;        // surface highlight
+                else if (y < 6) c = edgeColor;           // bottom shade
+                else if (y % 16 == 7) c = edgeColor;     // strata line
+                pixels[y * size + x] = c;
+            }
+        }
+
+        texture.SetPixels32(pixels);
+        texture.Apply();
+        File.WriteAllBytes(path, texture.EncodeToPNG());
+        Object.DestroyImmediate(texture);
+
+        AssetDatabase.ImportAsset(path);
+        TextureImporter importer = (TextureImporter)AssetImporter.GetAtPath(path);
+        if (importer != null)
+        {
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
+            importer.mipmapEnabled = false;
+            importer.filterMode = FilterMode.Point;
+            importer.SaveAndReimport();
+        }
+
+        Debug.Log($"[SoledarSetup] Created placeholder sprite '{path}'.");
+        return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+    }
+
+    private static Collider2D EnsureCameraBounds()
+    {
+        GameObject boundsGO = GameObject.Find(CameraBoundsGOName);
+        if (boundsGO == null)
+        {
+            boundsGO = new GameObject(CameraBoundsGOName);
+            Undo.RegisterCreatedObjectUndo(boundsGO, "Create CameraBounds");
+        }
+
+        PolygonCollider2D poly = boundsGO.GetComponent<PolygonCollider2D>();
+        if (poly == null)
+            poly = boundsGO.AddComponent<PolygonCollider2D>();
+
+        // Trigger-only: the shape must never physically block the player
+        // (otherwise falls into pits would land on the polygon's bottom edge).
+        poly.isTrigger = true;
+
+        Vector2[] points = new Vector2[]
+        {
+            new Vector2(1f, 0f),
+            new Vector2(95f, 0f),
+            new Vector2(95f, 20f),
+            new Vector2(1f, 20f),
+        };
+        bool changed = poly.points.Length != points.Length;
+        if (!changed)
+        {
+            for (int i = 0; i < points.Length; i++)
+                if (poly.points[i] != points[i]) { changed = true; break; }
+        }
+        if (changed)
+        {
+            Undo.RecordObject(poly, "Set CameraBounds polygon");
+            poly.points = points;
+            EditorUtility.SetDirty(poly);
+        }
+
+        return poly;
+    }
+
+    private static void SetGameObjectActive(GameObject go, bool active, string reason)
+    {
+        if (go == null || go.activeSelf == active) return;
+        Undo.RecordObject(go, (active ? "Enable " : "Disable ") + go.name);
+        go.SetActive(active);
+        EditorUtility.SetDirty(go);
+        Debug.Log($"[SoledarSetup] {(active ? "Enabled" : "Disabled")} '{go.name}' — {reason}.");
+    }
+
+    private static void PlaceBench(string name, Vector3 position)
+    {
+        GameObject bench = GameObject.Find(name);
+        if (bench == null)
+        {
+            bench = new GameObject(name);
+            Undo.RegisterCreatedObjectUndo(bench, "Create " + name);
+
+            bench.layer = LayerMask.NameToLayer("Interactable");
+            SpriteRenderer sprite = bench.AddComponent<SpriteRenderer>();
+            sprite.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(PlaceholderSpritePath);
+            sprite.color = new Color(0.85f, 0.68f, 0.35f, 1f); // warm amber
+            sprite.sortingOrder = 2;
+            bench.transform.localScale = new Vector3(1.6f, 0.7f, 1f);
+
+            BoxCollider2D trigger = bench.AddComponent<BoxCollider2D>();
+            trigger.isTrigger = true;
+
+            bench.AddComponent<ForgottenBench>();
+        }
+
+        Undo.RecordObject(bench.transform, "Place " + name);
+        bench.transform.position = position;
+    }
+
+    private static Door PlaceDoor(string name, Vector3 position, Vector2 size, Color color, bool locked)
+    {
+        GameObject doorGO = GameObject.Find(name);
+        if (doorGO == null)
+        {
+            doorGO = new GameObject(name);
+            Undo.RegisterCreatedObjectUndo(doorGO, "Create " + name);
+
+            doorGO.layer = LayerMask.NameToLayer("Ground"); // blocks player + enemies + probes
+            SpriteRenderer sprite = doorGO.AddComponent<SpriteRenderer>();
+            sprite.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(PlaceholderSpritePath);
+            sprite.color = color;
+            sprite.sortingOrder = 1;
+            doorGO.transform.localScale = new Vector3(size.x, size.y, 1f);
+
+            BoxCollider2D box = doorGO.AddComponent<BoxCollider2D>();
+            box.size = new Vector2(1f, 1f); // scaled with the object
+
+            doorGO.AddComponent<Door>();
+        }
+
+        Undo.RecordObject(doorGO.transform, "Place " + name);
+        doorGO.transform.position = position;
+        return doorGO.GetComponent<Door>();
+    }
+
+    private static void PlaceKey(string name, Vector3 position, Door targetDoor)
+    {
+        GameObject key = GameObject.Find(name);
+        if (key == null)
+        {
+            key = new GameObject(name);
+            Undo.RegisterCreatedObjectUndo(key, "Create " + name);
+
+            SpriteRenderer sprite = key.AddComponent<SpriteRenderer>();
+            sprite.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(PlaceholderSpritePath);
+            sprite.color = new Color(0.95f, 0.8f, 0.3f, 1f); // gold
+            sprite.sortingOrder = 3;
+            key.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+
+            BoxCollider2D trigger = key.AddComponent<BoxCollider2D>();
+            trigger.isTrigger = true;
+
+            CollectibleKey keyComponent = key.AddComponent<CollectibleKey>();
+            SetObjectRef(keyComponent, "targetDoor", targetDoor);
+        }
+
+        Undo.RecordObject(key.transform, "Place " + name);
+        key.transform.position = position;
+    }
+
+    private static void PlaceDeathPit(Vector2 center, Vector2 size)
+    {
+        GameObject pit = GameObject.Find("DeathPit");
+        if (pit == null)
+        {
+            pit = new GameObject("DeathPit");
+            Undo.RegisterCreatedObjectUndo(pit, "Create DeathPit");
+            pit.AddComponent<DeathPit>();
+        }
+
+        BoxCollider2D box = pit.GetComponent<BoxCollider2D>();
+        if (box == null)
+            box = Undo.AddComponent<BoxCollider2D>(pit);
+        box.isTrigger = true;
+        box.size = size;
+
+        Undo.RecordObject(pit.transform, "Place DeathPit");
+        pit.transform.position = new Vector3(center.x, center.y, 0f);
+    }
+
+    /// <summary>Reuses an existing scene enemy (Phase 2 instances) or spawns the prefab.</summary>
+    private static void EnsureEnemyAt(GameObject prefab, string[] possibleNames, string finalName, Vector3 position)
+    {
+        GameObject enemy = null;
+        foreach (string n in possibleNames)
+        {
+            enemy = GameObject.Find(n);
+            if (enemy != null) break;
+        }
+
+        if (enemy == null)
+        {
+            enemy = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+            Undo.RegisterCreatedObjectUndo(enemy, "Place " + finalName);
+        }
+
+        Undo.RecordObject(enemy, "Rename " + finalName);
+        Undo.RecordObject(enemy.transform, "Move " + finalName);
+        enemy.name = finalName;
+        enemy.transform.position = position;
+    }
 }
 #endif
