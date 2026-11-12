@@ -155,6 +155,16 @@ public class PlayerHealth : MonoBehaviour
     }
 
     /// <summary>
+    /// Sets current health directly (clamped to 0..maxHealth). Used by the
+    /// save system to restore a saved health value on load.
+    /// </summary>
+    public void SetHealth(int value)
+    {
+        CurrentHealth = Mathf.Clamp(value, 0, maxHealth);
+        if (OnHealthChanged != null) OnHealthChanged(CurrentHealth, maxHealth);
+    }
+
+    /// <summary>
     /// Kills the player, ignoring invincibility frames — used by death pits
     /// and other inescapable hazards (falling must always be lethal).
     /// </summary>

@@ -2,10 +2,8 @@ using UnityEngine;
 
 /// <summary>
 /// Forgotten Bench — SOLEDAR's save point (Hollow Knight bench equivalent).
-/// Resting restores full health and moves the respawn point here.
-///
-/// In later phases this becomes the real save trigger (world state, map,
-/// abilities — Phase 4). For now it is a checkpoint you choose to use.
+/// Resting restores full health, moves the respawn point here and writes the
+/// save file (Phase 4 persistence).
 ///
 /// Wiring (Phase 3 setup tool):
 ///   - Lives on the bench GameObject (layer "Interactable", trigger collider).
@@ -41,7 +39,11 @@ public class ForgottenBench : MonoBehaviour, IInteractable
         if (cachedHealth != null)
             cachedHealth.ResetHealth();
 
-        Debug.Log($"[ForgottenBench] Rested at '{benchName}' — health restored, respawn point set.", this);
+        // Phase 4: bench rest = save. Snapshot health (now full) + respawn
+        // position (now this bench) + keys/doors into the save file.
+        SaveManager.EnsureInstance().SaveGame($"rest at '{benchName}'");
+
+        Debug.Log($"[ForgottenBench] Rested at '{benchName}' — health restored, respawn point set, game saved.", this);
     }
 
     void Reset()

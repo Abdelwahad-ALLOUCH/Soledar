@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2d620a50a09a5d4baece4cddcab39fc, type: 3}
+  m_Name: AishaIntro
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  speakerName: Aisha the Rug Merchant
+  lines:
+  - Careful where you step, traveler - the wells here are older than the walls.
+  - My rugs once hung in the palace. Now I trade stories for silence.
+  - If you ever find a way past the palace gate, tell me what the ash did to the
+    carpets.

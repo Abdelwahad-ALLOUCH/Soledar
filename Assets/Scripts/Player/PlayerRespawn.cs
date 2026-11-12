@@ -34,6 +34,7 @@ public class PlayerRespawn : MonoBehaviour
     private Rigidbody2D rb;
     private SpriteRenderer sprite;
     private Vector3 fallbackSpawn;
+    private Vector3? positionOverride;   // set by the save system (Phase 4)
     private bool respawning;
 
     void Awake()
@@ -73,7 +74,28 @@ public class PlayerRespawn : MonoBehaviour
     {
         if (point == null) return;
         respawnPoint = point;
+        positionOverride = null;
         Debug.Log($"[PlayerRespawn] Respawn point updated to '{point.name}'.", this);
+    }
+
+    /// <summary>
+    /// Position-based respawn (used by the save system on load, where there is
+    /// no scene Transform to point at). Overridden by the next SetRespawnPoint.
+    /// </summary>
+    public void SetRespawnPosition(Vector3 position)
+    {
+        positionOverride = position;
+        Debug.Log($"[PlayerRespawn] Respawn position override set to {position}.", this);
+    }
+
+    /// <summary>Where the player would respawn right now (save system reads this).</summary>
+    public Vector3 CurrentRespawnPosition
+    {
+        get
+        {
+            if (positionOverride.HasValue) return positionOverride.Value;
+            return respawnPoint != null ? respawnPoint.position : fallbackSpawn;
+        }
     }
 
     private void HandleDied()
@@ -103,7 +125,7 @@ public class PlayerRespawn : MonoBehaviour
             yield return new WaitForSeconds(respawnDelay);
 
         /* -------- 3. Teleport + restore -------- */
-        transform.position = respawnPoint != null ? respawnPoint.position : fallbackSpawn;
+        transform.position = CurrentRespawnPosition;
 
         if (movement != null) movement.ResetState();
         if (rb != null) rb.simulated = true;

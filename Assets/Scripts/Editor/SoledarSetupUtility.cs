@@ -5,19 +5,21 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 using UnityEngine.UI;
-using Cinemachine;
+using Unity.Cinemachine;
 
 /// <summary>
-/// One-click scene configuration for SOLEDAR (Phase 1 + Phase 2).
+/// One-click scene configuration for SOLEDAR (Phases 1-4).
 ///
-/// MENU ITEM 1 — Tools > Soledar > Setup Phase 1 Scene
-///
-/// HOW TO USE:
+/// HOW TO USE (in order — each phase requires the previous one):
 ///   1. Open Assets/TestScene.unity (and make sure no other scene is loaded).
-///   2. Run the menu item:  Tools > Soledar > Setup Phase 1 Scene
-///   3. Run the menu item:  Tools > Soledar > Setup Phase 2 Combat & NPCs
-///   4. Enter Play mode and follow the test checklists in Docs/DevLog.md.
+///   2. Run, in this order:
+///        Tools > Soledar > Setup Phase 1 Scene
+///        Tools > Soledar > Setup Phase 2 Combat & NPCs
+///        Tools > Soledar > Setup Phase 3 Region (Medina Outskirts)
+///        Tools > Soledar > Setup Phase 4 Persistence & Upper Medina
+///   3. Enter Play mode and follow the test checklists in Docs/DevLog.md.
 ///
 /// WHAT IT DOES (idempotent — safe to run again):
 ///   - Renames 'DashGhost .prefab'/'Heart .prefab' (removes trailing spaces).
@@ -50,8 +52,10 @@ public static class SoledarSetupUtility
             return;
         }
 
-        foreach (Scene loaded in EditorSceneManager.GetLoadedScenes())
+        int sceneCount = SceneManager.sceneCount;
+        for (int i = 0; i < sceneCount; i++)
         {
+            Scene loaded = SceneManager.GetSceneAt(i);
             if (loaded.path == "Assets/Scenes/SampleScene.unity")
             {
                 Debug.LogError("[SoledarSetup] SampleScene is also loaded in the hierarchy. Close it (keep only TestScene), then run again.");
@@ -152,10 +156,10 @@ public static class SoledarSetupUtility
         /* ---------------- 4. Camera rig (Cinemachine 3) ---------------- */
         // Interpolate the player's rigidbody so the damped camera doesn't jitter.
         Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
-        if (playerRb != null && playerRb.interpolate == RigidbodyInterpolation2D.None)
+        if (playerRb != null && playerRb.interpolation == RigidbodyInterpolation2D.None)
         {
             Undo.RecordObject(playerRb, "Enable rigidbody interpolation");
-            playerRb.interpolate = RigidbodyInterpolation2D.Interpolate;
+            playerRb.interpolation = RigidbodyInterpolation2D.Interpolate;
             Debug.Log("[SoledarSetup] Enabled Rigidbody2D interpolation on the Player (camera smoothness).");
         }
 
@@ -183,19 +187,17 @@ public static class SoledarSetupUtility
         if (vcam == null)
             vcam = Undo.AddComponent<CinemachineCamera>(vcamGO);
 
-        SetObjectRef(vcam, "m_Follow", player.transform);
-        SetFloat(vcam, "m_Lens.m_OrthographicSize", 5f); // matches the previous static camera
+        SetObjectRef(vcam, "Target.TrackingTarget", player.transform);
+        SetFloat(vcam, "Lens.OrthographicSize", 5f); // matches the previous static camera
 
         CinemachinePositionComposer composer = vcamGO.GetComponent<CinemachinePositionComposer>();
         if (composer == null)
             composer = Undo.AddComponent<CinemachinePositionComposer>(vcamGO);
 
-        // Make sure the composer is registered in the camera's pipeline list.
-        RegisterPipelineComponent(vcam, composer);
-
+        // CM3 discovers pipeline components attached to the camera automatically.
         // Defaults are acceptable if these fields ever move; we log instead of failing.
-        SetVector3(composer, "m_Damping", new Vector3(0.5f, 0.5f, 0f));
-        SetFloat(composer, "m_LookaheadTime", 0.1f);
+        SetVector3(composer, "Damping", new Vector3(0.5f, 0.5f, 0f));
+        SetFloat(composer, "Lookahead.Time", 0.1f);
 
         /* ---------------- 5. Player prefab ---------------- */
         if (!AssetDatabase.IsValidFolder("Assets/Prefabs/Player"))
@@ -234,7 +236,7 @@ public static class SoledarSetupUtility
         Object asset = AssetDatabase.LoadAssetAtPath<Object>(path);
         if (asset == null) return; // already renamed or missing
 
-        string error = AssetDatabase.RenameAsset(asset, newName);
+        string error = AssetDatabase.RenameAsset(path, newName);
         if (string.IsNullOrEmpty(error))
             Debug.Log($"[SoledarSetup] Renamed '{path}' -> '{newName}'.");
         else
@@ -351,27 +353,6 @@ public static class SoledarSetupUtility
         }
 
         prop.vector3Value = value;
-        so.ApplyModifiedPropertiesWithoutUndo();
-    }
-
-    private static void RegisterPipelineComponent(CinemachineCamera vcam, CinemachineComponentBase component)
-    {
-        if (vcam == null || component == null) return;
-
-        SerializedObject so = new SerializedObject(vcam);
-        SerializedProperty comps = so.FindProperty("m_Components");
-        if (comps == null)
-        {
-            Debug.LogWarning("[SoledarSetup] 'm_Components' not found on CinemachineCamera — composer may not be registered.");
-            return;
-        }
-
-        for (int i = 0; i < comps.arraySize; i++)
-            if (comps.GetArrayElementAtIndex(i).objectReferenceValue == component)
-                return; // already registered
-
-        comps.InsertArrayElementAtIndex(comps.arraySize);
-        comps.GetArrayElementAtIndex(comps.arraySize - 1).objectReferenceValue = component;
         so.ApplyModifiedPropertiesWithoutUndo();
     }
 
@@ -625,7 +606,7 @@ public static class SoledarSetupUtility
         if (rb == null) rb = Undo.AddComponent<Rigidbody2D>(enemy);
         rb.gravityScale = 3f;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-        rb.interpolate = RigidbodyInterpolation2D.Interpolate;
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
 
         BoxCollider2D box = enemy.GetComponent<BoxCollider2D>();
         if (box == null) box = Undo.AddComponent<BoxCollider2D>(enemy);
@@ -878,7 +859,7 @@ public static class SoledarSetupUtility
     private const string WallSpritePath = "Assets/Art/Placeholder/PlaceholderWall.png";
     private const string CameraBoundsGOName = "CameraBounds";
 
-    private const int RegionWidth = 96;
+    private static int paintWidth = 96; // tiles painted by Fill/Clear/Paint (96 = Medina Outskirts only, 134 = + Upper Medina)
     private const int RegionHeight = 22;
 
     /// <summary>
@@ -961,6 +942,7 @@ public static class SoledarSetupUtility
         Tilemap ground = GetOrCreateTilemap(levelGO.transform, "GroundTiles", groundTile,
             Color.white, sortingOrder: -5, groundLayer: true);
 
+        paintWidth = 96;   // Phase 3 paints the Medina Outskirts region only
         PaintRegion(ground, background, groundTile, wallTile);
 
         /* ---------------- 3. Retire superseded prototype objects ---------------- */
@@ -968,7 +950,7 @@ public static class SoledarSetupUtility
         SetGameObjectActive(GameObject.Find("Checkpoint"), false, "demo checkpoint (replaced by Forgotten Benches)");
 
         /* ---------------- 4. Camera confiner ---------------- */
-        Collider2D boundsShape = EnsureCameraBounds();
+        Collider2D boundsShape = EnsureCameraBounds(95f);
 
         GameObject vcamGO = GameObject.Find("PlayerFollowCamera");
         if (vcamGO == null)
@@ -983,8 +965,8 @@ public static class SoledarSetupUtility
                 confiner = Undo.AddComponent<CinemachineConfiner2D>(vcamGO);
                 Debug.Log("[SoledarSetup] Added CinemachineConfiner2D to PlayerFollowCamera.");
             }
-            SetObjectRef(confiner, "m_BoundingShape2D", boundsShape);
-            SetFloat(confiner, "m_Damping", 0.5f);
+            SetObjectRef(confiner, "BoundingShape2D", boundsShape);
+            SetFloat(confiner, "Damping", 0.5f);
         }
 
         /* ---------------- 5. Region actors ---------------- */
@@ -1051,7 +1033,7 @@ public static class SoledarSetupUtility
     {
         for (int y = y0; y <= y1; y++)
             for (int x = x0; x <= x1; x++)
-                if (x >= 0 && x < RegionWidth && y >= 0 && y < RegionHeight)
+                if (x >= 0 && x < paintWidth && y >= 0 && y < RegionHeight)
                     grid[x, y] = true;
     }
 
@@ -1059,18 +1041,19 @@ public static class SoledarSetupUtility
     {
         for (int y = y0; y <= y1; y++)
             for (int x = x0; x <= x1; x++)
-                if (x >= 0 && x < RegionWidth && y >= 0 && y < RegionHeight)
+                if (x >= 0 && x < paintWidth && y >= 0 && y < RegionHeight)
                     grid[x, y] = false;
     }
 
     private static void PaintRegion(Tilemap ground, Tilemap background, RuleTile groundTile, RuleTile wallTile)
     {
-        bool[,] solid = new bool[RegionWidth, RegionHeight];
+        bool[,] solid = new bool[paintWidth, RegionHeight];
 
         /* Base street + side walls */
         FillRect(solid, 1, 93, 0, 2);      // base ground, top surface y=3
         FillRect(solid, 0, 1, 0, 21);      // left wall
-        FillRect(solid, 94, 95, 0, 21);    // right wall
+        if (paintWidth <= 96)
+            FillRect(solid, 94, 95, 0, 21); // Phase 3 right boundary; Phase 4 continues past it
 
         /* Teaching pit (2 deep, climbable out) */
         ClearRect(solid, 15, 18, 0, 2);
@@ -1101,13 +1084,41 @@ public static class SoledarSetupUtility
         /* City-wall plateau, top surface y=10 */
         FillRect(solid, 82, 93, 0, 9);
 
+        /* District 2 - "Upper Medina" (Phase 4; painted only at 134-wide regions).
+           Row y occupies world y..y+1, so a fill ending at row N has top surface N+1. */
+        if (paintWidth > 96)
+        {
+            /* Plateau-level corridor through the old right wall (top y10) */
+            FillRect(solid, 94, 99, 0, 9);
+
+            /* Entry drop shaft (x100-102): street-level floor, open above,
+               staggered climb platforms for the return trip. */
+            FillRect(solid, 100, 101, 0, 2);   // shaft floor (street level)
+            ClearRect(solid, 100, 102, 3, 9);  // open the shaft
+            FillRect(solid, 100, 101, 4, 4);   // p1 - top y5
+            FillRect(solid, 102, 102, 6, 6);   // p2 - top y7 (staggered right)
+            FillRect(solid, 100, 101, 8, 8);   // p3 - top y9
+
+            /* District 2 street, top y3, with a death gap */
+            FillRect(solid, 102, 125, 0, 2);
+            ClearRect(solid, 110, 111, 0, 2);
+
+            /* Climb to the shrine ledge (each hop 2 tiles up) */
+            FillRect(solid, 116, 117, 4, 4);   // platform top y5
+            FillRect(solid, 119, 120, 6, 6);   // platform top y7
+
+            /* Shrine ledge (top y9) + right wall */
+            FillRect(solid, 122, 131, 0, 8);
+            FillRect(solid, 132, 133, 0, 21);
+        }
+
         ground.ClearAllTiles();
         background.ClearAllTiles();
 
         int painted = 0;
         for (int y = 0; y < RegionHeight; y++)
         {
-            for (int x = 0; x < RegionWidth; x++)
+            for (int x = 0; x < paintWidth; x++)
             {
                 Vector3Int pos = new Vector3Int(x, y, 0);
                 background.SetTile(pos, wallTile);
@@ -1119,7 +1130,7 @@ public static class SoledarSetupUtility
             }
         }
 
-        Debug.Log($"[SoledarSetup] Painted '{ground.gameObject.name}': {painted} solid tiles; '{background.gameObject.name}': {RegionWidth * RegionHeight} background tiles.");
+        Debug.Log($"[SoledarSetup] Painted '{ground.gameObject.name}': {painted} solid tiles; '{background.gameObject.name}': {paintWidth * RegionHeight} background tiles.");
     }
 
     private static Tilemap GetOrCreateTilemap(Transform parent, string name, RuleTile tile,
@@ -1243,7 +1254,7 @@ public static class SoledarSetupUtility
         return AssetDatabase.LoadAssetAtPath<Sprite>(path);
     }
 
-    private static Collider2D EnsureCameraBounds()
+    private static Collider2D EnsureCameraBounds(float maxX)
     {
         GameObject boundsGO = GameObject.Find(CameraBoundsGOName);
         if (boundsGO == null)
@@ -1263,8 +1274,8 @@ public static class SoledarSetupUtility
         Vector2[] points = new Vector2[]
         {
             new Vector2(1f, 0f),
-            new Vector2(95f, 0f),
-            new Vector2(95f, 20f),
+            new Vector2(maxX, 0f),
+            new Vector2(maxX, 20f),
             new Vector2(1f, 20f),
         };
         bool changed = poly.points.Length != points.Length;
@@ -1335,7 +1346,8 @@ public static class SoledarSetupUtility
             BoxCollider2D box = doorGO.AddComponent<BoxCollider2D>();
             box.size = new Vector2(1f, 1f); // scaled with the object
 
-            doorGO.AddComponent<Door>();
+            Door door = doorGO.AddComponent<Door>();
+            SetString(door, "doorName", name); // persistence key must be unique per door
         }
 
         Undo.RecordObject(doorGO.transform, "Place " + name);
@@ -1408,6 +1420,395 @@ public static class SoledarSetupUtility
         Undo.RecordObject(enemy.transform, "Move " + finalName);
         enemy.name = finalName;
         enemy.transform.position = position;
+    }
+
+    /* ===================== Phase 4 ===================== */
+
+    private const string CartographerRepeatPath = "Assets/ScriptableObjects/Dialogue/CartographerRepeat.asset";
+    private const string AishaDialoguePath = "Assets/ScriptableObjects/Dialogue/AishaIntro.asset";
+    private const string SaveFileName = "soledar_save.json";
+
+    /// <summary>
+    /// Phase 4 — persistence &amp; progression (single scene):
+    ///   1. Repaints the region 134 tiles wide: District 2 "Upper Medina" beyond
+    ///      the city wall (corridor → drop shaft with a climbable return path →
+    ///      street with a death gap → climb → shrine ledge + sealed Palace Gate).
+    ///   2. Extends camera bounds + death pit to the new width.
+    ///   3. Adds SaveApplier to the Player (applies a loaded save at scene start).
+    ///   4. Builds the PausePanel UI (Esc / Start) and wires the PauseMenu buttons.
+    ///   5. Quest groundwork: the Cartographer's dialogue completion grants the
+    ///      Cartographer's Seal, opening the SealedPassage (repeat line afterwards).
+    ///   6. Places District 2 actors: Aisha NPC, two enemies, a bench, Palace Gate.
+    ///   7. Syncs doorName on every Door so persistence keys are unique.
+    /// Requires Phase 1-3 setup. Idempotent.
+    /// </summary>
+    [MenuItem("Tools/Soledar/Setup Phase 4 Persistence & Upper Medina")]
+    public static void SetupPhase4()
+    {
+        Scene scene = EditorSceneManager.GetActiveScene();
+
+        /* ---------------- Guards ---------------- */
+        if (scene.path != TestScenePath)
+        {
+            Debug.LogError($"[SoledarSetup] Active scene is '{scene.path}'. Open '{TestScenePath}' first, then run this command again.");
+            return;
+        }
+
+        GameObject player = GameObject.Find("Player");
+        if (player == null || player.GetComponent<PlayerRespawn>() == null || player.GetComponent<PlayerInputReader>() == null)
+        {
+            Debug.LogError("[SoledarSetup] Phase 1 setup not detected. Run 'Tools > Soledar > Setup Phase 1 Scene' first.");
+            return;
+        }
+
+        GameObject levelGO = GameObject.Find("Level");
+        if (levelGO == null || GameObject.Find("MedinaGate") == null)
+        {
+            Debug.LogError("[SoledarSetup] Phase 3 setup not detected ('Level' tilemaps / 'MedinaGate' missing). Run 'Tools > Soledar > Setup Phase 3 Region (Medina Outskirts)' first.");
+            return;
+        }
+
+        Transform backgroundT = levelGO.transform.Find("BackgroundTiles");
+        Transform groundT = levelGO.transform.Find("GroundTiles");
+        if (backgroundT == null || groundT == null)
+        {
+            Debug.LogError("[SoledarSetup] Tilemaps 'BackgroundTiles'/'GroundTiles' missing under 'Level' — run Phase 3 setup first.");
+            return;
+        }
+
+        int interactableLayerIndex = EnsureLayer("Interactable");
+        if (interactableLayerIndex < 0)
+        {
+            Debug.LogError("[SoledarSetup] Could not ensure the 'Interactable' layer — Phase 4 setup aborted.");
+            return;
+        }
+
+        Sprite placeholder = EnsurePlaceholderSprite();
+        if (placeholder == null)
+        {
+            Debug.LogError("[SoledarSetup] Placeholder sprite could not be created — Phase 4 setup aborted.");
+            return;
+        }
+
+        /* ---------------- 1. Placeholder tiles (same palette as Phase 3) ---------------- */
+        Sprite groundSprite = EnsurePlaceholderSpriteVariant(GroundSpritePath,
+            new Color32(140, 122, 95, 255), new Color32(176, 154, 118, 255), new Color32(104, 90, 70, 255));
+        Sprite wallSprite = EnsurePlaceholderSpriteVariant(WallSpritePath,
+            new Color32(96, 86, 76, 255), new Color32(112, 102, 90, 255), new Color32(78, 70, 62, 255));
+        RuleTile groundTile = EnsureGroundTile(groundSprite);
+        RuleTile wallTile = EnsureWallTile(wallSprite);
+        if (groundTile == null || wallTile == null)
+        {
+            Debug.LogError("[SoledarSetup] Tile assets could not be prepared — Phase 4 setup aborted.");
+            return;
+        }
+
+        /* ---------------- 2. Repaint the full region at 134 tiles wide ---------------- */
+        paintWidth = 134;
+        PaintRegion(groundT.GetComponent<Tilemap>(), backgroundT.GetComponent<Tilemap>(), groundTile, wallTile);
+
+        /* ---------------- 3. Camera bounds + death pit cover the new width ---------------- */
+        Collider2D boundsShape = EnsureCameraBounds(133f);
+
+        GameObject vcamGO = GameObject.Find("PlayerFollowCamera");
+        if (vcamGO != null)
+        {
+            CinemachineConfiner2D confiner = vcamGO.GetComponent<CinemachineConfiner2D>();
+            if (confiner == null)
+            {
+                confiner = Undo.AddComponent<CinemachineConfiner2D>(vcamGO);
+                Debug.Log("[SoledarSetup] Added CinemachineConfiner2D to PlayerFollowCamera.");
+            }
+            SetObjectRef(confiner, "BoundingShape2D", boundsShape);
+            SetFloat(confiner, "Damping", 0.5f);
+        }
+        else
+        {
+            Debug.LogWarning("[SoledarSetup] PlayerFollowCamera not found — camera will not be confined. Run Phase 1 setup first.");
+        }
+
+        PlaceDeathPit(new Vector2(66.5f, -2.5f), new Vector2(136f, 2f));
+
+        /* ---------------- 4. Save wiring ---------------- */
+        if (player.GetComponent<SaveApplier>() == null)
+        {
+            Undo.AddComponent<SaveApplier>(player);
+            Debug.Log("[SoledarSetup] Added SaveApplier to the Player (applies a loaded save at scene start).");
+        }
+
+        /* ---------------- 5. Pause menu UI ---------------- */
+        GameObject canvasGO = GameObject.Find("UI");
+        if (canvasGO == null)
+        {
+            Debug.LogError("[SoledarSetup] No Canvas GameObject named 'UI' in the scene.");
+            return;
+        }
+
+        DialogueUI dialogueUI = canvasGO.GetComponent<DialogueUI>();
+        if (dialogueUI == null)
+        {
+            Debug.LogError("[SoledarSetup] Canvas 'UI' has no DialogueUI — run 'Tools > Soledar > Setup Phase 2 Combat & NPCs' first.");
+            return;
+        }
+
+        EnsureEventSystem();
+
+        PauseMenu pauseMenu = canvasGO.GetComponent<PauseMenu>();
+        if (pauseMenu == null)
+            pauseMenu = Undo.AddComponent<PauseMenu>(canvasGO);
+
+        Transform pausePanelT = FindChildByPrefix(canvasGO.transform, "PausePanel");
+        GameObject pausePanel = pausePanelT != null ? pausePanelT.gameObject
+            : CreateUIElement("PausePanel", canvasGO.transform,
+                new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero);
+
+        Image pauseBg = pausePanel.GetComponent<Image>();
+        if (pauseBg == null)
+            pauseBg = pausePanel.AddComponent<Image>();
+        pauseBg.color = new Color(0.02f, 0.02f, 0.04f, 0.85f);
+        pauseBg.raycastTarget = true; // swallow clicks that would reach the game
+
+        Text pauseTitle = GetOrCreateUIText("PauseTitle", pausePanel.transform,
+            new Vector2(0f, 0.5f), new Vector2(1f, 1f), new Vector2(0f, 60f), new Vector2(0f, -60f),
+            54, TextAnchor.MiddleCenter, new Color(0.95f, 0.85f, 0.6f, 1f));
+        pauseTitle.text = "PAUSED";
+
+        Button resumeButton = GetOrCreateUIButton("ResumeButton", pausePanel.transform,
+            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(280f, 56f), new Vector2(0f, 15f),
+            new Color(0.35f, 0.28f, 0.18f, 1f), "Resume");
+
+        Button quitButton = GetOrCreateUIButton("QuitButton", pausePanel.transform,
+            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(280f, 48f), new Vector2(0f, -65f),
+            new Color(0.26f, 0.21f, 0.16f, 1f), "Quit");
+
+        SetObjectRef(pauseMenu, "panel", pausePanel);
+        SetObjectRef(pauseMenu, "resumeButton", resumeButton);
+        SetObjectRef(pauseMenu, "quitButton", quitButton);
+
+        if (pausePanel.activeSelf)
+        {
+            Undo.RecordObject(pausePanel, "Hide PausePanel");
+            pausePanel.SetActive(false); // hidden until PauseMenu opens it
+        }
+
+        /* ---------------- 6. Cartographer's Seal (quest groundwork) ---------------- */
+        DialogueData cartographerRepeat = EnsureCartographerRepeatDialogue();
+
+        GameObject cartographerGO = GameObject.Find("OldCartographer");
+        GameObject sealedGO = GameObject.Find("SealedPassage");
+        Door sealedPassage = sealedGO != null ? sealedGO.GetComponent<Door>() : null;
+        if (cartographerGO == null || sealedPassage == null)
+        {
+            Debug.LogWarning("[SoledarSetup] OldCartographer/SealedPassage not found — the Cartographer's Seal reward was not wired.");
+        }
+        else
+        {
+            NPCInteractable cartographerNPC = cartographerGO.GetComponent<NPCInteractable>();
+            if (cartographerNPC == null)
+                cartographerNPC = Undo.AddComponent<NPCInteractable>(cartographerGO);
+            SetObjectRef(cartographerNPC, "rewardDoor", sealedPassage);
+            SetObjectRef(cartographerNPC, "repeatDialogue", cartographerRepeat);
+            Debug.Log("[SoledarSetup] Wired the Cartographer's Seal: his dialogue completion opens the SealedPassage.");
+        }
+
+        /* ---------------- 7. District 2 actors ---------------- */
+        DialogueData aisha = EnsureAishaDialogue();
+        PlaceNPC("Aisha", new Vector3(119f, 3.6f, 0f), aisha, dialogueUI, placeholder,
+            interactableLayerIndex, new Color(0.75f, 0.55f, 0.65f, 1f));
+
+        GameObject dustPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(DustCrawlerPrefabPath);
+        GameObject guardPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(MedinaGuardPrefabPath);
+        if (dustPrefab != null)
+            EnsureEnemyAt(dustPrefab, new[] { "DustCrawler_District2" }, "DustCrawler_District2", new Vector3(107f, 3.5f, 0f));
+        else
+            Debug.LogWarning("[SoledarSetup] DustCrawler prefab missing — District 2 crawler not placed.");
+        if (guardPrefab != null)
+            EnsureEnemyAt(guardPrefab, new[] { "MedinaGuard_District2" }, "MedinaGuard_District2", new Vector3(115f, 3.5f, 0f));
+        else
+            Debug.LogWarning("[SoledarSetup] MedinaGuard prefab missing — District 2 guard not placed.");
+
+        PlaceBench("Bench_UpperMedina", new Vector3(124f, 9.35f, 0f));
+        PlaceDoor("PalaceGate", new Vector3(128.5f, 11f, 0f),
+            new Vector2(2f, 4f), new Color(0.55f, 0.45f, 0.25f, 1f), locked: true); // Phase 5 exit teaser
+
+        /* ---------------- 8. Persistence keys: every door needs a unique name ---------------- */
+        SyncDoorNames();
+
+        string savePath = Path.Combine(Application.persistentDataPath, SaveFileName);
+        if (File.Exists(savePath))
+        {
+            Debug.Log($"[SoledarSetup] NOTE: a save file already exists ({savePath}). If it predates Phase 4 wiring, run 'Tools > Soledar > Delete Save File (Debug)' before playtesting.");
+        }
+
+        /* ---------------- 9. Save ---------------- */
+        EditorSceneManager.MarkSceneDirty(scene);
+        if (EditorSceneManager.SaveScene(scene))
+            Debug.Log("[SoledarSetup] Phase 4 setup COMPLETE — persistence + Upper Medina are wired. Follow the Phase 4 checklist in Docs/DevLog.md.");
+        else
+            Debug.LogError("[SoledarSetup] Scene save failed — save manually (Ctrl+S).");
+    }
+
+    /// <summary>Debug helper: deletes the JSON save file so a fresh run starts clean.</summary>
+    [MenuItem("Tools/Soledar/Delete Save File (Debug)")]
+    public static void DeleteSaveFile()
+    {
+        string path = Path.Combine(Application.persistentDataPath, SaveFileName);
+        if (File.Exists(path))
+        {
+            File.Delete(path);
+            Debug.Log($"[SoledarSetup] Deleted save file: {path}");
+        }
+        else
+        {
+            Debug.Log($"[SoledarSetup] No save file found at: {path}");
+        }
+    }
+
+    /* ===================== Phase 4 helpers ===================== */
+
+    /// <summary>Every Door registers in SaveManager by doorName — names must be unique.</summary>
+    private static void SyncDoorNames()
+    {
+        Door[] doors = Object.FindObjectsByType<Door>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (Door door in doors)
+        {
+            if (door.gameObject.name == door.DoorName) continue;
+
+            SerializedObject so = new SerializedObject(door);
+            SerializedProperty prop = so.FindProperty("doorName");
+            if (prop == null)
+            {
+                Debug.LogWarning($"[SoledarSetup] 'doorName' not found on Door '{door.gameObject.name}' — persistence key not synced.");
+                continue;
+            }
+
+            prop.stringValue = door.gameObject.name;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            Debug.Log($"[SoledarSetup] Door '{door.gameObject.name}': persistence name synced.");
+        }
+    }
+
+    private static void EnsureEventSystem()
+    {
+        if (Object.FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>(FindObjectsInactive.Include) != null)
+            return;
+
+        GameObject es = new GameObject("EventSystem");
+        Undo.RegisterCreatedObjectUndo(es, "Create EventSystem");
+        es.AddComponent<UnityEngine.EventSystems.EventSystem>();
+        es.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
+        Debug.Log("[SoledarSetup] Created EventSystem (InputSystemUIInputModule) — required by the pause menu buttons.");
+    }
+
+    private static DialogueData EnsureCartographerRepeatDialogue()
+    {
+        DialogueData dialogue = CreateAssetIfMissing<DialogueData>(CartographerRepeatPath);
+
+        dialogue.speakerName = "The Old Cartographer";
+        dialogue.lines = new[]
+        {
+            "The seal is yours - the old passage through the city wall is open now.",
+            "Go carefully. What the ruins whisper... bring it back to me.",
+        };
+
+        EditorUtility.SetDirty(dialogue);
+        return dialogue;
+    }
+
+    private static DialogueData EnsureAishaDialogue()
+    {
+        DialogueData dialogue = CreateAssetIfMissing<DialogueData>(AishaDialoguePath);
+
+        dialogue.speakerName = "Aisha the Rug Merchant";
+        dialogue.lines = new[]
+        {
+            "Careful where you step, traveler - the wells here are older than the walls.",
+            "My rugs once hung in the palace. Now I trade stories for silence.",
+            "If you ever find a way past the palace gate, tell me what the ash did to the carpets.",
+        };
+
+        EditorUtility.SetDirty(dialogue);
+        return dialogue;
+    }
+
+    private static void PlaceNPC(string name, Vector3 position, DialogueData dialogue, DialogueUI dialogueUI,
+        Sprite placeholder, int interactableLayerIndex, Color tint)
+    {
+        GameObject npc = GameObject.Find(name);
+        if (npc == null)
+        {
+            npc = new GameObject(name);
+            Undo.RegisterCreatedObjectUndo(npc, "Create " + name);
+
+            SpriteRenderer sprite = npc.AddComponent<SpriteRenderer>();
+            sprite.sprite = placeholder;
+            sprite.sortingOrder = 2;
+
+            BoxCollider2D box = npc.AddComponent<BoxCollider2D>();
+            box.isTrigger = true;
+            box.size = new Vector2(1.2f, 2f);
+
+            npc.AddComponent<NPCInteractable>();
+        }
+
+        npc.layer = interactableLayerIndex;
+
+        SpriteRenderer existingSprite = npc.GetComponent<SpriteRenderer>();
+        if (existingSprite != null)
+            existingSprite.color = tint;
+
+        NPCInteractable interactable = npc.GetComponent<NPCInteractable>();
+        if (interactable == null)
+            interactable = Undo.AddComponent<NPCInteractable>(npc);
+        SetObjectRef(interactable, "dialogue", dialogue);
+        SetObjectRef(interactable, "dialogueUI", dialogueUI);
+
+        Undo.RecordObject(npc.transform, "Place " + name);
+        npc.transform.position = position;
+    }
+
+    private static Button GetOrCreateUIButton(string name, Transform parent,
+        Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot, Vector2 sizeDelta, Vector2 anchoredPosition,
+        Color backgroundColor, string label)
+    {
+        Transform existing = parent.Find(name);
+        GameObject go = existing != null ? existing.gameObject
+            : CreateUIElement(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition);
+
+        Image image = go.GetComponent<Image>();
+        if (image == null)
+            image = go.AddComponent<Image>();
+        image.color = backgroundColor;
+        image.raycastTarget = true; // buttons must catch clicks
+
+        Button button = go.GetComponent<Button>();
+        if (button == null)
+            button = go.AddComponent<Button>();
+        button.targetGraphic = image;
+
+        Text labelText = GetOrCreateUIText("Label", go.transform,
+            new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero,
+            26, TextAnchor.MiddleCenter, Color.white);
+        labelText.text = label;
+
+        return button;
+    }
+
+    private static void SetString(Object target, string propertyPath, string value)
+    {
+        SerializedObject so = new SerializedObject(target);
+        SerializedProperty prop = so.FindProperty(propertyPath);
+        if (prop == null)
+        {
+            Debug.LogWarning($"[SoledarSetup] Property '{propertyPath}' not found on {target.GetType().Name} — skipped (defaults kept).");
+            return;
+        }
+
+        prop.stringValue = value;
+        so.ApplyModifiedPropertiesWithoutUndo();
     }
 }
 #endif

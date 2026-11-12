@@ -5,9 +5,12 @@ using UnityEngine;
 /// A gate that blocks passage until unlocked. Placed on the "Ground" layer so
 /// the player, enemies and wall probes all treat it as level geometry.
 ///
-/// Unlocking happens through a CollectibleKey reference (Phase 3 groundwork;
-/// real key inventory + multiple locks in Phase 4). A gate with no key stays
-/// sealed — used for the region exit teaser.
+/// Unlocking happens through a CollectibleKey reference or an NPC reward grant
+/// (Phase 4). A gate with no key stays sealed — used for the region exit teaser.
+///
+/// Persistence (Phase 4): open state is recorded in SaveManager (door name →
+/// opened list) and auto-saved. On scene load, Awake re-opens doors whose name
+/// appears in the save file.
 ///
 /// Lives on the door GameObject.
 /// </summary>
@@ -36,6 +39,11 @@ public class Door : MonoBehaviour
 
         if (!startLocked && !IsOpen)
             Open();
+
+        // Restore saved open state (Persistence, Phase 4). Open() re-records
+        // the door, but MarkDoorOpen skips duplicates so no extra file write.
+        if (!IsOpen && SaveManager.EnsureInstance().IsDoorOpen(doorName))
+            Open();
     }
 
     /// <summary>Called by a CollectibleKey when it is picked up.</summary>
@@ -54,6 +62,9 @@ public class Door : MonoBehaviour
     private void Open()
     {
         IsOpen = true;
+
+        // Auto-save the open state (Phase 4). No-ops for already-recorded doors.
+        SaveManager.EnsureInstance().MarkDoorOpen(doorName);
 
         if (col != null)
             col.enabled = false;

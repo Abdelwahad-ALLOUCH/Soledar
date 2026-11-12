@@ -280,4 +280,120 @@ Setup: run the Phase 1, 2, and 3 tools in order (each logs green COMPLETE).
 
 ---
 
-*Next: Phase 4 — world structure & persistence (save system tied to benches, region transition through the sealed passage, map/progression groundwork, expanded NPC roles).*
+## Phase 4 — Persistence & Progression: "Upper Medina"
+
+### Scope delivered
+
+- [x] **JSON save system** — keys, opened gates, health, respawn point and player position persist between sessions
+- [x] **Auto-save** on key pickup, gate unlock, NPC reward and bench rest (bench = manual save point)
+- [x] **Save restore** at scene start (doors/keys check the save in `Awake`; `SaveApplier` restores the player)
+- [x] **Pause menu** on Esc / gamepad Start (freezes time; Resume / Quit)
+- [x] **Quest groundwork** — the Old Cartographer grants the **Cartographer's Seal** when his intro dialogue ends; the Sealed Passage opens; later talks use a shorter follow-up dialogue
+- [x] **District 2 "Upper Medina"** beyond the city wall — the region is now **134 × 22 tiles**
+- [x] **Unique door persistence keys** — `doorName` is set from the GameObject name when placed and synced for pre-existing doors
+
+### Save design
+
+- `SaveManager` is a lazy singleton (`EnsureInstance()` + `DontDestroyOnLoad`) mirroring state to `Application.persistentDataPath/soledar_save.json` (`C:/Users/<user>/AppData/LocalLow/DefaultCompany/Soledar/soledar_save.json`).
+- File shape (human-readable, `JsonUtility`):
+
+```json
+{
+  "playerX": 5.0, "playerY": 3.6,
+  "health": 5, "maxHealth": 5,
+  "collectedKeys": ["Medina Gate Key"],
+  "openedDoors": ["MedinaGate"]
+}
+```
+
+- Write points: `CollectibleKey` pickup → auto-save; `Door.Open` → auto-save; NPC reward → `Door.Unlock` → auto-save; `ForgottenBench` rest → `SaveGame`.
+- Restore points: `Door.Awake` / `CollectibleKey.Awake` query the loaded state; `SaveApplier` (on the Player) restores health and position at scene start.
+- `PlayerRespawn` gained a position-based override (`SetRespawnPosition`) so a **saved** position beats the default spawn.
+- Debug: `Tools > Soledar > Delete Save File (Debug)`.
+
+### District 2 layout (x 94–133, every hop ≤ 2 tiles up)
+
+- **Corridor** (x 94–99, top y10): continues the city-wall plateau through the old boundary
+- **Drop shaft** (x 100–102): drop to street level; return path p1 (top y5) → p2 (x102, top y7) → p3 (top y9) → corridor
+- **Street** (x 102–125, top y3): death gap at x 110–111; `DustCrawler_District2` and `MedinaGuard_District2` patrol; **Aisha the Rug Merchant** at x 119
+- **Climb** (x 116–117 top y5 → x 119–120 top y7)
+- **Shrine ledge** (x 122–131, top y9): `Bench_UpperMedina` (x 124); **Palace Gate** (x 128.5, sealed 2×4) — Phase 5 teaser
+- **Right wall** closed at x 132–133; camera bounds extended to x 133, death pit widened to 136
+
+### New scripts / changes
+
+| Script | Change |
+|--------|--------|
+| `Core/SaveManager.cs` (new) | Lazy singleton; load/mirror JSON; `IsKeyCollected` / `IsDoorOpen` / `MarkKeyCollected` / `MarkDoorOpen` / `SaveGame` / `ApplyToScene` / `DeleteSave`; `HasSave` |
+| `Core/SaveApplier.cs` (new) | On Player Start: if a save exists, restore health/position (saved position wins over the default spawn) |
+| `UI/PauseMenu.cs` (new) | Esc/Start toggle; stores previous `Time.timeScale`, freezes to 0; Resume/Quit buttons; restores timeScale if destroyed while paused |
+| `World/Door.cs` | `Awake` re-opens saved doors; `Open()` auto-saves `doorName`; exposes `DoorName` |
+| `World/CollectibleKey.cs` | `Awake` destroys already-collected keys; pickup auto-saves before unlocking |
+| `World/ForgottenBench.cs` | Rest now calls `SaveManager.SaveGame` |
+| `Dialogue/NPCInteractable.cs` | New `rewardDoor` + `repeatDialogue`; unlocks the door when the dialogue closes (once); later talks use the repeat line |
+| `Player/PlayerHealth.cs` | New `SetHealth(int)` (clamped), used by save restore |
+| `Player/PlayerRespawn.cs` | New position-based respawn override (`SetRespawnPosition`, `CurrentRespawnPosition`) |
+| `Player/PlayerInputReader.cs` | New `PauseWasPressed` (Player/Pause action) |
+| `InputSystem_Actions.inputactions` | `Player/Pause`: Esc + gamepad Start |
+| `Editor/SoledarSetupUtility.cs` | Phase 4 menu item, width-aware painting (`paintWidth`), District 2, camera bounds/death pit resize, `SaveApplier`, pause UI + EventSystem, Cartographer reward wiring, Aisha, District 2 actors, `SyncDoorNames`, Delete Save File |
+
+### Setup tool — Phase 4 (idempotent; requires Phases 1–3)
+
+1. Repaints the region at **134** tiles wide (Phase 3 painting is now width-aware; its old right wall is skipped past x96).
+2. Extends `CameraBounds` (x 1..133) and the `DeathPit` strip (136 × 2 at y −2.5).
+3. Adds `SaveApplier` to the Player.
+4. Builds `PausePanel` (full-screen dark overlay, inactive) with `PauseMenu`, Resume and Quit buttons; adds an EventSystem (`InputSystemUIInputModule`) if missing.
+5. Creates `CartographerRepeat.asset` and wires the reward (`rewardDoor = SealedPassage`).
+6. Creates `AishaIntro.asset` + Aisha NPC; places `DustCrawler_District2`, `MedinaGuard_District2`, `Bench_UpperMedina`, `PalaceGate`.
+7. Syncs every `Door.doorName` to its GameObject name (persistence keys).
+8. Warns if a save file already exists (stale saves may pre-open doors — delete via the debug menu).
+
+### Verified in-editor (Unity MCP, 2026-11-12)
+
+- **Compile:** `Assembly-CSharp` + `Assembly-CSharp-Editor` rebuild clean; Console error count 0.
+- **Latent Phase 1–3 fixes found during verification** (Phases 1–3 had never been compiled before): Cinemachine 3 namespace is `Unity.Cinemachine`; CM3 serialized fields are `Target.TrackingTarget`, `Lens.OrthographicSize`, `Damping`, `Lookahead.Time`, `BoundingShape2D`; `EditorSceneManager.GetLoadedScenes` → `SceneManager.sceneCount/GetSceneAt`; `Rigidbody2D.interpolate` → `.interpolation`; `AssetDatabase.RenameAsset(Object,…)` → path overload; missing `using UnityEngine.Tilemaps;`; Phase 3's boundary wall would have blocked the new corridor (now painted only at ≤96 width).
+- **Scene structure:** tilemaps 134 × 22; camera bounds (1,0)–(133,20) wired to the confiner; `DeathPit` (66.5, −2.5) 136 × 2; doors `MedinaGate` / `SealedPassage` / `PalaceGate` with unique `doorName`s; key `Medina Gate Key`; 4 benches; 6 enemies incl. both District 2 actors; Cartographer `rewardDoor = SealedPassage`, `repeatDialogue = CartographerRepeat`; `PauseMenu` refs wired (panel hidden); EventSystem present.
+- **Tile audit:** 23/23 assertions pass (corridor open above y10, shaft platforms, street gap, climb, ledge, right wall, plateau).
+- **Play-mode smoke test:** player spawns at (5, 3.6) with 5/5 HP; `Pause()` → `timeScale 0` + panel visible, `Resume()` → `timeScale 1` + panel hidden; `SaveGame` writes the file.
+- **Persistence round-trip:** opened `MedinaGate` + recorded the key + saved → exited and re-entered Play mode → gate restored open (collider disabled), key gone, `SealedPassage`/`PalaceGate` still closed, player position/health restored from the file. Test save deleted afterwards.
+
+### Phase 4 test checklist (manual — hands-on pass still recommended)
+
+**Pause**
+- [ ] Esc during play → PAUSED overlay, game frozen; Esc again → resumes at normal speed
+- [ ] Gamepad Start does the same; Resume/Quit buttons respond to mouse
+- [ ] Pause mid-air / mid-lunge → resume continues cleanly (no stuck timeScale)
+
+**Save / restore**
+- [ ] Pick the key → Console logs pickup; quit Play, re-enter → key gone, Medina Gate open
+- [ ] Open the Sealed Passage via the NPC → quit/re-enter → stays open
+- [ ] Rest at a bench → quit/re-enter → dying afterwards respawns at that bench
+- [ ] Die without having saved → respawns at the last checkpoint, health resets
+
+**Quest**
+- [ ] Talk to the Old Cartographer through his intro → after the last line the Sealed Passage opens (Console: reward granted)
+- [ ] Talk to him again → shorter follow-up dialogue
+- [ ] Aisha has her own dialogue on the Upper Medina street
+
+**District 2**
+- [ ] Drop down the shaft → street; climb back p1 → p2 → p3 → corridor
+- [ ] Death gap at x 110–111 drops to the pit; street enemies don't walk into it
+- [ ] Climb to the shrine ledge: bench rests/saves; Palace Gate is solid
+- [ ] Camera stays inside bounds up to the right wall; no black voids
+
+**Regression:** Phases 1–3 checks (movement/combat/dialogue/benches/gates).
+
+### Known issues / deferred
+
+- Single scene only — no scene transitions yet; multi-scene architecture deferred (the Palace Gate is a Phase 5 teaser).
+- No settings/options menu yet (pause has Resume/Quit only).
+- Save file has no version field or migration path — deleting it is the reset.
+- Stale-save edge: a save written before Phase 4 wiring can pre-open doors; the setup tool warns and the debug menu deletes it.
+- NPC reward grants on dialogue close even if the player dies mid-dialogue — accepted for now.
+- Dialogue typing continues during pause (unscaled time) — cosmetic; revisit when the UI gets its own pause handling.
+- Hit-stop vs pause timeScale: if a hit-stop ends during pause it restores 1 instead of the paused 0 — practically impossible timing, revisit if reported.
+- Balance/quest data assets reset if setup tools are re-run (edit in the Inspector afterwards).
+
+---
+
+*Next: Phase 5 — abilities & world expansion (Descent of Ash down-attack/pogo, traversal abilities, the Silent Palace beyond the Palace Gate).*

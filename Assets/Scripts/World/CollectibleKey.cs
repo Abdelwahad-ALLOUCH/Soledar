@@ -2,7 +2,8 @@ using UnityEngine;
 
 /// <summary>
 /// Walk-over key pickup for gate progression. Touching it unlocks the target
-/// Door (progression groundwork — real inventory arrives in Phase 4).
+/// Door. Collection is recorded in SaveManager (Phase 4) so keys stay collected
+/// across sessions — Awake destroys the key if the save already has it.
 ///
 /// Wiring (Phase 3 setup tool):
 ///   - Lives on the key GameObject with a small trigger collider.
@@ -30,6 +31,13 @@ public class CollectibleKey : MonoBehaviour
 
     void Awake()
     {
+        // Persistence (Phase 4): already collected in the save file → gone.
+        if (SaveManager.EnsureInstance().IsKeyCollected(keyName))
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         basePosition = transform.position;
         baseCached = true;
         bobTimer = Random.value * Mathf.PI * 2f; // desync multiple keys
@@ -51,6 +59,10 @@ public class CollectibleKey : MonoBehaviour
         if (player == null || player.IsDead) return;
 
         Collected = true;
+
+        // Persistence (Phase 4): record + auto-save, then unlock the target door
+        // (which records + saves its own open state).
+        SaveManager.EnsureInstance().MarkKeyCollected(keyName);
 
         if (targetDoor != null)
             targetDoor.Unlock(keyName);

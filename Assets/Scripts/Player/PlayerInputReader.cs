@@ -14,7 +14,8 @@ using UnityEngine.InputSystem;
 ///   Jump    Space / gamepad A (buttonSouth)
 ///   Dash    LeftShift / gamepad B (buttonEast) / RB (rightShoulder)
 ///   Attack  J / Enter / mouse left / gamepad X (buttonWest)
-///   Interact E / gamepad Y (buttonNorth)  (consumed by future NPC/dialogue systems)
+///   Interact E / gamepad Y (buttonNorth)
+///   Pause   Escape / gamepad Start (added in Phase 4)
 ///
 /// Lives on the Player GameObject. Configured by Tools > Soledar > Setup Phase 1 Scene.
 /// </summary>
@@ -30,6 +31,7 @@ public class PlayerInputReader : MonoBehaviour
     private InputAction dashAction;
     private InputAction attackAction;
     private InputAction interactAction;
+    private InputAction pauseAction;
     private bool initialized;
 
     /// <summary>Current movement vector (x = horizontal). Zero when input is disabled.</summary>
@@ -42,6 +44,13 @@ public class PlayerInputReader : MonoBehaviour
     public bool DashWasPressed { get { return IsReady() && dashAction.WasPressedThisFrame(); } }
     public bool AttackWasPressed { get { return IsReady() && attackAction.WasPressedThisFrame(); } }
     public bool InteractWasPressed { get { return IsReady() && interactAction.WasPressedThisFrame(); } }
+
+    /// <summary>
+    /// Pause/Escape press. Consumed by PauseMenu (Phase 4). Unlike the other
+    /// presses this works even while the Player map holds gameplay input —
+    /// pausing must always be available.
+    /// </summary>
+    public bool PauseWasPressed { get { return IsReady() && pauseAction.WasPressedThisFrame(); } }
 
     /// <summary>True while the Player action map is enabled. Frozen during the death sequence.</summary>
     public bool PlayerMapEnabled { get; private set; }
@@ -72,13 +81,14 @@ public class PlayerInputReader : MonoBehaviour
         dashAction = inputActions.FindAction("Player/Dash", throwIfNotFound: false);
         attackAction = inputActions.FindAction("Player/Attack", throwIfNotFound: false);
         interactAction = inputActions.FindAction("Player/Interact", throwIfNotFound: false);
+        pauseAction = inputActions.FindAction("Player/Pause", throwIfNotFound: false);
 
         if (moveAction == null || jumpAction == null || dashAction == null ||
-            attackAction == null || interactAction == null)
+            attackAction == null || interactAction == null || pauseAction == null)
         {
             Debug.LogError(
                 "[PlayerInputReader] Missing required action(s) in the assigned asset: " +
-                "Player/Move, Player/Jump, Player/Dash, Player/Attack, Player/Interact. " +
+                "Player/Move, Player/Jump, Player/Dash, Player/Attack, Player/Interact, Player/Pause. " +
                 "Check Assets/InputSystem_Actions.inputactions.",
                 this);
             enabled = false;
