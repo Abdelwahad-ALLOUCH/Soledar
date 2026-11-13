@@ -396,4 +396,109 @@ Setup: run the Phase 1, 2, and 3 tools in order (each logs green COMPLETE).
 
 ---
 
-*Next: Phase 5 — abilities & world expansion (Descent of Ash down-attack/pogo, traversal abilities, the Silent Palace beyond the Palace Gate).*
+## Phase 5 — First Boss: "The Gatekeeper" & Descent of Ash
+
+### Scope delivered
+
+- [x] **The Gatekeeper** — the first major boss, guarding the District 2 shrine courtyard in front of the Palace Gate
+- [x] **Descent of Ash** — reward ability: airborne down-strike + pogo bounce, persisted in the save
+- [x] **Boss arena orchestration** — entrance seal, boss bounds, health bar, retry on death, re-arm on re-entry
+- [x] **Boss defeat persistence** — the Gatekeeper stays dead across play sessions (`defeatedBosses` in the save)
+- [x] **Sunken Medina vertical slice** (`Assets/Scenes/SunkenMedina.unity`) — cloned from TestScene with discovery rooms, Ancient Dirham currency, the Silent Merchant, Lost Soul, Medina Warden and a completion trigger
+- [x] **Ziri visual install** — the protagonist's placeholder art lives on a `ZiriVisual` child (idle bob; gameplay untouched)
+
+### The Gatekeeper (design + numbers)
+
+State machine `Dormant → Choosing → WindUp → Slam / Sweep / Volley → Recover` (`Enemies/GatekeeperBoss.cs`):
+
+| Attack | Behaviour | Tuning |
+|--------|-----------|--------|
+| Slam | leaps at the player, lands with an AoE shockwave | slamJump 12, chase 7, AoE radius 1.7 + camera shake |
+| Sweep | dashes across the courtyard floor | speed 8 (phase 1) → 10 (phase 2) |
+| Volley | lobs arcing projectiles | 3 shots (phase 1) → 5 shots (phase 2), vx ±2.5, vy 7 |
+
+- Telegraph 0.55 s, recover 1.1 s, choose delay 0.7 s; walk 1.2; HP 30 via the shared `EnemyHealth` (knockbackForce 0 so it never staggers).
+- **Phase 2 at ≤ 50 % HP:** angry tint + faster sweep + bigger volleys.
+- Projectiles are `BossProjectile` (arcing, ground-layer collision, despawn on impact).
+- The boss is clamped inside the arena by `BossBounds`; teleports use `rb.position` + `Physics2D.SyncTransforms()` (Unity 6 keeps `autoSyncTransforms` off).
+
+### Descent of Ash (player kit)
+
+- Airborne + holding Down + `HasAbility("descentOfAsh")` → dedicated down-strike (`PlayerAttack`): own range (1), doesn't advance the ground combo, 0.25 s recovery.
+- Striking an enemy or a `PogoSurface` below bounces the player up (`PogoBounce`, force 11) — the street gap at x 110–111 is crossable with a pogo pad placed over it.
+
+### BossArena orchestration (`World/BossArena.cs`)
+
+- Lives on the `GatekeeperArena` trigger at the courtyard entrance; on entry it seals the way back (child `Seal`), wakes the boss, shows `BossHealthUI` ("THE GATEKEEPER").
+- Victory: grants Descent of Ash, opens the Palace Gate, shows the reward banner (6 s), records `defeatedBosses: ["gatekeeper"]` — auto-saved.
+- Death: unseals, resets boss (HP 30, dormant) and hides the UI; the bench inside the courtyard is the retry point; the arena re-arms when the player re-enters.
+- On later sessions with the boss already defeated, the arena unlocks the gate and deactivates the boss object.
+
+### Sunken Medina vertical slice
+
+`Tools > Soledar > Create Sunken Medina Vertical Slice` clones TestScene → `Assets/Scenes/SunkenMedina.unity` (TestScene stays the regression scene). Demo content (stable IDs preserved):
+
+| Object | Room ID / item | Placement (verified against the tilemap) |
+|--------|----------------|------------------------------------------|
+| Room_Start / Street / Rooftops / Courtyard | `medina_start`, `medina_street`, `medina_rooftops`, `broken_riad` | trigger centres (3,0) (20,0) (38,10) (57,5) |
+| Dirham_Street_01 / Rooftop_01 / Courtyard_01 | 10 dirhams each | (11,3.5) (27,6.5) (45,5.5) |
+| SilentMerchant | "Wind of the Atlas" for 25 dirhams (grants `windOfAtlas`) | (20,1.5) in the street trench |
+| LostSoul | floating ranged enemy (HP 3) | (34,6) over the y5 ledge |
+| MedinaWarden | mini-boss guard (HP 12, charge AI) | (55,3.5) inside the broken riad |
+| DemoCompletion + DemoCompletePanel | inert until `gatekeeper` is defeated | (65,3) past the riad |
+
+Demo flow: collect 3 × 10 dirhams → buy the Wind of the Atlas (30 available, 5 left over) → cross Medina Gate → defeat the Gatekeeper deep in District 2 → walk back to the completion trigger to see the end panel.
+
+### Defects found & fixed during verification
+
+| # | Severity | Finding | Fix |
+|---|----------|---------|-----|
+| 1 | Critical | `GroundTiles` carried a **Dynamic** Rigidbody2D baked into the Phase 4 commit — the level fell/tumbled at play start | Set to Static + saved; the Phase 5 setup tool now asserts it (regression guard in step 0) |
+| 2 | Critical | Unity 6 keeps `Physics2D.autoSyncTransforms` off — transform-only teleports left the physics body behind (respawn visibly desynced) | `PlayerRespawn.RespawnRoutine` and `GatekeeperBoss.ResetBoss` now also set `rb.position` + `Physics2D.SyncTransforms()` |
+| 3 | High | Boss health bar and reward banner never showed — `BossArena.healthUI` / `rewardBanner` were wired before those UI objects existed in the setup order | Setup tool completes the arena wiring after UI creation; all six arena fields + `bossId` verified |
+| 4 | High | `SunkenMedinaBootstrap.CreateMarker` NRE'd: Unity 6.3 refuses to add a `SpriteRenderer` while the quad's `MeshRenderer` exists (`AddComponent` returns null) | Markers keep the quad mesh as the placeholder visual; the tint goes through a material instance |
+| 5 | Medium | Demo markers were placed as if positions were corners/ground-level guesses — several buried under tiles (dirhams at y2 under a y3/y5 surface) or floating over pits (Warden at (41,2) under an y11 column) | Raycasted a full ground-height map of the tilemap and repositioned every marker onto solid, reachable ground |
+| 6 | Medium | Room discovery never fired at spawn — the bootstrap treated room positions as corners, but `BoxCollider2D` sizes are centred (Room_Start spanned x−7..3, missing the spawn at x5) | Re-centred all four room triggers; spawn discovery verified |
+| 7 | Medium | `DemoEndTrigger.completionPanel` was never authored — completion would have been invisible | Bootstrap now creates `DemoCompletePanel` (canvas text, hidden) and wires it |
+| 8 | Medium | **Ground-check seam bug (latent since Phase 1):** the ground check was a single centre ray; when the player stood exactly on a tilemap cell seam (the spawn is one), the ray grazed the seam between composite polygons and missed → grounded never became true, first jump dead | `PlayerMovement.IsGrounded()` now probes a short `OverlapBox` (0.8 wide) across the feet |
+
+### Verification (play mode, this phase)
+
+- World static at play start (regression guard passes); Ziri visual renders and the player stands on the courtyard ledge next to the bench.
+- Fight start: seal on, bar visible ("THE GATEKEEPER", Filled 1.00), boss awake at 30/30.
+- Phase 2: angry tint + 5-projectile volley observed live.
+- Retry: player death → respawn at spawn with **body and transform in sync** (fix #2 verified), boss reset to 30/30 dormant, seal off, bar hidden; re-entry re-arms the full fight.
+- Victory: Descent of Ash granted, Palace Gate opened, `defeatedBosses: ["gatekeeper"]` + ability persisted to `soledar_save.json`.
+- Demo scene: all demo objects present with correct components; build settings contain TestScene + SunkenMedina; spawn room discovery fires; ground check grounded at spawn after fix #8.
+
+### Phase 5 test checklist (manual — hands-on pass recommended)
+
+**Boss fight (District 2 shrine courtyard)**
+- [ ] Walk into the courtyard — entrance seals behind you, boss bar appears
+- [ ] Learn his tells: slam shockwave, floor sweep, arcing volleys; phase 2 at half health (angry tint, 5 shots)
+- [ ] Die → respawn at the courtyard bench, boss fully reset, seal gone; walk back in → fight re-arms
+- [ ] Win → banner, Descent of Ash acquired, Palace Gate opens; quit/re-enter — boss stays dead, gate stays open
+
+**Descent of Ash**
+- [ ] In the air, hold Down + Attack → down-strike; pogo off the PogoPad over the x110–111 gap
+- [ ] Pogo off enemies without taking contact damage
+
+**Sunken Medina slice (open `Assets/Scenes/SunkenMedina.unity`, set as first scene or play from there)**
+- [ ] Rooms log as discovered as you pass through them (start room fires at spawn)
+- [ ] Collect all 3 Ancient Dirhams (30 total); buy "Wind of the Atlas" from the Silent Merchant (E) — verify the deny message with < 25, then the purchase
+- [ ] Lost Soul hovers and lobs shots; Medina Warden telegraphs and charges in the broken riad
+- [ ] After beating the Gatekeeper, walk back to x65 — the completion panel appears
+
+### Known issues / deferred
+
+- Reward banner and completion panel were verified by wiring/force-activation; their 6 s / trigger windows are easy to miss from remote throttled-editor checks — confirm live.
+- Boss/enemy/projectile visuals are placeholder primitives (see `Docs/AssetRegister.md`); Ziri art is AI-generated temporary source awaiting the commissioned sheet.
+- Resting mid-fight at the courtyard bench heals while the fight continues — accepted for now; revisit with arena-wide "no rest during fight" rule.
+- `EnemyHealth` velocity-zero on damage interrupts boss attacks mid-animation — acceptable, revisit if it looks wrong live.
+- Demo merchants/gates grant `windOfAtlas` but no `AbilityGate` blockers are placed yet — the charm is cosmetic until District 1 gets ability-gated secrets.
+- Remote (bridge-driven) play testing runs at ~4–7 fps while the editor is unfocused — timing-sensitive checks (banner windows, trigger races) are only reliable hands-on.
+
+---
+
+*Next: Phase 6 — Silent Palace beyond the Palace Gate (scene transitions, ability-gated traversal, second ability from the merchant chain).*
+

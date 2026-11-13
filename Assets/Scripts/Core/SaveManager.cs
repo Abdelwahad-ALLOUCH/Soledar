@@ -9,12 +9,14 @@ using UnityEngine;
 /// mirrors it to a JSON file under Application.persistentDataPath.
 ///
 /// Save points: Forgotten Bench rest (full heal + respawn + everything below).
-/// Persisted: player health, respawn position, collected keys, opened doors.
+/// Persisted: player health, respawn position, collected keys, opened doors,
+/// unlocked abilities (Phase 5).
 ///
 /// Other systems never touch the file directly:
 ///   - Door.Awake / CollectibleKey.Awake query IsDoorOpen / IsKeyCollected
 ///     so saved state survives leaving Play mode and restarting the game.
-///   - MarkKeyCollected / MarkDoorOpen update state AND save immediately.
+///   - MarkKeyCollected / MarkDoorOpen / MarkAbilityUnlocked update state AND
+///     save immediately.
 ///   - SaveGame() snapshots the player's live state (called on bench rest).
 ///   - SaveApplier (on the Player) applies the saved state on scene start.
 /// </summary>
@@ -31,12 +33,18 @@ public class SaveManager : MonoBehaviour
     [Serializable]
     private class SaveData
     {
+        public int version = 2;
         public float playerX;
         public float playerY;
         public int health = 5;
         public int maxHealth = 5;
         public string[] collectedKeys = new string[0];
         public string[] openedDoors = new string[0];
+        public string[] unlockedAbilities = new string[0];
+        public string[] defeatedBosses = new string[0];
+        public string[] discoveredRooms = new string[0];
+        public string[] collectedItems = new string[0];
+        public int ancientDirhams;
     }
 
     private SaveData data = new SaveData();
@@ -68,6 +76,17 @@ public class SaveManager : MonoBehaviour
         return Array.IndexOf(data.openedDoors, doorName) >= 0;
     }
 
+    /// <summary>True when the named ability has been unlocked (Phase 5).</summary>
+    public bool HasAbility(string abilityName)
+    {
+        return Array.IndexOf(data.unlockedAbilities, abilityName) >= 0;
+    }
+
+    public bool IsBossDefeated(string bossId) { return Array.IndexOf(data.defeatedBosses, bossId) >= 0; }
+    public bool IsRoomDiscovered(string roomId) { return Array.IndexOf(data.discoveredRooms, roomId) >= 0; }
+    public bool IsItemCollected(string itemId) { return Array.IndexOf(data.collectedItems, itemId) >= 0; }
+    public int AncientDirhams { get { return data.ancientDirhams; } }
+
     /* ---------------- state changes (auto-save) ---------------- */
 
     public void MarkKeyCollected(string keyName)
@@ -84,6 +103,51 @@ public class SaveManager : MonoBehaviour
 
         data.openedDoors = Append(data.openedDoors, doorName);
         SaveGame($"door '{doorName}'");
+    }
+
+    /// <summary>Records an unlocked ability and auto-saves (Phase 5).</summary>
+    public void MarkAbilityUnlocked(string abilityName)
+    {
+        if (string.IsNullOrEmpty(abilityName) || HasAbility(abilityName)) return;
+
+        data.unlockedAbilities = Append(data.unlockedAbilities, abilityName);
+        SaveGame($"ability '{abilityName}'");
+    }
+
+    public void MarkBossDefeated(string bossId)
+    {
+        if (string.IsNullOrEmpty(bossId) || IsBossDefeated(bossId)) return;
+        data.defeatedBosses = Append(data.defeatedBosses, bossId);
+        SaveGame($"boss '{bossId}' defeated");
+    }
+
+    public void DiscoverRoom(string roomId)
+    {
+        if (string.IsNullOrEmpty(roomId) || IsRoomDiscovered(roomId)) return;
+        data.discoveredRooms = Append(data.discoveredRooms, roomId);
+        SaveGame($"room '{roomId}' discovered");
+    }
+
+    public void MarkItemCollected(string itemId)
+    {
+        if (string.IsNullOrEmpty(itemId) || IsItemCollected(itemId)) return;
+        data.collectedItems = Append(data.collectedItems, itemId);
+        SaveGame($"item '{itemId}' collected");
+    }
+
+    public void AddDirhams(int amount, string reason = "pickup")
+    {
+        if (amount <= 0) return;
+        data.ancientDirhams += amount;
+        SaveGame($"{amount} dirhams: {reason}");
+    }
+
+    public bool TrySpendDirhams(int amount, string reason = "purchase")
+    {
+        if (amount <= 0 || data.ancientDirhams < amount) return false;
+        data.ancientDirhams -= amount;
+        SaveGame($"{amount} dirhams: {reason}");
+        return true;
     }
 
     /* ---------------- save / load ---------------- */
@@ -150,15 +214,26 @@ public class SaveManager : MonoBehaviour
             SaveData loaded = JsonUtility.FromJson<SaveData>(json);
             if (loaded != null)
             {
+                loaded.collectedKeys ??= new string[0];
+                loaded.openedDoors ??= new string[0];
+                loaded.unlockedAbilities ??= new string[0];
+                loaded.defeatedBosses ??= new string[0];
+                loaded.discoveredRooms ??= new string[0];
+                loaded.collectedItems ??= new string[0];
+                loaded.health = Mathf.Max(1, loaded.health);
+                loaded.maxHealth = Mathf.Max(1, loaded.maxHealth);
                 data = loaded;
                 HasSave = true;
                 Debug.Log($"[SaveManager] Save loaded: health {data.health}/{data.maxHealth}, " +
-                          $"{data.collectedKeys.Length} key(s), {data.openedDoors.Length} door(s).", this);
+                          $"{data.collectedKeys.Length} key(s), {data.openedDoors.Length} door(s), " +
+                          $"{data.unlockedAbilities.Length} ability/ies.", this);
             }
         }
         catch (Exception e)
         {
-            Debug.LogError($"[SaveManager] Failed to read save file: {e.Message}", this);
+            Debug.LogWarning($"[SaveManager] Corrupt save ignored: {e.Message}", this);
+            data = new SaveData();
+            HasSave = false;
         }
     }
 

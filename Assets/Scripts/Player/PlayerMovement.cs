@@ -29,6 +29,11 @@ public class PlayerMovement : MonoBehaviour
     public float coyoteTime = 0.15f;
     public float jumpBufferTime = 0.15f;
 
+    [Header("Unlockable Jump")]
+    [Tooltip("SaveManager ability name that enables the second mid-air jump.")]
+    public string doubleJumpAbilityName = "windOfAtlas";
+    public float doubleJumpForce = 11f;
+
     /* ===================== WALL ===================== */
     [Header("Wall")]
     public float wallSlideSpeed = 2f;
@@ -70,6 +75,7 @@ public class PlayerMovement : MonoBehaviour
     private float originalGravity;
 
     private float ghostTimer;
+    private bool doubleJumpAvailable;
 
     /* ===================== PUBLIC STATE ===================== */
     /// <summary>1 = facing right, -1 = facing left. Drives attack direction and sprite flips.</summary>
@@ -77,6 +83,9 @@ public class PlayerMovement : MonoBehaviour
 
     public bool IsWallSliding { get { return isWallSliding; } }
     public bool IsDashing { get { return isDashing; } }
+
+    /// <summary>True when the player's ground ray hits the ground layer right now.</summary>
+    public bool IsGroundedNow { get { return IsGrounded(); } }
 
     /// <summary>Cached PlayerHealth reference (may be null — guarded everywhere).</summary>
     public PlayerHealth Health { get { return playerHealth; } }
@@ -88,6 +97,7 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         originalGravity = rb.gravityScale;
         playerHealth = GetComponent<PlayerHealth>();
+        doubleJumpAvailable = true;
 
         input = GetComponent<PlayerInputReader>();
         if (input == null)
@@ -130,7 +140,10 @@ public class PlayerMovement : MonoBehaviour
 
         /* -------- GROUND CHECK -------- */
         if (IsGrounded())
+        {
             coyoteCounter = coyoteTime;
+            doubleJumpAvailable = true;
+        }
 
         /* -------- JUMP INPUT (buffered) -------- */
         if (input.JumpWasPressed)
@@ -179,6 +192,14 @@ public class PlayerMovement : MonoBehaviour
             );
             wallJumpLockCounter = wallJumpLockTime;
             jumpBufferCounter = 0;
+        }
+
+        if (jumpBufferCounter > 0 && coyoteCounter <= 0f && !isWallSliding &&
+            doubleJumpAvailable && SaveManager.EnsureInstance().HasAbility(doubleJumpAbilityName))
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpForce);
+            doubleJumpAvailable = false;
+            jumpBufferCounter = 0f;
         }
     }
 
@@ -241,7 +262,8 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        SpriteRenderer playerSR = GetComponent<SpriteRenderer>();
+        // Ziri's renderer lives on the "ZiriVisual" child, not on this physics root.
+        SpriteRenderer playerSR = GetComponentInChildren<SpriteRenderer>();
         if (playerSR == null) return;
 
         GameObject ghost = Instantiate(dashGhostPrefab, transform.position, transform.rotation);
@@ -257,6 +279,27 @@ public class PlayerMovement : MonoBehaviour
     }
 
     /* ===================== STATE RESET ===================== */
+
+    /// <summary>
+    /// Descent of Ash pogo bounce (Phase 5): cancels any dash/wall state,
+    /// restores normal gravity and launches the player upward. Called by
+    /// PlayerAttack when a downward strike connects with something pogo-able.
+    /// </summary>
+    public void PogoBounce(float upwardForce)
+    {
+        isDashing = false;
+        isWallSliding = false;
+        doubleJumpAvailable = true;
+        wallJumpLockCounter = 0f;
+        coyoteCounter = 0f;
+        ghostTimer = 0f;
+
+        if (rb != null)
+        {
+            rb.gravityScale = originalGravity;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, upwardForce);
+        }
+    }
 
     /// <summary>
     /// Clears all transient movement state (active dash, buffers, timers) and
@@ -286,12 +329,16 @@ public class PlayerMovement : MonoBehaviour
     bool IsGrounded()
     {
         if (groundCheck == null) return false;
-        return Physics2D.Raycast(
+        // A single centre ray misses whenever the player stands exactly on a
+        // tilemap cell seam (the spawn point is one), because the ray grazes
+        // the seam between composite polygons. A short box across the feet
+        // overlaps the ground regardless of seams.
+        return Physics2D.OverlapBox(
             groundCheck.position,
-            Vector2.down,
-            checkDistance,
+            new Vector2(0.8f, checkDistance * 2f),
+            0f,
             groundLayer
-        );
+        ) != null;
     }
 
     bool IsTouchingWall()

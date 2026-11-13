@@ -44,7 +44,8 @@ public class PlayerRespawn : MonoBehaviour
         attack = GetComponent<PlayerAttack>();
         input = GetComponent<PlayerInputReader>();
         rb = GetComponent<Rigidbody2D>();
-        sprite = GetComponent<SpriteRenderer>();
+        // Ziri's renderer lives on the "ZiriVisual" child, not on this physics root.
+        sprite = GetComponentInChildren<SpriteRenderer>(true);
 
         if (health == null)
         {
@@ -126,6 +127,16 @@ public class PlayerRespawn : MonoBehaviour
 
         /* -------- 3. Teleport + restore -------- */
         transform.position = CurrentRespawnPosition;
+        // Unity 6 keeps Physics2D.autoSyncTransforms off, so a bare transform
+        // teleport never reaches the physics body (the visible player respawns
+        // while its physics body stays at the death spot). Move the body too
+        // and sync explicitly.
+        if (rb != null)
+        {
+            rb.position = CurrentRespawnPosition;
+            rb.linearVelocity = Vector2.zero;
+        }
+        Physics2D.SyncTransforms();
 
         if (movement != null) movement.ResetState();
         if (rb != null) rb.simulated = true;

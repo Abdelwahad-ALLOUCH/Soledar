@@ -58,7 +58,8 @@ public class PlayerHealth : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        sprite = GetComponent<SpriteRenderer>();
+        // Ziri's renderer lives on the "ZiriVisual" child, not on this physics root.
+        sprite = GetComponentInChildren<SpriteRenderer>(true);
 
         if (sprite != null)
         {

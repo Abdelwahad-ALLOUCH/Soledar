@@ -10,7 +10,7 @@ using UnityEngine.UI;
 using Unity.Cinemachine;
 
 /// <summary>
-/// One-click scene configuration for SOLEDAR (Phases 1-4).
+/// One-click scene configuration for SOLEDAR (Phases 1-5).
 ///
 /// HOW TO USE (in order — each phase requires the previous one):
 ///   1. Open Assets/TestScene.unity (and make sure no other scene is loaded).
@@ -19,6 +19,7 @@ using Unity.Cinemachine;
 ///        Tools > Soledar > Setup Phase 2 Combat & NPCs
 ///        Tools > Soledar > Setup Phase 3 Region (Medina Outskirts)
 ///        Tools > Soledar > Setup Phase 4 Persistence & Upper Medina
+///        Tools > Soledar > Setup Phase 5 Boss Gatekeeper & Descent of Ash
 ///   3. Enter Play mode and follow the test checklists in Docs/DevLog.md.
 ///
 /// WHAT IT DOES (idempotent — safe to run again):
@@ -1809,6 +1810,270 @@ public static class SoledarSetupUtility
 
         prop.stringValue = value;
         so.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    /* ===================== Phase 5 ===================== */
+
+    [MenuItem("Tools/Soledar/Setup Phase 5 Boss Gatekeeper & Descent of Ash")]
+    public static void SetupPhase5Boss()
+    {
+        Scene scene = EditorSceneManager.GetActiveScene();
+
+        /* ---------------- Guards ---------------- */
+        if (scene.path != TestScenePath)
+        {
+            Debug.LogError($"[SoledarSetup] Active scene is '{scene.path}'. Open '{TestScenePath}' first, then run this command again.");
+            return;
+        }
+
+        GameObject player = GameObject.Find("Player");
+        if (player == null || player.GetComponent<PlayerRespawn>() == null || player.GetComponent<SaveApplier>() == null)
+        {
+            Debug.LogError("[SoledarSetup] Phase 1/4 setup not detected. Run 'Tools > Soledar > Setup Phase 1 Scene' and 'Setup Phase 4 Persistence & Upper Medina' first.");
+            return;
+        }
+
+        GameObject palaceGateGO = GameObject.Find("PalaceGate");
+        if (palaceGateGO == null || GameObject.Find("MedinaGate") == null)
+        {
+            Debug.LogError("[SoledarSetup] Phase 4 setup not detected (MedinaGate/PalaceGate missing). Run 'Tools > Soledar > Setup Phase 4 Persistence & Upper Medina' first.");
+            return;
+        }
+
+        int enemyLayerIndex = EnsureLayer("Enemy");
+        if (enemyLayerIndex < 0)
+        {
+            Debug.LogError("[SoledarSetup] Could not ensure the 'Enemy' layer — Phase 5 setup aborted.");
+            return;
+        }
+
+        int groundLayerIndex = LayerMask.NameToLayer("Ground");
+        if (groundLayerIndex < 0) groundLayerIndex = 3;
+
+        Sprite placeholder = EnsurePlaceholderSprite();
+        if (placeholder == null)
+        {
+            Debug.LogError("[SoledarSetup] Placeholder sprite could not be created — Phase 5 setup aborted.");
+            return;
+        }
+
+        /* ---------------- 0. World sanity: the level tilemap must be static ---------------- */
+        // Regression guard: a Dynamic Rigidbody2D on GroundTiles slipped into
+        // the Phase 4 commit — at Play mode start gravity dragged the whole
+        // level down and tumbled it (the fight arena "worked" while the world
+        // fell). A static tilemap must never simulate.
+        Transform groundT = GameObject.Find("Level")?.transform.Find("GroundTiles");
+        if (groundT != null)
+        {
+            Rigidbody2D groundRb = groundT.GetComponent<Rigidbody2D>();
+            if (groundRb != null && groundRb.bodyType != RigidbodyType2D.Static)
+            {
+                RigidbodyType2D previous = groundRb.bodyType;
+                Undo.RecordObject(groundRb, "Make level tilemap static");
+                groundRb.bodyType = RigidbodyType2D.Static;
+                groundRb.gravityScale = 0f;
+                groundRb.freezeRotation = true;
+                EditorUtility.SetDirty(groundRb);
+                Debug.Log($"[SoledarSetup] GroundTiles Rigidbody2D was {previous} — set to Static.");
+            }
+        }
+
+        /* ---------------- 1. Bounce pad under the street gap ---------------- */
+        // Ability-gated rescue: falling into the gap, a Descent of Ash
+        // down-strike on this pad bounces the player back out (apex ≈ 2 tiles
+        // from bounce height — enough to reach street level).
+        GameObject pad = GameObject.Find("PogoPad");
+        if (pad == null)
+        {
+            pad = new GameObject("PogoPad");
+            Undo.RegisterCreatedObjectUndo(pad, "Create PogoPad");
+            pad.transform.position = new Vector3(111f, 2.5f, 0f);
+
+            SpriteRenderer padSprite = pad.AddComponent<SpriteRenderer>();
+            padSprite.sprite = placeholder;
+            padSprite.color = new Color(0.35f, 0.75f, 0.7f, 0.85f);
+            padSprite.sortingOrder = 1;
+
+            BoxCollider2D padCol = pad.AddComponent<BoxCollider2D>();
+            padCol.isTrigger = true;
+            padCol.size = new Vector2(2f, 0.6f); // spans the x110-111 gap, below street level
+
+            pad.AddComponent<PogoSurface>();
+            Debug.Log("[SoledarSetup] Placed PogoPad under the street gap (down-strike it to bounce out).");
+        }
+
+        /* ---------------- 2. The Gatekeeper ---------------- */
+        GameObject boss = GameObject.Find("Gatekeeper");
+        if (boss == null)
+        {
+            boss = new GameObject("Gatekeeper");
+            Undo.RegisterCreatedObjectUndo(boss, "Create Gatekeeper");
+            boss.transform.position = new Vector3(125.5f, 10.35f, 0f); // courtyard floor + half height
+            boss.layer = enemyLayerIndex;
+
+            SpriteRenderer sr = boss.AddComponent<SpriteRenderer>();
+            sr.sprite = placeholder;
+            sr.color = new Color(0.45f, 0.2f, 0.18f, 1f);
+            sr.sortingOrder = 2;
+            boss.transform.localScale = new Vector3(3f, 3f, 1f);
+
+            BoxCollider2D col = boss.AddComponent<BoxCollider2D>();
+            col.size = new Vector2(0.6f, 0.9f); // ×3 scale → 1.8 × 2.7 world units
+
+            Rigidbody2D rb = boss.AddComponent<Rigidbody2D>();
+            rb.gravityScale = 3f;
+            rb.freezeRotation = true;
+
+            boss.AddComponent<ContactDamage>(); // defaults: 1 damage, 0.8 s cooldown
+            boss.AddComponent<GatekeeperBoss>();
+            Debug.Log("[SoledarSetup] Created the Gatekeeper (Enemy layer, placeholder guardian).");
+        }
+
+        boss.layer = enemyLayerIndex; // keep idempotent
+        GatekeeperBoss bossBrain = boss.GetComponent<GatekeeperBoss>();
+        EnemyHealth bossHealth = boss.GetComponent<EnemyHealth>();
+        if (bossBrain == null || bossHealth == null)
+        {
+            Debug.LogError("[SoledarSetup] The Gatekeeper is missing GatekeeperBoss/EnemyHealth — Phase 5 setup aborted.");
+            return;
+        }
+        bossHealth.maxHealth = 30;      // fallback values (no EnemyData assigned)
+        bossHealth.knockbackForce = 0f; // an armored guardian does not budge
+        SetInt(bossBrain, "groundLayer", 1 << groundLayerIndex);
+        SetObjectRef(bossBrain, "projectileSprite", placeholder);
+
+        /* ---------------- 3. Arena: trigger + seal + boss bounds ---------------- */
+        GameObject arena = GameObject.Find("GatekeeperArena");
+        if (arena == null)
+        {
+            arena = new GameObject("GatekeeperArena");
+            Undo.RegisterCreatedObjectUndo(arena, "Create GatekeeperArena");
+            arena.transform.position = new Vector3(123f, 8.5f, 0f);
+
+            BoxCollider2D trigger = arena.AddComponent<BoxCollider2D>();
+            trigger.isTrigger = true;
+            trigger.size = new Vector2(1f, 10f); // across the ledge entrance, y3.5..13.5
+
+            arena.AddComponent<BossArena>();
+
+            // Seal: invisible wall closing the courtyard once the fight starts.
+            GameObject sealGO = new GameObject("Seal");
+            Undo.RegisterCreatedObjectUndo(sealGO, "Create Seal");
+            sealGO.transform.SetParent(arena.transform, false);
+            sealGO.transform.localPosition = new Vector3(-1.5f, -1f, 0f); // world (121.5, 7.5)
+            BoxCollider2D sealCol = sealGO.AddComponent<BoxCollider2D>();
+            sealCol.size = new Vector2(1f, 9f); // world x121..122, y3..12
+            sealCol.enabled = false;
+
+            // Bounds: the courtyard rectangle the boss is clamped to.
+            GameObject boundsGO = new GameObject("BossBounds");
+            Undo.RegisterCreatedObjectUndo(boundsGO, "Create BossBounds");
+            boundsGO.transform.SetParent(arena.transform, false);
+            boundsGO.transform.localPosition = new Vector3(4f, -0.5f, 0f); // world (127, 8)
+            BoxCollider2D boundsCol = boundsGO.AddComponent<BoxCollider2D>();
+            boundsCol.size = new Vector2(10f, 10f); // world x122..132, y3..13
+            boundsCol.enabled = false;              // geometry reference only
+        }
+
+        BossArena arenaScript = arena.GetComponent<BossArena>();
+        if (arenaScript == null)
+        {
+            Debug.LogError("[SoledarSetup] 'GatekeeperArena' has no BossArena component — Phase 5 setup aborted.");
+            return;
+        }
+        Transform sealT = arena.transform.Find("Seal");
+        Transform boundsT = arena.transform.Find("BossBounds");
+        if (sealT == null || boundsT == null)
+        {
+            Debug.LogError("[SoledarSetup] GatekeeperArena is missing its 'Seal'/'BossBounds' children — Phase 5 setup aborted.");
+            return;
+        }
+
+        Door palaceGate = palaceGateGO.GetComponent<Door>();
+        if (palaceGate == null)
+        {
+            Debug.LogError("[SoledarSetup] 'PalaceGate' has no Door component — Phase 5 setup aborted.");
+            return;
+        }
+
+        SetObjectRef(arenaScript, "seal", sealT.GetComponent<Collider2D>());
+        SetObjectRef(arenaScript, "boundsCollider", boundsT.GetComponent<Collider2D>());
+        SetObjectRef(arenaScript, "boss", bossBrain);
+        SetObjectRef(arenaScript, "bossHealth", bossHealth);
+        SetObjectRef(arenaScript, "rewardDoor", palaceGate);
+
+        /* ---------------- 4. Boss health bar + reward banner (Canvas 'UI') ---------------- */
+        GameObject canvasGO = GameObject.Find("UI");
+        if (canvasGO == null)
+        {
+            Debug.LogError("[SoledarSetup] No Canvas GameObject named 'UI' in the scene — run the earlier phase setups first.");
+            return;
+        }
+
+        Transform barPanelT = canvasGO.transform.Find("BossBar");
+        GameObject barPanel = barPanelT != null ? barPanelT.gameObject
+            : CreateUIElement("BossBar", canvasGO.transform,
+                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(620f, 64f), new Vector2(0f, -20f));
+
+        Text bossTitle = GetOrCreateUIText("BossTitle", barPanel.transform,
+            new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -26f), new Vector2(0f, 0f),
+            20, TextAnchor.MiddleCenter, new Color(0.95f, 0.85f, 0.6f, 1f));
+
+        Transform barBgT = barPanel.transform.Find("BarBackground");
+        GameObject barBg = barBgT != null ? barBgT.gameObject
+            : CreateUIElement("BarBackground", barPanel.transform,
+                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(600f, 26f), new Vector2(0f, -44f));
+        Image bgImage = barBg.GetComponent<Image>();
+        if (bgImage == null) bgImage = barBg.AddComponent<Image>();
+        bgImage.color = new Color(0.05f, 0.04f, 0.06f, 0.9f);
+        bgImage.raycastTarget = false;
+
+        Transform barFillT = barBg.transform.Find("BarFill");
+        GameObject barFill = barFillT != null ? barFillT.gameObject
+            : CreateUIElement("BarFill", barBg.transform,
+                new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero);
+        RectTransform fillRect = barFill.GetComponent<RectTransform>();
+        fillRect.offsetMin = new Vector2(2f, 2f);
+        fillRect.offsetMax = new Vector2(-2f, -2f);
+        Image fillImage = barFill.GetComponent<Image>();
+        if (fillImage == null) fillImage = barFill.AddComponent<Image>();
+        fillImage.color = new Color(0.8f, 0.25f, 0.2f, 1f);
+        fillImage.type = Image.Type.Filled;
+        fillImage.fillMethod = Image.FillMethod.Horizontal;
+        fillImage.fillOrigin = (int)Image.OriginHorizontal.Left;
+        fillImage.fillAmount = 1f;
+        fillImage.raycastTarget = false;
+
+        BossHealthUI healthUI = canvasGO.GetComponent<BossHealthUI>();
+        if (healthUI == null)
+            healthUI = Undo.AddComponent<BossHealthUI>(canvasGO);
+        SetObjectRef(healthUI, "barPanel", barPanel);
+        SetObjectRef(healthUI, "fillImage", fillImage);
+        SetObjectRef(healthUI, "titleText", bossTitle);
+        SetGameObjectActive(barPanel, false, "hidden until a fight starts");
+
+        Text banner = GetOrCreateUIText("RewardBanner", canvasGO.transform,
+            new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(-450f, -45f), new Vector2(450f, 45f),
+            26, TextAnchor.MiddleCenter, new Color(0.98f, 0.82f, 0.4f, 1f));
+        banner.text = "Descent of Ash acquired!\nHold Down in the air and press Attack to strike below you.";
+        SetGameObjectActive(banner.gameObject, false, "shown by BossArena on victory");
+
+        // Section 3 ran before the UI existed — complete the arena wiring now.
+        SetObjectRef(arenaScript, "healthUI", healthUI);
+        SetObjectRef(arenaScript, "rewardBanner", banner.gameObject);
+
+        /* ---------------- 5. Door names + save ---------------- */
+        SyncDoorNames();
+
+        EditorSceneManager.MarkSceneDirty(scene);
+        if (EditorSceneManager.SaveScene(scene))
+            Debug.Log("[SoledarSetup] Phase 5 setup COMPLETE — the Gatekeeper guards the Palace Gate. Follow the Phase 5 checklist in Docs/DevLog.md.");
+        else
+            Debug.LogError("[SoledarSetup] Scene save failed — save manually (Ctrl+S).");
     }
 }
 #endif

@@ -10,6 +10,11 @@ using UnityEngine;
 /// Pressing attack again within the combo window advances to the next step.
 /// Holding Up/Down at the moment of an attack aims the slash upward/downward.
 ///
+/// Descent of Ash (Phase 5): once unlocked (SaveManager ability), attacking
+/// while airborne and holding Down performs a downward strike instead of a
+/// combo step. Connecting with an enemy or a PogoSurface bounces the player
+/// upward (pogo) — the traversal core of the ability.
+///
 /// Feel: hit-stop + camera shake fire ONLY when a step connects.
 /// Rules preserved from Phase 1: no attacking while stunned or dead.
 ///
@@ -33,6 +38,13 @@ public class PlayerAttack : MonoBehaviour
     [Header("Wiring")]
     public Transform attackPoint;
     public LayerMask enemyLayer;
+
+    [Header("Descent of Ash (Phase 5)")]
+    [Tooltip("SaveManager ability name that unlocks the downward strike.")]
+    public string descentAbilityName = "descentOfAsh";
+    public float downAttackRange = 1f;
+    public float pogoForce = 11f;
+    public float downAttackRecovery = 0.25f;
 
     private PlayerMovement movement;
     private PlayerInputReader input;
@@ -95,7 +107,62 @@ public class PlayerAttack : MonoBehaviour
         }
 
         if (input.AttackWasPressed && recoveryTimer <= 0f)
+        {
+            // Descent of Ash (Phase 5): airborne + holding Down + ability unlocked
+            // → a dedicated downward strike instead of the next combo step.
+            if (input.MoveInput.y < -0.5f && !movement.IsGroundedNow && DescentUnlocked())
+            {
+                PerformDownStrike(ResolveStep());
+                return;
+            }
+
             PerformNextStep();
+        }
+    }
+
+    private bool DescentUnlocked()
+    {
+        return !string.IsNullOrEmpty(descentAbilityName) &&
+               SaveManager.EnsureInstance().HasAbility(descentAbilityName);
+    }
+
+    /// <summary>
+    /// Downward strike below the player: damages enemies (no knockback — they
+    /// are below), bounces off PogoSurfaces and pogo-bounces the player upward
+    /// on any connection. Does not advance the combo.
+    /// </summary>
+    private void PerformDownStrike(AttackComboData.AttackStep step)
+    {
+        int damage = step != null ? step.damage : fallbackDamage;
+        Vector2 origin = (Vector2)transform.position + Vector2.down * (downAttackRange * 0.6f);
+        bool connected = false;
+
+        foreach (Collider2D enemy in Physics2D.OverlapCircleAll(origin, downAttackRange, enemyLayer))
+        {
+            EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
+            if (enemyHealth == null) continue;
+
+            enemyHealth.TakeDamage(damage, Vector2.down, 1f);
+            connected = true;
+        }
+
+        // PogoSurfaces: bounce pads (and later breakable floors). Unmasked
+        // query so trigger pads are found; only PogoSurface components count.
+        foreach (Collider2D hit in Physics2D.OverlapCircleAll(origin, downAttackRange))
+        {
+            PogoSurface surface = hit.GetComponent<PogoSurface>();
+            if (surface != null && surface.Struck())
+                connected = true;
+        }
+
+        if (connected)
+        {
+            movement.PogoBounce(pogoForce);
+            HitStopController.Freeze(0.05f);
+            if (shake != null) shake.Shake(0.6f);
+        }
+
+        recoveryTimer = downAttackRecovery;
     }
 
     private void PerformNextStep()
@@ -177,5 +244,9 @@ public class PlayerAttack : MonoBehaviour
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(attackPoint.position + Vector3.up * fallbackRange, fallbackRange);
         Gizmos.DrawWireSphere(attackPoint.position + Vector3.down * fallbackRange, fallbackRange);
+
+        Gizmos.color = new Color(1f, 0.5f, 0.2f, 0.9f); // Descent of Ash strike zone
+        Gizmos.DrawWireSphere(
+            transform.position + Vector3.down * (downAttackRange * 0.6f), downAttackRange);
     }
 }

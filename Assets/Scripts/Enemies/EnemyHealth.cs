@@ -127,6 +127,24 @@ public class EnemyHealth : MonoBehaviour
             Die();
     }
 
+    /// <summary>
+    /// Restores full health and clears hurt state without re-running Awake.
+    /// Used by the boss arena reset when the player dies mid-fight (Phase 5).
+    /// </summary>
+    public void ResetHealth()
+    {
+        if (dying) return;
+
+        CurrentHealth = MaxHealth;
+        IsStunned = false;
+        stunTimer = 0f;
+        flashTimer = 0f;
+        if (sprite != null && baseColorCached)
+            sprite.color = baseColor;
+
+        if (OnHealthChanged != null) OnHealthChanged(CurrentHealth, MaxHealth);
+    }
+
     private void Die()
     {
         if (IsDead || dying) return;
