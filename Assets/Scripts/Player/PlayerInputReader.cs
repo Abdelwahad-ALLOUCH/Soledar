@@ -16,6 +16,7 @@ using UnityEngine.InputSystem;
 ///   Attack  J / Enter / mouse left / gamepad X (buttonWest)
 ///   Interact E / gamepad Y (buttonNorth)
 ///   Pause   Escape / gamepad Start (added in Phase 4)
+///   Heal    F / gamepad LB (leftShoulder) — hold to focus Echo Energy
 ///
 /// Lives on the Player GameObject. Configured by Tools > Soledar > Setup Phase 1 Scene.
 /// </summary>
@@ -32,6 +33,7 @@ public class PlayerInputReader : MonoBehaviour
     private InputAction attackAction;
     private InputAction interactAction;
     private InputAction pauseAction;
+    private InputAction healAction;
     private bool initialized;
 
     /// <summary>Current movement vector (x = horizontal). Zero when input is disabled.</summary>
@@ -51,6 +53,12 @@ public class PlayerInputReader : MonoBehaviour
     /// pausing must always be available.
     /// </summary>
     public bool PauseWasPressed { get { return IsReady() && pauseAction.WasPressedThisFrame(); } }
+
+    /// <summary>
+    /// True while the heal/focus button is held (F / gamepad LB). Healing is a
+    /// hold, not a tap, so the Reader exposes the raw state.
+    /// </summary>
+    public bool HealHeld { get { return IsReady() && healAction.IsPressed(); } }
 
     /// <summary>True while the Player action map is enabled. Frozen during the death sequence.</summary>
     public bool PlayerMapEnabled { get; private set; }
@@ -82,13 +90,14 @@ public class PlayerInputReader : MonoBehaviour
         attackAction = inputActions.FindAction("Player/Attack", throwIfNotFound: false);
         interactAction = inputActions.FindAction("Player/Interact", throwIfNotFound: false);
         pauseAction = inputActions.FindAction("Player/Pause", throwIfNotFound: false);
+        healAction = inputActions.FindAction("Player/Heal", throwIfNotFound: false);
 
         if (moveAction == null || jumpAction == null || dashAction == null ||
-            attackAction == null || interactAction == null || pauseAction == null)
+            attackAction == null || interactAction == null || pauseAction == null || healAction == null)
         {
             Debug.LogError(
                 "[PlayerInputReader] Missing required action(s) in the assigned asset: " +
-                "Player/Move, Player/Jump, Player/Dash, Player/Attack, Player/Interact, Player/Pause. " +
+                "Player/Move, Player/Jump, Player/Dash, Player/Attack, Player/Interact, Player/Pause, Player/Heal. " +
                 "Check Assets/InputSystem_Actions.inputactions.",
                 this);
             enabled = false;

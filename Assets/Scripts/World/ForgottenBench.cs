@@ -2,8 +2,8 @@ using UnityEngine;
 
 /// <summary>
 /// Forgotten Bench — SOLEDAR's save point (Hollow Knight bench equivalent).
-/// Resting restores full health, moves the respawn point here and writes the
-/// save file (Phase 4 persistence).
+/// Resting restores full health and Echo Energy, moves the respawn point here
+/// and writes the save file (Phase 4 persistence).
 ///
 /// Wiring (Phase 3 setup tool):
 ///   - Lives on the bench GameObject (layer "Interactable", trigger collider).
@@ -17,6 +17,7 @@ public class ForgottenBench : MonoBehaviour, IInteractable
 
     private PlayerRespawn cachedRespawn;
     private PlayerHealth cachedHealth;
+    private PlayerEnergy cachedEnergy;
 
     public bool CanInteract
     {
@@ -32,6 +33,7 @@ public class ForgottenBench : MonoBehaviour, IInteractable
     {
         if (cachedRespawn == null) cachedRespawn = interactor.GetComponent<PlayerRespawn>();
         if (cachedHealth == null) cachedHealth = interactor.GetComponent<PlayerHealth>();
+        if (cachedEnergy == null) cachedEnergy = interactor.GetComponent<PlayerEnergy>();
 
         if (cachedRespawn != null)
             cachedRespawn.SetRespawnPoint(transform);
@@ -39,11 +41,15 @@ public class ForgottenBench : MonoBehaviour, IInteractable
         if (cachedHealth != null)
             cachedHealth.ResetHealth();
 
+        // A rest refills the Lantern too: benches are where a run resets.
+        if (cachedEnergy != null)
+            cachedEnergy.Refill();
+
         // Phase 4: bench rest = save. Snapshot health (now full) + respawn
         // position (now this bench) + keys/doors into the save file.
         SaveManager.EnsureInstance().SaveGame($"rest at '{benchName}'");
 
-        Debug.Log($"[ForgottenBench] Rested at '{benchName}' — health restored, respawn point set, game saved.", this);
+        Debug.Log($"[ForgottenBench] Rested at '{benchName}' — health and Echo Energy restored, respawn point set, game saved.", this);
     }
 
     void Reset()

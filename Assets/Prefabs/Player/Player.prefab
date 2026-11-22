@@ -215,6 +215,8 @@ GameObject:
   - component: {fileID: 1797287585129821876}
   - component: {fileID: 3423361417289777001}
   - component: {fileID: 3335410842904872278}
+  - component: {fileID: 6672578316491926418}
+  - component: {fileID: 1362689367369619201}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -415,3 +417,35 @@ MonoBehaviour:
   respawnPoint: {fileID: 0}
   respawnDelay: 0.5
   fadeDuration: 0.4
+--- !u!114 &6672578316491926418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9042334615511009448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e06684c8a4e36c4eac2ba36d80d1043, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerEnergy
+  maxEnergy: 100
+  startingEnergy: 0
+  energyPerHit: 9
+--- !u!114 &1362689367369619201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9042334615511009448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b78bd73096070694e9381de024774cd9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealing
+  energyCost: 33
+  focusDuration: 0.6
+  masksRestored: 1
+  focusFocusTarget: {fileID: 0}
+  focusGrowScale: 0.35

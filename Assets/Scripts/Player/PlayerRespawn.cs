@@ -89,6 +89,27 @@ public class PlayerRespawn : MonoBehaviour
         Debug.Log($"[PlayerRespawn] Respawn position override set to {position}.", this);
     }
 
+    /// <summary>
+    /// Moves the player immediately (scene transitions and save restore).
+    /// Moves the physics body too: Unity 6 keeps Physics2D.autoSyncTransforms
+    /// off, so a transform-only move leaves the body behind.
+    /// </summary>
+    public void TeleportTo(Vector3 position)
+    {
+        transform.position = position;
+
+        if (rb != null)
+        {
+            rb.position = position;
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        Physics2D.SyncTransforms();
+
+        if (movement != null)
+            movement.ResetState();
+    }
+
     /// <summary>Where the player would respawn right now (save system reads this).</summary>
     public Vector3 CurrentRespawnPosition
     {

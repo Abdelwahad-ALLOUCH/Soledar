@@ -20,6 +20,8 @@ public class PlayerInteractor : MonoBehaviour
 
     [Header("Wiring")]
     [SerializeField] private Text promptText;
+    [Tooltip("Optional dark backing behind the prompt so it stays readable over bright terrain.")]
+    [SerializeField] private GameObject promptBacking;
 
     private PlayerInputReader input;
     private PlayerMovement movement;
@@ -95,6 +97,12 @@ public class PlayerInteractor : MonoBehaviour
         {
             SetPlayerControls(false);
             current.Interact(gameObject);
+
+            // Only conversations own the controls. Interactions that do not open
+            // a dialogue (merchants, benches) must hand movement back right away,
+            // otherwise the player stays frozen after buying or resting.
+            if (dialogue == null || !dialogue.IsOpen)
+                SetPlayerControls(true);
         }
     }
 
@@ -130,8 +138,18 @@ public class PlayerInteractor : MonoBehaviour
     private void SetPrompt(string message)
     {
         if (promptText == null) return;
-        promptText.text = string.IsNullOrEmpty(message) ? string.Empty : $"E  {message}";
-        promptText.gameObject.SetActive(!string.IsNullOrEmpty(message));
+
+        bool visible = !string.IsNullOrEmpty(message);
+
+        // Gold key-cap, then the action in body text: the input and the verb read
+        // as two different things instead of one flat label.
+        promptText.text = visible
+            ? $"<color={SoledarUITheme.GoldHex}>E</color>   {message}"
+            : string.Empty;
+        promptText.gameObject.SetActive(visible);
+
+        if (promptBacking != null)
+            promptBacking.SetActive(visible);
     }
 
     void OnDrawGizmosSelected()

@@ -42,6 +42,9 @@ public class PlayerHealth : MonoBehaviour
 
     public int CurrentHealth { get; private set; }
     public int MaxHealth { get { return maxHealth; } }
+
+    /// <summary>True when at least one mask is missing and healing is meaningful.</summary>
+    public bool CanHeal { get { return !IsDead && CurrentHealth < maxHealth; } }
     public bool IsInvincible { get; private set; }
     public bool IsStunned { get; private set; }
     public bool IsDead { get; private set; }
@@ -153,6 +156,23 @@ public class PlayerHealth : MonoBehaviour
             sprite.color = spriteBaseColor;
 
         if (OnHealthChanged != null) OnHealthChanged(CurrentHealth, maxHealth);
+    }
+
+    /// <summary>
+    /// Restores masks (Lantern healing). Returns how many were actually
+    /// restored, so the caller only charges energy for a real heal.
+    /// </summary>
+    public int Heal(int amount)
+    {
+        if (amount <= 0 || IsDead) return 0;
+
+        int before = CurrentHealth;
+        CurrentHealth = Mathf.Min(maxHealth, CurrentHealth + amount);
+
+        if (CurrentHealth != before && OnHealthChanged != null)
+            OnHealthChanged(CurrentHealth, maxHealth);
+
+        return CurrentHealth - before;
     }
 
     /// <summary>

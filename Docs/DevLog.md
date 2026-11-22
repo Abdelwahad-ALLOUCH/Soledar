@@ -500,5 +500,353 @@ Demo flow: collect 3 × 10 dirhams → buy the Wind of the Atlas (30 available, 
 
 ---
 
-*Next: Phase 6 — Silent Palace beyond the Palace Gate (scene transitions, ability-gated traversal, second ability from the merchant chain).*
+## Phase 6 — The Silent Palace & scene transitions
+
+### Scope delivered
+
+- [x] **Scene transitions** — walk-through doorway, scene loader, per-scene named spawn points, arrival hand-off
+- [x] **Persistent scene state** — save v3 records the current scene + spawn point; bench saves are scene-tagged; continue restores the player at the last checkpoint
+- [x] **The Silent Palace** — a new self-contained region behind the Palace Gate (`Assets/Scenes/SilentPalace.unity`, 76 × 22 tiles)
+- [x] **Shadow Passage** — the second merchant-chain ability, bought from the Lantern Keeper (40 dirhams, requires Wind of the Atlas)
+- [x] **Ability-gated traversal** — Shadow Passage barriers block the palace corridor; a Wind of the Atlas barrier hides an optional dirham stash
+- [x] **Merchant chain** — `MerchantInteractable.requiresAbility` refuses trade until the earlier ability is owned
+- [x] **Interactor freeze fix** — non-dialogue interactions (merchants, benches) no longer leave the player frozen
+
+### Scene flow design
+
+```
+SunkenMedina ── PalaceDoorway (behind the Gatekeeper-opened Palace Gate)
+     │                 x 130.6, y 10.5 → target SilentPalace / "palace_entry"
+     │
+     └── MedinaReturn  x 126, y 9.6  ← arrival point for the palace return doorway
+
+SilentPalace ── PalaceDoorway (left edge of the entry hall)
+                       x 2.2, y 5 → target SunkenMedina / "medina_return"
+```
+
+- `SceneLoader.BeginTransition(scene, spawnId)` is the only scene-loading entry point. It
+  1. writes a scene checkpoint to the save file,
+  2. hands the spawn id to `SceneFlow` (keyed by target scene name),
+  3. loads the scene, and clears its in-flight flag on `sceneLoaded`.
+- `SaveApplier.Start()` in the arriving scene consumes the pending spawn, teleports the player
+  (transform + Rigidbody2D + `Physics2D.SyncTransforms`) and makes that spawn point the respawn point.
+- `SceneTransition` is trigger-only, ignores a dead player, and has a 1.5 s re-arm window so a
+  spawn point next to a return doorway cannot bounce the player straight back.
+
+**Save v3 shape** (old saves load fine; missing fields default to empty):
+
+```json
+{
+  "version": 3,
+  "playerX": 9.0, "playerY": 3.35,
+  "health": 5, "maxHealth": 5,
+  "unlockedAbilities": ["windOfAtlas", "shadowPassage"],
+  "discoveredRooms": ["palace_entry_hall"],
+  "ancientDirhams": 5,
+  "currentScene": "SilentPalace",
+  "spawnPointId": ""
+}
+```
+
+- `SaveGame()` tags every save with the active scene and clears `spawnPointId` (position is authoritative).
+- `SetSceneCheckpoint()` snapshots the departing scene first, then points the save at the destination.
+- `ApplyToScene()` only restores coordinates when the recorded scene is the active one; after a
+  transition the named spawn point wins over raw coordinates.
+
+### The Silent Palace (76 × 22 tiles)
+
+| Area | x range | Notes |
+|---|---|---|
+| Entry hall (floor top y3) | 2–26 | arrival at x4, bench x9, 3 × 15 dirhams, Lantern Keeper x16.5 |
+| Shadow barrier | x 20.5 | 1 × 3 solid barrier, requires `shadowPassage` |
+| Death gap | x 27–28 | 2 wide, jump/dash across, death pit below |
+| Corridor + stair | 29–38 | Dust Crawler x24; platforms top y5 → y7 → y9 (each hop 2 tiles) |
+| Upper hall (floor top y9) | 39–72 | Medina Guard x44, Dust Crawler x63, bench x57 |
+| Wind alcove secret | x 49.5 / 52 | `windOfAtlas` barrier, 20 dirhams behind it |
+| Palace Seal | x 71.5 | permanently locked door — next-region teaser |
+
+- Camera bounds (1,0)–(74,20) wired to the existing confiner; death pit 78 × 2 at y −2.5.
+- Tilemap tinted cool ivory/indigo so the region reads differently from the Medina sandstone.
+- Map rooms: `palace_entry_hall`, `palace_gallery`, `palace_upper_hall`.
+
+### New scripts / changes
+
+| Script | Change |
+|--------|--------|
+| `Core/SceneFlow.cs` (new) | Static, scene-keyed spawn request; cleared on play start |
+| `Core/SceneLoader.cs` (new) | `BeginTransition(scene, spawnId)`; build-settings guard; in-flight flag reset on `sceneLoaded` |
+| `World/SceneTransition.cs` (new) | Trigger doorway with destination + spawn id + re-entry cooldown |
+| `World/SceneSpawnPoint.cs` (new) | Named arrival anchor + `Find(id)` |
+| `Core/SaveManager.cs` | Save v3 (`currentScene`, `spawnPointId`), scene-tagged saves, scene-aware position restore, `SavedHealth`, static `AbilityUnlocked` event |
+| `Core/SaveApplier.cs` | Consumes the pending spawn on arrival; restores saved health; otherwise applies the save |
+| `Player/PlayerRespawn.cs` | New `TeleportTo(Vector3)` (transform + body + sync + `ResetState`) |
+| `Core/AbilityGate.cs` | Live refresh: subscribes to `SaveManager.AbilityUnlocked`, opens instantly on purchase; blocker + Veil visual wiring |
+| `Dialogue/MerchantInteractable.cs` | Optional `requiresAbility` chain gate + locked prompt; purchase logs the granted ability |
+| `Interaction/PlayerInteractor.cs` | **Bug fix:** only dialogues keep the controls frozen — merchants/benches hand movement back |
+| `Editor/SilentPalaceBootstrap.cs` (new) | Phase 6 scene builder + Medina doorway tool |
+
+### Setup tool — Phase 6 (idempotent)
+
+**`Tools > Soledar > Setup Phase 6 Silent Palace`**
+1. Copies `TestScene.unity` → `Assets/Scenes/SilentPalace.unity` (only when absent).
+2. Removes every Medina-only object, **including inactive roots** (old prototype `Ground`, demo `Checkpoint`) and demo additions.
+3. Repaints the 76 × 22 palace layout, tints the tilemaps, forces the ground tilemap static (Phase 5 regression guard).
+4. Sets camera bounds + confiner, death pit, player/spawn/camera at the entry.
+5. Places: `PalaceEntry` spawn, return `PalaceDoorway`, 3 map rooms, 2 benches, Lantern Keeper, 3 + 1 dirhams, shadow + wind barriers, 3 enemies, `PalaceSeal`.
+6. Adds TestScene / SunkenMedina / SilentPalace to Build Settings.
+
+**`Tools > Soledar > Setup Phase 6 Scene Flow (active scene)`** (run on `SunkenMedina`)
+- Adds `MedinaReturn` spawn (126, 9.6) and the `PalaceDoorway` trigger (130.6, 10.5 → `SilentPalace` / `palace_entry`).
+- TestScene is deliberately left untouched (regression scene, as before).
+
+### Defects found & fixed during verification
+
+| # | Severity | Finding | Fix |
+|---|----------|---------|-----|
+| 1 | Critical | `SceneLoader.IsLoading` was only reset on play-mode start, so **only the first transition of a session** worked (second request silently ignored) | Reset on `SceneManager.sceneLoaded` |
+| 2 | Critical | Bench/other saves were not scene-tagged — quitting in the palace and reopening the Medina would restore palace coordinates in the Medina | `SaveGame` tags `currentScene` and clears `spawnPointId`; `ApplyToScene` skips position across scenes |
+| 3 | High | `ApplyToScene` only set the respawn override; the player was **not actually placed** at the saved checkpoint on load (pre-existing Phase 4 gap) | Restore now calls `PlayerRespawn.TeleportTo` |
+| 4 | High | Buying from a merchant froze the player — `PlayerInteractor` disabled movement/attack but only dialogues re-enabled them | Re-enable immediately when no dialogue opened |
+| 5 | Medium | Inactive Medina leftovers (`Ground`, `Checkpoint`) survived into the palace clone because `GameObject.Find` ignores inactive objects | Cleanup walks `scene.GetRootGameObjects()` including inactive |
+| 6 | Medium | Pending spawn was a bare id — a failed/redirected load could teleport a player using another scene's id | Request keyed by target scene name |
+
+### Verification (Unity 6.3, MCP-driven, 2026-11-19)
+
+- **Compile:** `Assembly-CSharp` + `Assembly-CSharp-Editor` rebuild clean; 0 errors.
+- **Scene build:** palace tile surface audit matches the design (entry y3, gap x27–28, platforms y5/y7/y9, upper hall y9); camera polygon (1,0)–(74,20); all actors on solid ground; build settings contain all three scenes.
+- **Arrival:** entering play in SilentPalace spawns the player at `palace_entry` (4, 3.6), 5/5 HP, barrier sealed, `palace_entry_hall` discovered.
+- **Merchant chain:** locked prompt before Wind of the Atlas; purchase refused without spending; prompt switches to “Buy Shadow Passage (40 dirhams)”; purchase sets `shadowPassage`, 45 → 5 dirhams, post-purchase prompt.
+- **Ability gates:** unlocking `windOfAtlas` opened the wind barrier (collider off, Veil hidden) live via the event; purchasing `shadowPassage` opened the entry barrier the same way.
+- **Transition (live trigger):** teleporting into the Medina doorway loaded SilentPalace at `palace_entry`, health carried over, save scene/spawn correct; the palace doorway returned to `medina_return`, proving the multi-transition fix.
+- **Continue:** bench rest wrote `currentScene: SilentPalace`, `spawnPointId: ""`, bench coordinates; a fresh play session restored the player at the bench with body/transform in sync.
+- **Cleanup:** test save deleted (no pre-existing save was present); editor left in the SunkenMedina scene; no scene left dirty.
+- Not run: hands-on gamepad/keyboard pass (bridge-driven input is not reliable), and the boss-gated walk into the doorway as a player (the trigger was driven by teleport).
+
+### Phase 6 test checklist (manual)
+
+**Transitions**
+- [ ] Defeat the Gatekeeper, walk through the opened Palace Gate and into the doorway → Silent Palace loads at the entry hall
+- [ ] Walk left into the palace entry wall → back in the Medina at the shrine ledge (bench/gate in view), health unchanged
+- [ ] Re-cross the doorway twice in a row → both directions still work (the multi-transition fix)
+
+**Save / continue**
+- [ ] Rest at the palace bench, quit Play, re-enter → you start at that bench with full health
+- [ ] Pick up dirhams / open a barrier in the palace, quit and reopen the Medina → no palace coordinates leak into the Medina
+
+**Merchant chain**
+- [ ] Buy Wind of the Atlas from the Silent Merchant in the Medina → Lantern Keeper prompt becomes “Buy Shadow Passage (40 dirhams)”
+- [ ] Try to buy before owning the wind → refusal prompt, no dirhams spent
+- [ ] Collect the three entry-hall dirhams (45 total) and buy Shadow Passage → 5 dirhams left, prompt “Thank the Lantern Keeper”, movement still works afterwards
+
+**Ability-gated traversal**
+- [ ] Shadow barrier is solid before the purchase; jump/dash cannot clear it; it vanishes when bought
+- [ ] Optional wind alcove barrier opens if Wind of the Atlas is owned; 20 dirhams are reachable behind it
+- [ ] Palace Seal (far right) stays solid — no key exists
+
+**Palace combat & traversal**
+- [ ] Death gap at x27–28 kills (death pit), enemies turn at ledges
+- [ ] Stair y3 → y5 → y7 → y9 climbable without dash; camera stays inside the palace
+- [ ] Both palace rooms log as discovered while passing
+
+**Regression:** Medina quests/gates/benches, boss fight, pause, hearts, combo, dialogue.
+
+### Known issues / deferred
+
+- No main-menu “Continue” yet: opening a different scene than the save's scene restores health but leaves the player at that scene's authored spot. The main menu / bootstrap scene is Phase 7 work.
+- Transitions use a hard cut (no fade). A short fade would be a small polish item once the UI pass lands.
+- The palace is all placeholder geometry/tints; no parallax or Moroccan wall art yet (art pass).
+- The Lantern Keeper is a merchant with no conversation — flavour dialogue belongs to the Phase 7 NPC/dialogue pass.
+- `PalaceSeal` is intentionally unopenable (next region teaser).
+- The save version field is written but still not validated/migrated; deleting the file remains the reset.
+
+---
+
+## Phase 7 — Main menu (New Game / Continue)
+
+### Scope delivered
+
+- [x] **Title screen** (`Assets/Scenes/MainMenu.unity`) — dark background, gold “SOLEDAR” title, subtitle, New Game / Continue
+- [x] **New Game** — deletes the save, starts a clean run in the Sunken Medina
+- [x] **Continue** — loads the scene + spawn point recorded in the save (Silent Palace included) and restores health/position
+- [x] **Build order** — MainMenu is now build scene 0 (TestScene / SunkenMedina / SilentPalace follow)
+
+### How it works
+
+- `MainMenuUI` lives on the menu Canvas and wires its buttons in `Start` (no persisted onClick lists).
+- `Refresh()` enables Continue only when a save exists **and** its scene is in Build Settings; the status line reads
+  “Continue — The Silent Palace” or “No journey recorded yet”.
+- **New Game:** `SaveManager.DeleteSave()` → `SceneManager.LoadScene("SunkenMedina")`. The first room trigger writes a fresh save, so Continue is available afterwards.
+- **Continue:** `SceneLoader.BeginTransition(savedScene, savedSpawnId)` — the same path used by doorways, so health, spawn ids and scene tagging behave identically. A save with no scene (pre-Phase-6) continues in SunkenMedina.
+- The menu never touches `Time.timeScale` except to force it back to 1, so a paused/frozen clock can't leak into a new session.
+
+```
+MainMenu
+  ├─ New Game ──→ delete save ──→ SunkenMedina (authored spawn)
+  └─ Continue ──→ SceneLoader.BeginTransition(save.currentScene, save.spawnPointId)
+                    └─ SaveApplier restores health + position/spawn in the loaded region
+```
+
+### New scripts / wiring
+
+| Script | Role |
+|--------|------|
+| `UI/MainMenuUI.cs` (new) | New Game / Continue / status line / Continue availability |
+| `Editor/MainMenuBootstrap.cs` (new) | Creates MainMenu.unity, title layout, camera, EventSystem, Canvas wiring; makes it build scene 0 |
+
+### Setup tool — `Tools > Soledar > Setup Main Menu` (idempotent)
+
+1. Creates `Assets/Scenes/MainMenu.unity` when missing (empty scene → camera + EventSystem + Canvas).
+2. Builds/reuses `MenuCanvas`: dark full-screen background, `SOLEDAR` title (72 pt gold), subtitle, `NewGameButton`, `ContinueButton`, `StatusText`.
+3. Adds `MainMenuUI` and wires the two buttons, status text and opening scene.
+4. Rewrites Build Settings with MainMenu first, all other scenes preserved and enabled.
+
+### Verification (Unity 6.3, MCP-driven, 2026-11-19)
+
+- **Compile:** 0 errors after adding both scripts.
+- **Scene:** roots `Main Camera | EventSystem | MenuCanvas`; hierarchy `MenuCanvas → MenuBackground, Title, Subtitle, NewGameButton(+Label), ContinueButton(+Label), StatusText`; all `MainMenuUI` references wired; build order `MainMenu, TestScene, SunkenMedina, SilentPalace`.
+- **No save:** Continue `interactable = false`, status “No journey recorded yet”.
+- **New Game:** SunkenMedina loaded at the plaza spawn, 5/5 HP, 0 dirhams, no key, Medina Gate closed — a clean run. The spawn-room auto-save creates a SunkenMedina save.
+- **Continue (same region):** save tagged SunkenMedina → Continue enabled and loads the plaza spawn.
+- **Continue (palace):** after a palace save, the menu showed “Continue — The Silent Palace”; clicking Continue loaded SilentPalace at the palace entry with 5/5 HP and the room re-discovered on arrival.
+- **Cleanup:** test save deleted; editor left on the MainMenu scene.
+- Not run: hands-on mouse/gamepad clicking of the buttons (methods invoked directly) and a standalone build launch (no player build was produced).
+
+### Phase 7 test checklist (manual)
+
+- [ ] Press Play in `MainMenu` with no save → Continue greyed out, “No journey recorded yet”
+- [ ] Click New Game → Sunken Medina plaza, 5 hearts, Medina Gate closed
+- [ ] Rest at a bench / collect something, quit Play, Play again → Continue enabled; click it → same region, saved checkpoint, saved health
+- [ ] Travel to the Silent Palace, quit Play, Play again → status “Continue — The Silent Palace”; Continue drops you in the palace entry hall with the same health
+- [ ] Delete the save (Tools > Soledar > Delete Save File) → reopen the menu, Continue is disabled again
+- [ ] Mouse + gamepad navigation work on both buttons; disabled Continue cannot be clicked
+
+### Known issues / deferred
+
+- No “Quit” / Settings / Credits entries yet — the brief was New Game and Continue only.
+- No way back to the menu from the pause menu (continue playing, quitting the app is the exit).
+- Continue uses the same hard cut as doorways (no fade); menu UI is placeholder typography, no Moroccan ornament/art yet.
+- The menu is a single layout for 16:9 (CanvasScaler scales it, but ultra-wide/portrait framing is untested).
+- If the saved scene is renamed/removed, Continue falls back to the Sunken Medina and logs a warning.
+- Unity writes a **zero GUID** for the MainMenu build-settings entry when the scene is created in the same editor session; the entry still resolves by path (`SceneUtility.GetBuildIndexByScenePath` → 0) and the GUID is filled in on the next editor launch.
+
+---
+
+---
+
+## Phase 7.5 — UI refinement: hierarchy, contrast, focus (2026-11-19)
+
+Goal: make the title screen and HUD read like one branded product without touching gameplay. Functionality, content and the Moroccan-influenced palette are unchanged; every restyle is a re-use of the same tokens.
+
+### Shared tokens
+
+`UI/SoledarUITheme.cs` is the single source of truth: ink backgrounds (`#0B0910` page, `#141019` panel, `#1D1824` raised), ivory content (`#EFE4CE`), gold reserved for actions and accents (`#E4C27A`), a muted tone for secondary copy (`#A29680`), and danger red (`#C4553D`) only for the boss bar. Type scale is size + weight only: display 84 / title 40 / heading 22 / body 21 / label 20 / small 15.
+
+### Main menu
+
+- Centred symmetry replaced by a **left-aligned reading column** (760×520 at x=160) with one 2 px gold margin rule — the only decoration on the screen.
+- Order: title → gold rule (sits directly on the title's baseline box) → subtitle → two-line premise → hairline divider → actions → status line.
+- **Content decides the hierarchy:** Continue is the gold primary when a save exists, otherwise New Game is; the other action is a quiet raised-panel secondary. Only the primary action gets a gold fill and ink bold label (12.6:1).
+- Disabled Continue keeps a legible plate and a muted label (≈5:1) instead of fading to invisibility; disabled never shows a focus rule.
+- **Focus states:** `UI/SelectableFocusVisual.cs` adds a short gold rule in the page margin plus a brighter label on hover/selection, and the primary action receives initial keyboard/gamepad focus. When anything is selected, a hovered sibling shows only its tint — the menu never shows two focus rules at once.
+- Fixed a layout bug where the title Text used a bottom pivot and rendered 96 px above its block, which made the gold rule look detached.
+
+### HUD
+
+- **Hearts:** masks are 34 px ivory with a hard ink outline so they hold up over bright sandstone; spent masks stay visible as dimmed slots (max health is readable), instead of disappearing. The layout group only spaces them — it no longer collapses them to the sprite's preferred 10 px size. Renamed the legacy `"HeartsContainer "` (trailing space).
+- **Dialogue:** solid ink panel (not translucent — 90 % alpha over bright tiles composites to mid-grey), 2 px gold hairline on top, gold bold speaker, ivory body at 21 px/1.2, small muted “E Continue” hint with a gold key-cap.
+- **Interaction prompt:** ink plate + 1 px outline, gold `E` then the verb in ivory body text; the plate is ordered behind the text (idempotently) so re-running the tool cannot cover the label.
+- **Pause:** solid ink overlay, gold `PAUSED` at title size, Resume as the gold primary and Quit as a quiet secondary; explicit up/down navigation, focus rules, and `defaultSelection = Resume` so a controller can unpause immediately.
+- **Boss bar:** 18 pt bold gold title, 22 px opaque ink track, danger-red fill, 600 px wide.
+- Every scene canvas uses `matchWidthOrHeight = 0.5` so the HUD holds proportion on both landscape and portrait.
+
+### Tooling
+
+`Tools > Soledar > Apply HUD Design (active scene)` (`Editor/SoledarUIPolish.cs`) applies the whole HUD pass to the active gameplay scene. It is idempotent and saves the scene; run it on any new region instead of restyling by hand.
+
+### Verification (Unity 6.3, MCP-driven)
+
+- **Compile:** 0 errors after all UI scripts and both tools.
+- **Menu captures** at 1920×1080 and at 900×1600 (canvas 1080×1920) rendered through a temporary camera: title block 280–742 px, gold rule flush with the title box, buttons and status aligned to the action column.
+- **Hierarchy swap:** with no save → New Game gold, Continue muted and non-interactable, focus on New Game. With a save → Continue gold and focused, status “Continue — The Sunken Medina”; New Game becomes the gold-label secondary.
+- **Focus collision test:** hovering New Game while Continue is selected leaves `newGameBar = false`, `continueBar = true` — exactly one rule.
+- **Pause:** opening selects Resume, `resumeBar = true`, `quitBar = false`; a real overlay frame is fully opaque and shows no world bleeding through.
+- **HUD frames:** hearts 34 px at 32/24 margins with 8 px gaps; dialogue panel 220 px tall with the gold rule, gold speaker and ivory body; prompt plate with gold `E`; boss bar at 62 % fill. Verified in `SunkenMedina`; `SilentPalace` checked by value (opaque panels, 18 pt boss title, Resume default, scaler 0.5).
+- **Contrast:** gold/ink 12.6:1, ink/gold 12.6:1, ivory/panel 14.9:1, muted/panel 6.45:1, gold/raised 11:1, disabled label ≈5:1.
+- Not run: hands-on mouse/gamepad input (states driven programmatically), a standalone build, and a real portrait device.
+
+### Known issues / deferred
+
+- Typography is still the built-in legacy font; no TMP or custom typeface is installed, so the hierarchy relies on size/weight/colour.
+- Scene art is placeholder, so mask silhouettes and the world's brightness are not final; the opaque-plate decision is based on the brightest placeholder tiles.
+- The Game view dock in this editor session is 568×473, so captures were rendered through a temporary camera; foreground sprites placed in front of the UI plane can appear above the HUD in those captures (Screen Space overlays always draw last in play).
+
+### Pause: return to main menu (2026-11-19)
+
+- The pause panel now has three actions in reading order: **Resume** (gold primary), **Main Menu** (raised panel, gold label) and **Quit** (raised panel, muted label). Quit is deliberately the quietest of the three.
+- Keyboard/gamepad navigation is one explicit vertical chain — Resume ⇄ Main Menu ⇄ Quit — so a controller is never stranded on a button, and `defaultSelection` is still Resume.
+- `PauseMenu.ReturnToMainMenu()` clears the pause state and UI selection, checks the scene is in Build Settings, then asks `ScreenFader` to fade into `mainMenuScene` (`MainMenu`). The clock stays frozen while the ink closes; the title screen restores it in `MainMenuUI.Start`. If the fade cannot start, the clock is restored so the run is never left frozen with a hidden panel.
+- The save file is left untouched: returning to the title screen behaves like quitting to the menu, and Continue resumes from the last checkpoint. No confirmation prompt — returning is one step, matching the rest of the pause menu.
+- `Tools > Soledar > Apply HUD Design (active scene)` now creates the Main Menu button in scenes authored before it existed, wires `PauseMenu.mainMenuButton`, and re-applies tone, focus rule and navigation. Both regions were re-applied and saved.
+
+**Verified:** `SunkenMedina` and `SilentPalace` both show `PauseTitle, ResumeButton, MainMenuButton, QuitButton`; nav chain and per-button focus rules correct (selecting Main Menu moved the rule off Resume). Live run: pause → Return to Main Menu → `MainMenu` active, `Time.timeScale = 1`, `IsPaused = false`, save present, Continue enabled and focused with “Continue — The Sunken Medina”. Test save deleted afterwards; editor left on `MainMenu`.
+
+### Fade to the menu (2026-11-19)
+
+- New `UI/ScreenFader.cs`: one persistent overlay, built on demand and marked `DontDestroyOnLoad`, so it survives the scene load instead of popping between scenes. It fades to brand ink, loads the destination, waits one frame for the new scene to render under the ink, then fades back in (0.22 s out / 0.28 s in by default, overridable per call).
+- **Unscaled time** throughout — the pause menu holds `Time.timeScale = 0`, and the fade must still animate.
+- The overlay sits at sorting order 32000 (above the HUD and pause panel) and sets `raycastTarget` while in flight, so a stray click cannot reach the screen behind it. `IsFading` guards state, and a single instance is reused for later transitions.
+- The pause menu no longer hard-cuts: it validates `MainMenu`, hides the panel, then calls `ScreenFader.FadeToScene`. The world stays frozen behind the closing ink, which avoids a fifth of a second of enemies moving under the fade.
+
+**Verified:** pause → Main Menu starts the fade (`IsFading = true`, `timeScale` still 0, overlay `raycastTarget = true`, sorting order 32000); afterwards the active scene is `MainMenu`, `IsFading = false`, overlay alpha 0 with raycast off, exactly one `ScreenFader` alive, and `timeScale = 1`. A slowed 30 s fade was captured mid-flight at alpha 0.47: the ink layer visibly dims the world above the HUD, confirming the overlay order. Not run: hands-on gamepad input during the fade (state driven programmatically).
+
+Scope note: New Game and Continue still hard-cut; the fade is currently wired only to the pause menu return. Reusing `ScreenFader.FadeToScene` there is a one-line change when wanted.
+
+### HUD: Ancient Dirham readout (2026-11-19)
+
+Currency existed only in the save file: the merchant charged dirhams and pickups added them, but the player never saw a balance. That is a usability defect, not just a missing flourish.
+
+- `SaveManager` gained `DirhamsChanged` (static, carries the new total) raised from `AddDirhams`, `TrySpendDirhams`, `DeleteSave` and `LoadFromFile`. One event keeps every source in sync without the HUD polling.
+- New `UI/CurrencyUI.cs`: writes the balance into a legacy `Text` and pulses the gold coin mark on **gain only** — spending updates quietly, so the motion still means "you picked something up". Unscaled time, and the authored scale is cached in `Awake` so a scene unloaded mid-pulse cannot leave the mark stretched.
+- `SoledarUIPolish` now builds the row idempotently on both gameplay scenes: a 12 px gold rhombus (zellige geometry, no glyph dependency) plus the count, in the left column under the masks. It sits left rather than top-right because the 620 px boss bar runs past the right edge at the 568 px game view.
+
+**Verified (play mode):** fresh run shows the saved balance (`4`, then `10` after a gain); gain pulse observed mid-animation (`markScale 1.02`); `TrySpendDirhams` moved `7 → 4` with the label following; a direct scene load into `SilentPalace` initialised the HUD from the save and updated on gain; wiring (text/mark refs, `EFE4CE` label, `E4C27A` mark, 45° rotation, 8 px mark-to-count gap) read back from the scene. Visual check at 1920×1080 shows the diamond and count tight under the ivory masks. Not run: a real merchant purchase through the interaction prompt (the spend path was called directly).
+
+**Defect caught during the pass:** `EnsureOutline(countGO, …)` referenced a variable scoped to the create branch, so the project assembly failed while the command assembly reported success — a reminder to read `GetConsoleLogs` after script edits.
+
+### Echo Energy and Lantern healing (2026-11-22)
+
+The combat loop had no reason to keep pressure up: masks healed for free at benches and fights cost nothing but masks. Echo Energy closes the loop — you earn the resource by landing hits, and you spend it standing still to heal, so a hard fight is survivable but not free.
+
+**Controls:** hold `F` (keyboard) or `LB` (gamepad) for 0.6 s while grounded. One mask per focus, 33 energy each, out of 100; a hit grants 9 energy per enemy struck. Bar goes dim gold below 33, so "can I heal?" is readable without text.
+
+- `Player/PlayerEnergy.cs`: capacity 100, gain from `PlayerAttack.AttackConnected` (raised with the number of enemies struck, so only real connections pay), `TrySpend`, `Refill`. Not persisted — a fresh entry starts at 0, a bench rest refills it.
+- `Player/PlayerHealing.cs`: owns the focus state machine. Starts only when grounded, not dashing, missing a mask and holding enough energy; roots the player through `PlayerMovement.SetMovementLocked`; cancels on release, damage, stun, attack or death **before** energy is charged, so a broken focus never costs anything. Holding the button chains heals (Hollow Knight style).
+- `PlayerInputReader` + `InputSystem_Actions.inputactions`: new `Heal` action (F / gamepad LB), added as a required action so a stale asset fails loudly instead of silently.
+- `PlayerMovement`: `MovementLocked` gates horizontal input, jump buffer and dash (gravity and knockback still apply). Cleared by `ResetState` so a death mid-focus cannot leave the player frozen.
+- `PlayerHealth.Heal(int)` returns the masks actually restored; `CanHeal` guards the whole path.
+- `UI/EnergyUI.cs` + `SoledarUIPolish.StyleEnergy`: 140×8 track in the left stack (masks → energy → dirhams, currency moved to y −86). Event-driven, colours from the theme tokens.
+- `ForgottenBench`: a rest refills energy alongside health.
+
+The Lantern is part of Ziri's kit for now rather than a merchant item; the upgrade line (bigger heals, faster focus) stays open for the inventory phase.
+
+**Verified (play mode):** bar starts empty and dim at 0 energy; `AddEnergy(100)` filled it and switched to gold; holding F with 3/5 masks restored two masks, spending exactly 66 energy; a damage event 1 s into a focus broke it and charged nothing (3 completed heals totalled 99 energy, matching a 100 start); a real swing on a dummy crawler hit for 3→2 HP and paid +9 energy into the meter; a bench rest took 70 → 100 energy and 3 → 5 masks, then saved; both gameplay scenes carry the bar, `EnergyUI`, `PlayerEnergy` and `PlayerHealing` (bar 140×8 at (32,−70), Filled/Horizontal, currency at −86); a 1920×1080 capture shows the three-row stack reading cleanly. Console clean, save deleted, editor left on `MainMenu` not playing, `runInBackground` reverted.
+
+**Limitations:** the swing that granted energy was dispatched through the component (`SendMessage`) because synthetic attack input could not produce a reliable press edge from the editor bridge — the input path itself is the pre-existing, previously verified Jump/Attack one, but the final confirmation of "press J → energy" was not hands-on. Gamepad was not tested on hardware. Energy is intentionally not in the save file.
+
+*Next: pause-menu Abilities panel, then the single-region map.*
+
+### Pause menu: Abilities page (2026-11-22)
+
+The pause menu only had Resume / Main Menu / Quit, so unlocked abilities were invisible outside a shop or a gate. This adds the first of the blueprint's pause submenus, using the panel, type scale and focus language already in place, and no new save data.
+
+- `Core/AbilityCatalog.cs`: one source for display names and one-line descriptions. Dash, Wall Jump and the Lantern are always owned; Wind of the Atlas, Shadow Passage and Descent of Ash appear only when `SaveManager.HasAbility` says so. Unknown saved ids are ignored instead of shown raw.
+- `UI/AbilitiesPanel.cs`: a full-screen page inside `PausePanel`. It rebuilds its rows on every open — name in heading size/ivory, description in small/muted, a 1 px rule between entries — so a new unlock needs no scene work. Focus starts on Back, whose navigation is `None` so a controller cannot wander into the pause buttons hidden underneath. A `Closed` event hands focus back to the Abilities button.
+- `UI/PauseMenu.cs`: gains `abilitiesButton` / `abilitiesPanel`; opens the page, closes it on pause, resume and return-to-menu, and restores focus.
+- `SoledarUIPolish`: adds the Abilities button between Resume and Main Menu (one explicit up/down chain), builds and wires the page idempotently on both regions, and moves `PausePanel` to the top of the Canvas so the HUD no longer draws over the pause surface.
+
+**Verified (play mode, SunkenMedina and SilentPalace):** both regions start with the panel and page hidden; pause freezes `timeScale` at 0; a fresh kit shows 3 rows (Dash, Wall Jump, Lantern), and a save carrying `windOfAtlas` + `shadowPassage` shows 5, in catalog order; reopening does not duplicate rows (the first pass appended a second set because `Destroy` is deferred — rows are now detached before destruction); Back closes the page and returns focus to Abilities; resuming with the page still open restores `timeScale = 1` and hides both; the canvas ends with `PausePanel` as its last child in both scenes. A 1578×1314 UI-only capture shows the title, five rows and Back with the hearts/energy/currency fully covered.
+
+**Limitations:** the empty-state line cannot trigger while the base kit supplies three entries, so it was only code-reviewed, not seen on screen. Gamepad focus/navigation was read from the EventSystem, not tested on hardware. The offscreen capture needed a UI-layer-only culling mask — rendering the world through the temporary camera otherwise drew scene geometry behind the page, which briefly looked like a UI artifact.
+
+*Next: single-region room map driven by `discoveredRooms`.*
 

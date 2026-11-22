@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// SOLEDAR's persistence layer (Phase 4).
@@ -10,7 +11,7 @@ using UnityEngine;
 ///
 /// Save points: Forgotten Bench rest (full heal + respawn + everything below).
 /// Persisted: player health, respawn position, collected keys, opened doors,
-/// unlocked abilities (Phase 5).
+/// unlocked abilities (Phase 5), current scene + spawn point (Phase 6).
 ///
 /// Other systems never touch the file directly:
 ///   - Door.Awake / CollectibleKey.Awake query IsDoorOpen / IsKeyCollected
@@ -25,6 +26,12 @@ public class SaveManager : MonoBehaviour
 {
     public static SaveManager Instance { get; private set; }
 
+    /// <summary>Raised when an ability is unlocked (ability gates refresh themselves).</summary>
+    public static event Action<string> AbilityUnlocked;
+
+    /// <summary>Raised with the new total whenever the dirham balance changes (HUD).</summary>
+    public static event Action<int> DirhamsChanged;
+
     private static string SavePath
     {
         get { return Path.Combine(Application.persistentDataPath, "soledar_save.json"); }
@@ -33,7 +40,7 @@ public class SaveManager : MonoBehaviour
     [Serializable]
     private class SaveData
     {
-        public int version = 2;
+        public int version = 3;
         public float playerX;
         public float playerY;
         public int health = 5;
@@ -45,6 +52,8 @@ public class SaveManager : MonoBehaviour
         public string[] discoveredRooms = new string[0];
         public string[] collectedItems = new string[0];
         public int ancientDirhams;
+        public string currentScene = "";
+        public string spawnPointId = "";
     }
 
     private SaveData data = new SaveData();
@@ -87,6 +96,15 @@ public class SaveManager : MonoBehaviour
     public bool IsItemCollected(string itemId) { return Array.IndexOf(data.collectedItems, itemId) >= 0; }
     public int AncientDirhams { get { return data.ancientDirhams; } }
 
+    /// <summary>Health recorded in the save (read by SceneFlow on arrival).</summary>
+    public int SavedHealth { get { return data.health; } }
+
+    /// <summary>Scene the save belongs to (Phase 6; empty for pre-Phase-6 saves).</summary>
+    public string CurrentScene { get { return data.currentScene; } }
+
+    /// <summary>SceneSpawnPoint id the player was last placed at (Phase 6).</summary>
+    public string SpawnPointId { get { return data.spawnPointId; } }
+
     /* ---------------- state changes (auto-save) ---------------- */
 
     public void MarkKeyCollected(string keyName)
@@ -112,6 +130,8 @@ public class SaveManager : MonoBehaviour
 
         data.unlockedAbilities = Append(data.unlockedAbilities, abilityName);
         SaveGame($"ability '{abilityName}'");
+
+        if (AbilityUnlocked != null) AbilityUnlocked(abilityName);
     }
 
     public void MarkBossDefeated(string bossId)
@@ -140,6 +160,7 @@ public class SaveManager : MonoBehaviour
         if (amount <= 0) return;
         data.ancientDirhams += amount;
         SaveGame($"{amount} dirhams: {reason}");
+        RaiseDirhamsChanged();
     }
 
     public bool TrySpendDirhams(int amount, string reason = "purchase")
@@ -147,10 +168,27 @@ public class SaveManager : MonoBehaviour
         if (amount <= 0 || data.ancientDirhams < amount) return false;
         data.ancientDirhams -= amount;
         SaveGame($"{amount} dirhams: {reason}");
+        RaiseDirhamsChanged();
         return true;
     }
 
     /* ---------------- save / load ---------------- */
+
+    /// <summary>
+    /// Records the destination scene + spawn point of a transition and saves
+    /// (Phase 6). The destination scene's SaveApplier reads them back on start.
+    /// </summary>
+    public void SetSceneCheckpoint(string sceneName, string spawnPointId)
+    {
+        // Snapshot the departing scene first, then point the save at the
+        // destination (SaveGame tags the active scene and clears spawnPointId).
+        SaveGame($"leaving for '{sceneName}'");
+
+        data.currentScene = string.IsNullOrEmpty(sceneName) ? "" : sceneName;
+        data.spawnPointId = string.IsNullOrEmpty(spawnPointId) ? "" : spawnPointId;
+        WriteFile();
+        Debug.Log($"[SaveManager] Scene checkpoint → '{data.currentScene}' at '{data.spawnPointId}'.", this);
+    }
 
     /// <summary>Snapshots the player's live state to disk (bench rest, milestones).</summary>
     public void SaveGame(string reason = "bench rest")
@@ -171,6 +209,13 @@ public class SaveManager : MonoBehaviour
             data.playerY = pos.y;
         }
 
+        // Phase 6: every save is tagged with the scene it was written in, so a
+        // save can never restore coordinates into a different region. A normal
+        // save (bench / auto-save) is position-authoritative, so any spawn id
+        // left over from a transition is cleared.
+        data.currentScene = SceneManager.GetActiveScene().name;
+        data.spawnPointId = "";
+
         WriteFile();
         Debug.Log($"[SaveManager] Progress saved ({reason}) → {SavePath}", this);
     }
@@ -181,7 +226,31 @@ public class SaveManager : MonoBehaviour
         if (!HasSave || player == null || respawn == null) return;
 
         player.SetHealth(data.health);
-        respawn.SetRespawnPosition(new Vector3(data.playerX, data.playerY, 0f));
+
+        // Phase 6: a save belongs to one scene. Loading a different scene must
+        // not snap the player to coordinates from the other region. Pre-Phase-6
+        // saves have no scene recorded and keep the original behaviour.
+        string activeScene = SceneManager.GetActiveScene().name;
+        if (!string.IsNullOrEmpty(data.currentScene) && data.currentScene != activeScene)
+        {
+            Debug.Log($"[SaveManager] Save belongs to scene '{data.currentScene}' (active '{activeScene}') — health restored, position left at the scene spawn.", this);
+            return;
+        }
+
+        SceneSpawnPoint spawn = SceneSpawnPoint.Find(data.spawnPointId);
+        if (spawn != null)
+        {
+            respawn.TeleportTo(spawn.transform.position);
+            respawn.SetRespawnPoint(spawn.transform);
+            Debug.Log($"[SaveManager] Applied save: health {data.health}/{data.maxHealth}, spawn point '{data.spawnPointId}'.", this);
+            return;
+        }
+
+        // No named spawn point: continue at the last checkpoint (bench / scene
+        // spawn) recorded in the save. TeleportTo moves the physics body too.
+        Vector3 savedPosition = new Vector3(data.playerX, data.playerY, 0f);
+        respawn.TeleportTo(savedPosition);
+        respawn.SetRespawnPosition(savedPosition);
         Debug.Log($"[SaveManager] Applied save: health {data.health}/{data.maxHealth}, respawn at ({data.playerX}, {data.playerY}).", this);
     }
 
@@ -196,6 +265,8 @@ public class SaveManager : MonoBehaviour
             File.Delete(SavePath);
             Debug.Log("[SaveManager] Save file deleted.", this);
         }
+
+        RaiseDirhamsChanged();
     }
 
     /* ---------------- internals ---------------- */
@@ -219,14 +290,15 @@ public class SaveManager : MonoBehaviour
                 loaded.unlockedAbilities ??= new string[0];
                 loaded.defeatedBosses ??= new string[0];
                 loaded.discoveredRooms ??= new string[0];
-                loaded.collectedItems ??= new string[0];
+                loaded.currentScene ??= "";
+                loaded.spawnPointId ??= "";
                 loaded.health = Mathf.Max(1, loaded.health);
                 loaded.maxHealth = Mathf.Max(1, loaded.maxHealth);
                 data = loaded;
                 HasSave = true;
                 Debug.Log($"[SaveManager] Save loaded: health {data.health}/{data.maxHealth}, " +
                           $"{data.collectedKeys.Length} key(s), {data.openedDoors.Length} door(s), " +
-                          $"{data.unlockedAbilities.Length} ability/ies.", this);
+                          $"{data.unlockedAbilities.Length} ability/ies, scene '{data.currentScene}'.", this);
             }
         }
         catch (Exception e)
@@ -235,6 +307,13 @@ public class SaveManager : MonoBehaviour
             data = new SaveData();
             HasSave = false;
         }
+
+        RaiseDirhamsChanged();
+    }
+
+    private void RaiseDirhamsChanged()
+    {
+        if (DirhamsChanged != null) DirhamsChanged(data.ancientDirhams);
     }
 
     private void WriteFile()

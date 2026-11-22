@@ -87,6 +87,12 @@ public class PlayerMovement : MonoBehaviour
     /// <summary>True when the player's ground ray hits the ground layer right now.</summary>
     public bool IsGroundedNow { get { return IsGrounded(); } }
 
+    /// <summary>
+    /// True while another system owns the player's feet — currently the
+    /// Lantern focus, which must root the player while a mask is restored.
+    /// </summary>
+    public bool MovementLocked { get; private set; }
+
     /// <summary>Cached PlayerHealth reference (may be null — guarded everywhere).</summary>
     public PlayerHealth Health { get { return playerHealth; } }
 
@@ -133,7 +139,7 @@ public class PlayerMovement : MonoBehaviour
             return; // frozen during the respawn sequence
 
         /* -------- INPUT (Unity Input System via PlayerInputReader) -------- */
-        float moveInput = input.MoveInput.x;
+        float moveInput = MovementLocked ? 0f : input.MoveInput.x;
 
         if (moveInput > 0) FacingDirection = 1;
         else if (moveInput < 0) FacingDirection = -1;
@@ -146,11 +152,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         /* -------- JUMP INPUT (buffered) -------- */
-        if (input.JumpWasPressed)
+        if (!MovementLocked && input.JumpWasPressed)
             jumpBufferCounter = jumpBufferTime;
 
         /* -------- DASH INPUT -------- */
-        if (input.DashWasPressed && dashCooldownTimer <= 0 && !isDashing)
+        if (!MovementLocked && input.DashWasPressed && dashCooldownTimer <= 0 && !isDashing)
             StartDash();
 
         HandleWallSlide(moveInput);
@@ -165,7 +171,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (!isDashing && wallJumpLockCounter <= 0 && (playerHealth == null || !playerHealth.IsStunned))
         {
-            float moveInput = input.MoveInput.x;
+            float moveInput = MovementLocked ? 0f : input.MoveInput.x;
             rb.linearVelocity = new Vector2(
                 moveInput * moveSpeed,
                 rb.linearVelocity.y
@@ -302,12 +308,22 @@ public class PlayerMovement : MonoBehaviour
     }
 
     /// <summary>
+    /// Roots (or releases) the player. Used by PlayerHealing while the Lantern
+    /// focus is charging; a death cancels it via ResetState.
+    /// </summary>
+    public void SetMovementLocked(bool locked)
+    {
+        MovementLocked = locked;
+    }
+
+    /// <summary>
     /// Clears all transient movement state (active dash, buffers, timers) and
     /// restores gravity. Called by PlayerRespawn after teleporting the player,
     /// so a death mid-dash cannot leave gravityScale stuck at zero.
     /// </summary>
     public void ResetState()
     {
+        MovementLocked = false;
         isDashing = false;
         dashTime = 0f;
         dashCooldownTimer = 0f;

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -45,6 +46,13 @@ public class PlayerAttack : MonoBehaviour
     public float downAttackRange = 1f;
     public float pogoForce = 11f;
     public float downAttackRecovery = 0.25f;
+
+    /// <summary>
+    /// Raised with the number of enemies struck whenever a swing connects.
+    /// PlayerEnergy listens to this: Echo Energy comes from landing hits, not
+    /// from swinging at air.
+    /// </summary>
+    public event Action<int> AttackConnected;
 
     private PlayerMovement movement;
     private PlayerInputReader input;
@@ -136,6 +144,7 @@ public class PlayerAttack : MonoBehaviour
         int damage = step != null ? step.damage : fallbackDamage;
         Vector2 origin = (Vector2)transform.position + Vector2.down * (downAttackRange * 0.6f);
         bool connected = false;
+        int enemiesStruck = 0;
 
         foreach (Collider2D enemy in Physics2D.OverlapCircleAll(origin, downAttackRange, enemyLayer))
         {
@@ -144,6 +153,7 @@ public class PlayerAttack : MonoBehaviour
 
             enemyHealth.TakeDamage(damage, Vector2.down, 1f);
             connected = true;
+            enemiesStruck++;
         }
 
         // PogoSurfaces: bounce pads (and later breakable floors). Unmasked
@@ -154,6 +164,9 @@ public class PlayerAttack : MonoBehaviour
             if (surface != null && surface.Struck())
                 connected = true;
         }
+
+        if (enemiesStruck > 0 && AttackConnected != null)
+            AttackConnected(enemiesStruck);
 
         if (connected)
         {
@@ -195,10 +208,15 @@ public class PlayerAttack : MonoBehaviour
         }
 
         /* -------- feedback: only when the attack connects -------- */
-        if (hits > 0 && step != null)
+        if (hits > 0)
         {
-            HitStopController.Freeze(step.hitStopDuration);
-            if (shake != null) shake.Shake(step.shakeForce);
+            if (AttackConnected != null) AttackConnected(hits);
+
+            if (step != null)
+            {
+                HitStopController.Freeze(step.hitStopDuration);
+                if (shake != null) shake.Shake(step.shakeForce);
+            }
         }
 
         /* -------- timing -------- */

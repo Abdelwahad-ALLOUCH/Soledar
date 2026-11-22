@@ -27,6 +27,12 @@
 # Visual Scripting
 /[Aa]ssets/Unity.VisualScripting.Ide/.vscode/
 
+# Local editor/tooling state (machine-specific paths, recovery autosaves)
+/Assets/_Recovery/
+/Assets/_Recovery.meta
+/.agents/
+/ProjectSettings/Packages/com.unity.ai.assistant/
+
 # OS junk
 .DS_Store
 Thumbs.db

@@ -19,6 +19,10 @@ public class HealthUI : MonoBehaviour
     [SerializeField] private GameObject heartPrefab;
     [SerializeField] private Transform heartsParent;
 
+    [Header("Mask Appearance")]
+    [SerializeField] private Color filledColor = new Color(0.937f, 0.894f, 0.808f, 1f); // ivory
+    [SerializeField] private Color emptyColor = new Color(0.431f, 0.388f, 0.325f, 0.65f); // dimmed slot
+
     private readonly List<Image> hearts = new List<Image>();
     private bool subscribed;
 
@@ -82,13 +86,17 @@ public class HealthUI : MonoBehaviour
         UpdateHearts(playerHealth.CurrentHealth);
     }
 
-    /// <summary>Enables hearts 0..currentHealth-1, disables the rest. Public for external refresh requests.</summary>
+    /// <summary>
+    /// Tints filled masks ivory and spent masks dim (the slot stays visible, so
+    /// the player can read maximum health at a glance). Public for external
+    /// refresh requests.
+    /// </summary>
     public void UpdateHearts(int currentHealth)
     {
         for (int i = 0; i < hearts.Count; i++)
         {
-            if (hearts[i] != null)
-                hearts[i].enabled = i < currentHealth;
+            if (hearts[i] == null) continue;
+            hearts[i].color = i < currentHealth ? filledColor : emptyColor;
         }
     }
 }
