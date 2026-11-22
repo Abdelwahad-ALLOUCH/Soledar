@@ -1,0 +1,489 @@
+fileFormatVersion: 2
+guid: c53468e52e52d5e44889b39d3febf427
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5463716289144696473
+    second: Ziri_IdleFrames_v3_0
+  - first:
+      213: 3456024201574511763
+    second: Ziri_IdleFrames_v3_1
+  - first:
+      213: 8396535101322442264
+    second: Ziri_IdleFrames_v3_2
+  - first:
+      213: -7730794824070717892
+    second: Ziri_IdleFrames_v3_3
+  - first:
+      213: -6427310268042686011
+    second: Ziri_IdleFrames_v3_4
+  - first:
+      213: -6129104852765779517
+    second: Ziri_IdleFrames_v3_5
+  - first:
+      213: 8036163518816433123
+    second: Ziri_IdleFrames_v3_6
+  - first:
+      213: 4979075322324823471
+    second: Ziri_IdleFrames_v3_7
+  - first:
+      213: 7227707787433689318
+    second: Ziri_IdleFrames_v3_8
+  - first:
+      213: 4392514367595192227
+    second: Ziri_IdleFrames_v3_9
+  - first:
+      213: 4319657728473390962
+    second: Ziri_IdleFrames_v3_10
+  - first:
+      213: -1628092907592096296
+    second: Ziri_IdleFrames_v3_11
+  - first:
+      213: 7434842847395956457
+    second: Ziri_IdleFrames_v3_12
+  - first:
+      213: -3714085413746355754
+    second: Ziri_IdleFrames_v3_13
+  - first:
+      213: -2996039827511377788
+    second: Ziri_IdleFrames_v3_14
+  - first:
+      213: 2187369022616026489
+    second: Ziri_IdleFrames_v3_15
+  - first:
+      213: 7736010691385926327
+    second: Ziri_IdleFrames_v3_16
+  - first:
+      213: -6131290193842810845
+    second: Ziri_IdleFrames_v3_17
+  - first:
+      213: -5942281902384187999
+    second: Ziri_IdleFrames_v3_18
+  - first:
+      213: -6348507324005776609
+    second: Ziri_IdleFrames_v3_19
+  - first:
+      213: -1179276751993287403
+    second: Ziri_IdleFrames_v3_20
+  - first:
+      213: 6808096485620382961
+    second: Ziri_IdleFrames_v3_21
+  - first:
+      213: 5469099061459522954
+    second: Ziri_IdleFrames_v3_22
+  - first:
+      213: -7606013506059733906
+    second: Ziri_IdleFrames_v3_23
+  - first:
+      213: 6922071829660143265
+    second: Ziri_IdleFrames_v3_24
+  - first:
+      213: 2285157564214614718
+    second: Ziri_IdleFrames_v3_25
+  - first:
+      213: 6931362734449914745
+    second: Ziri_IdleFrames_v3_26
+  - first:
+      213: 1796775659958078793
+    second: Ziri_IdleFrames_v3_27
+  - first:
+      213: 132155884832053927
+    second: Ziri_IdleFrames_v3_28
+  - first:
+      213: 5859880666840704226
+    second: Ziri_IdleFrames_v3_29
+  - first:
+      213: 8313580428184893779
+    second: Ziri_IdleFrames_v3_30
+  - first:
+      213: -4363435553764407595
+    second: Ziri_IdleFrames_v3_31
+  - first:
+      213: -2613739333119551431
+    second: Ziri_IdleFrames_v3_32
+  - first:
+      213: -4312573251120937206
+    second: Ziri_IdleFrames_v3_33
+  - first:
+      213: -2412985302273258202
+    second: Ziri_IdleFrames_v3_34
+  - first:
+      213: 417464377896156879
+    second: Ziri_IdleFrames_v3_35
+  - first:
+      213: 1646853345751224617
+    second: Ziri_IdleFrames_v3_36
+  - first:
+      213: 4684856729912783822
+    second: Ziri_IdleFrames_v3_37
+  - first:
+      213: 4259765810397955500
+    second: Ziri_IdleFrames_v3_38
+  - first:
+      213: 4266832451491648692
+    second: Ziri_IdleFrames_v3_39
+  - first:
+      213: 7096597087306784405
+    second: Ziri_IdleFrames_v3_40
+  - first:
+      213: -2756498017462300822
+    second: Idle_01
+  - first:
+      213: -6714146255402601037
+    second: Idle_02
+  - first:
+      213: -4914351600739261391
+    second: Idle_03
+  - first:
+      213: 8045593241502845221
+    second: Idle_04
+  - first:
+      213: 457006308311335959
+    second: Idle_05
+  - first:
+      213: -1006470023562271296
+    second: Idle_06
+  - first:
+      213: 8072346608272230478
+    second: Idle_07
+  - first:
+      213: 1482098930563686504
+    second: Idle_08
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 200
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Idle_01
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 104
+        width: 271
+        height: 500
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6f471d58a3feb9d0800000000000000
+      internalID: -2756498017462300822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Idle_02
+      rect:
+        serializedVersion: 2
+        x: 271
+        y: 104
+        width: 271
+        height: 500
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b575b4cd8f82d2a0800000000000000
+      internalID: -6714146255402601037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Idle_03
+      rect:
+        serializedVersion: 2
+        x: 542
+        y: 104
+        width: 271
+        height: 500
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1346098a147bccbb0800000000000000
+      internalID: -4914351600739261391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Idle_04
+      rect:
+        serializedVersion: 2
+        x: 813
+        y: 104
+        width: 271
+        height: 500
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5298f0ffc60b7af60800000000000000
+      internalID: 8045593241502845221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Idle_05
+      rect:
+        serializedVersion: 2
+        x: 1084
+        y: 104
+        width: 271
+        height: 500
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 714820be0dc975600800000000000000
+      internalID: 457006308311335959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Idle_06
+      rect:
+        serializedVersion: 2
+        x: 1355
+        y: 104
+        width: 271
+        height: 500
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c5ed7898dc4802f0800000000000000
+      internalID: -1006470023562271296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Idle_07
+      rect:
+        serializedVersion: 2
+        x: 1626
+        y: 104
+        width: 271
+        height: 500
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4845e9987cb60070800000000000000
+      internalID: 8072346608272230478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Idle_08
+      rect:
+        serializedVersion: 2
+        x: 1897
+        y: 104
+        width: 271
+        height: 500
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8602c36ff19719410800000000000000
+      internalID: 1482098930563686504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Idle_01: -2756498017462300822
+      Idle_02: -6714146255402601037
+      Idle_03: -4914351600739261391
+      Idle_04: 8045593241502845221
+      Idle_05: 457006308311335959
+      Idle_06: -1006470023562271296
+      Idle_07: 8072346608272230478
+      Idle_08: 1482098930563686504
+      Ziri_IdleFrames_v3_0: -5463716289144696473
+      Ziri_IdleFrames_v3_1: 3456024201574511763
+      Ziri_IdleFrames_v3_10: 4319657728473390962
+      Ziri_IdleFrames_v3_11: -1628092907592096296
+      Ziri_IdleFrames_v3_12: 7434842847395956457
+      Ziri_IdleFrames_v3_13: -3714085413746355754
+      Ziri_IdleFrames_v3_14: -2996039827511377788
+      Ziri_IdleFrames_v3_15: 2187369022616026489
+      Ziri_IdleFrames_v3_16: 7736010691385926327
+      Ziri_IdleFrames_v3_17: -6131290193842810845
+      Ziri_IdleFrames_v3_18: -5942281902384187999
+      Ziri_IdleFrames_v3_19: -6348507324005776609
+      Ziri_IdleFrames_v3_2: 8396535101322442264
+      Ziri_IdleFrames_v3_20: -1179276751993287403
+      Ziri_IdleFrames_v3_21: 6808096485620382961
+      Ziri_IdleFrames_v3_22: 5469099061459522954
+      Ziri_IdleFrames_v3_23: -7606013506059733906
+      Ziri_IdleFrames_v3_24: 6922071829660143265
+      Ziri_IdleFrames_v3_25: 2285157564214614718
+      Ziri_IdleFrames_v3_26: 6931362734449914745
+      Ziri_IdleFrames_v3_27: 1796775659958078793
+      Ziri_IdleFrames_v3_28: 132155884832053927
+      Ziri_IdleFrames_v3_29: 5859880666840704226
+      Ziri_IdleFrames_v3_3: -7730794824070717892
+      Ziri_IdleFrames_v3_30: 8313580428184893779
+      Ziri_IdleFrames_v3_31: -4363435553764407595
+      Ziri_IdleFrames_v3_32: -2613739333119551431
+      Ziri_IdleFrames_v3_33: -4312573251120937206
+      Ziri_IdleFrames_v3_34: -2412985302273258202
+      Ziri_IdleFrames_v3_35: 417464377896156879
+      Ziri_IdleFrames_v3_36: 1646853345751224617
+      Ziri_IdleFrames_v3_37: 4684856729912783822
+      Ziri_IdleFrames_v3_38: 4259765810397955500
+      Ziri_IdleFrames_v3_39: 4266832451491648692
+      Ziri_IdleFrames_v3_4: -6427310268042686011
+      Ziri_IdleFrames_v3_40: 7096597087306784405
+      Ziri_IdleFrames_v3_5: -6129104852765779517
+      Ziri_IdleFrames_v3_6: 8036163518816433123
+      Ziri_IdleFrames_v3_7: 4979075322324823471
+      Ziri_IdleFrames_v3_8: 7227707787433689318
+      Ziri_IdleFrames_v3_9: 4392514367595192227
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

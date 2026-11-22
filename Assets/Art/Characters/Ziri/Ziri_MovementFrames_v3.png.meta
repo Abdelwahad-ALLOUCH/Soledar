@@ -1,0 +1,1085 @@
+fileFormatVersion: 2
+guid: 81256fc33fee3b540b4f1cabbac6cca9
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6677366751180290142
+    second: Ziri_MovementFrames_v3_0
+  - first:
+      213: -4841630065098160637
+    second: Ziri_MovementFrames_v3_1
+  - first:
+      213: -4747012311196431141
+    second: Ziri_MovementFrames_v3_2
+  - first:
+      213: 4313246864989979347
+    second: Ziri_MovementFrames_v3_3
+  - first:
+      213: 3477425024722868172
+    second: Ziri_MovementFrames_v3_4
+  - first:
+      213: -383833436602140149
+    second: Ziri_MovementFrames_v3_5
+  - first:
+      213: -8326892100201611001
+    second: Ziri_MovementFrames_v3_6
+  - first:
+      213: 6876767088763205754
+    second: Ziri_MovementFrames_v3_7
+  - first:
+      213: 2462789835514499507
+    second: Ziri_MovementFrames_v3_8
+  - first:
+      213: 5843445069962567906
+    second: Ziri_MovementFrames_v3_9
+  - first:
+      213: -2462277177428898428
+    second: Ziri_MovementFrames_v3_10
+  - first:
+      213: -602811057114075277
+    second: Ziri_MovementFrames_v3_11
+  - first:
+      213: 399230826545884681
+    second: Ziri_MovementFrames_v3_12
+  - first:
+      213: 7148852122838736473
+    second: Ziri_MovementFrames_v3_13
+  - first:
+      213: 3581126165436467057
+    second: Ziri_MovementFrames_v3_14
+  - first:
+      213: 5990024683243078184
+    second: Ziri_MovementFrames_v3_15
+  - first:
+      213: 4575866343480229231
+    second: Ziri_MovementFrames_v3_16
+  - first:
+      213: 1349321112443385345
+    second: Ziri_MovementFrames_v3_17
+  - first:
+      213: 6294142577138869734
+    second: Ziri_MovementFrames_v3_18
+  - first:
+      213: 4629661811315607691
+    second: Ziri_MovementFrames_v3_19
+  - first:
+      213: -7137672116962510966
+    second: Ziri_MovementFrames_v3_20
+  - first:
+      213: 7614936833182947770
+    second: Ziri_MovementFrames_v3_21
+  - first:
+      213: -302241915177617130
+    second: Ziri_MovementFrames_v3_22
+  - first:
+      213: 3780673546580023882
+    second: Ziri_MovementFrames_v3_23
+  - first:
+      213: -2500735277417300415
+    second: Ziri_MovementFrames_v3_24
+  - first:
+      213: -4766499214633095216
+    second: Ziri_MovementFrames_v3_25
+  - first:
+      213: 9203020361588047892
+    second: Ziri_MovementFrames_v3_26
+  - first:
+      213: 752376017572494850
+    second: Ziri_MovementFrames_v3_27
+  - first:
+      213: -5513380336175176927
+    second: Ziri_MovementFrames_v3_28
+  - first:
+      213: 6702349234522805245
+    second: Ziri_MovementFrames_v3_29
+  - first:
+      213: -2498013272323895184
+    second: Ziri_MovementFrames_v3_30
+  - first:
+      213: 8581058512165604097
+    second: Ziri_MovementFrames_v3_31
+  - first:
+      213: 6844683574533315359
+    second: Ziri_MovementFrames_v3_32
+  - first:
+      213: 4848860857725326032
+    second: Ziri_MovementFrames_v3_33
+  - first:
+      213: 6400041214861042376
+    second: Ziri_MovementFrames_v3_34
+  - first:
+      213: -4132137740917222019
+    second: Ziri_MovementFrames_v3_35
+  - first:
+      213: -2599622280304262820
+    second: Ziri_MovementFrames_v3_36
+  - first:
+      213: 3159905028011334963
+    second: Ziri_MovementFrames_v3_37
+  - first:
+      213: -6041913219615589117
+    second: Ziri_MovementFrames_v3_38
+  - first:
+      213: -2617418331463781738
+    second: Ziri_MovementFrames_v3_39
+  - first:
+      213: 8080995024170513768
+    second: Ziri_MovementFrames_v3_40
+  - first:
+      213: 5007819037032254599
+    second: Ziri_MovementFrames_v3_41
+  - first:
+      213: 4800972018414907067
+    second: Ziri_MovementFrames_v3_42
+  - first:
+      213: -6739018554243507341
+    second: Ziri_MovementFrames_v3_43
+  - first:
+      213: 2308649455878562072
+    second: Ziri_MovementFrames_v3_44
+  - first:
+      213: -2304344859827386006
+    second: Ziri_MovementFrames_v3_45
+  - first:
+      213: -7679135634492334241
+    second: Ziri_MovementFrames_v3_46
+  - first:
+      213: -5557349134891161056
+    second: Ziri_MovementFrames_v3_47
+  - first:
+      213: -5007764562850542559
+    second: Ziri_MovementFrames_v3_48
+  - first:
+      213: 8472886290382268995
+    second: Ziri_MovementFrames_v3_49
+  - first:
+      213: 8521042904403626478
+    second: Ziri_MovementFrames_v3_50
+  - first:
+      213: -1547040500498391211
+    second: Ziri_MovementFrames_v3_51
+  - first:
+      213: -4554616108820806256
+    second: Ziri_MovementFrames_v3_52
+  - first:
+      213: -5712363688306238557
+    second: Ziri_MovementFrames_v3_53
+  - first:
+      213: 3092025901548650384
+    second: Ziri_MovementFrames_v3_54
+  - first:
+      213: -6189016030618244217
+    second: Ziri_MovementFrames_v3_55
+  - first:
+      213: 7103342593338373668
+    second: Ziri_MovementFrames_v3_56
+  - first:
+      213: 7837536405382699302
+    second: Ziri_MovementFrames_v3_57
+  - first:
+      213: 6379393250766514811
+    second: Ziri_MovementFrames_v3_58
+  - first:
+      213: 1662194245689252511
+    second: Ziri_MovementFrames_v3_59
+  - first:
+      213: 4755897602647558223
+    second: Ziri_MovementFrames_v3_60
+  - first:
+      213: -263004657187590889
+    second: Ziri_MovementFrames_v3_61
+  - first:
+      213: 2460628269395318337
+    second: Ziri_MovementFrames_v3_62
+  - first:
+      213: 840333169269785088
+    second: Ziri_MovementFrames_v3_63
+  - first:
+      213: -7628274123977861391
+    second: Ziri_MovementFrames_v3_64
+  - first:
+      213: -8376026570145004670
+    second: Ziri_MovementFrames_v3_65
+  - first:
+      213: 8030118716928552161
+    second: Ziri_MovementFrames_v3_66
+  - first:
+      213: 5261688291184113992
+    second: Ziri_MovementFrames_v3_67
+  - first:
+      213: -8695699934834791124
+    second: Ziri_MovementFrames_v3_68
+  - first:
+      213: -8641771828615425948
+    second: Ziri_MovementFrames_v3_69
+  - first:
+      213: -2238828850188829862
+    second: Ziri_MovementFrames_v3_70
+  - first:
+      213: 6763802855723482902
+    second: Ziri_MovementFrames_v3_71
+  - first:
+      213: -3648044085575396152
+    second: Ziri_MovementFrames_v3_72
+  - first:
+      213: -4018626575042276661
+    second: Ziri_MovementFrames_v3_73
+  - first:
+      213: -4223837037180776408
+    second: Ziri_MovementFrames_v3_74
+  - first:
+      213: -5904387543371943721
+    second: Ziri_MovementFrames_v3_75
+  - first:
+      213: 6909687642298965308
+    second: Ziri_MovementFrames_v3_76
+  - first:
+      213: 2155840479134087259
+    second: Ziri_MovementFrames_v3_77
+  - first:
+      213: -7381887641791561876
+    second: Ziri_MovementFrames_v3_78
+  - first:
+      213: -455376104629814754
+    second: Ziri_MovementFrames_v3_79
+  - first:
+      213: -1150281156651754176
+    second: Ziri_MovementFrames_v3_80
+  - first:
+      213: -4940632724258523798
+    second: Ziri_MovementFrames_v3_81
+  - first:
+      213: 1138588444891393948
+    second: Ziri_MovementFrames_v3_82
+  - first:
+      213: -5986324697989116566
+    second: Ziri_MovementFrames_v3_83
+  - first:
+      213: -893622138147831419
+    second: Ziri_MovementFrames_v3_84
+  - first:
+      213: -3903257842209695920
+    second: Ziri_MovementFrames_v3_85
+  - first:
+      213: 8866919437582257738
+    second: Walk_01
+  - first:
+      213: -7923221114941991851
+    second: Walk_02
+  - first:
+      213: 8232121291649219200
+    second: Walk_03
+  - first:
+      213: 5907391905570043736
+    second: Walk_04
+  - first:
+      213: -1156535452901077130
+    second: Walk_05
+  - first:
+      213: 6917590313969028531
+    second: Walk_06
+  - first:
+      213: -6651511011356628897
+    second: Walk_07
+  - first:
+      213: -3205860988614005147
+    second: Walk_08
+  - first:
+      213: 8449775345468628126
+    second: Walk_09
+  - first:
+      213: 11406907883527339
+    second: Walk_10
+  - first:
+      213: 8030128826893041618
+    second: Walk_11
+  - first:
+      213: 2315132830120601726
+    second: Walk_12
+  - first:
+      213: -6450398274895702993
+    second: Run_01
+  - first:
+      213: 7322464546081896913
+    second: Run_02
+  - first:
+      213: -3218867303384580802
+    second: Run_03
+  - first:
+      213: 7264823018393102350
+    second: Run_04
+  - first:
+      213: -6142624701978572155
+    second: Run_05
+  - first:
+      213: -425075948663645550
+    second: Run_06
+  - first:
+      213: -8449018333635047107
+    second: Run_07
+  - first:
+      213: -5725731523733341290
+    second: Run_08
+  - first:
+      213: 6043002784650429577
+    second: Run_09
+  - first:
+      213: 9151066736925549315
+    second: Run_10
+  - first:
+      213: -7266845314124737194
+    second: Run_11
+  - first:
+      213: -5168576596277122810
+    second: Run_12
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 130
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Walk_01
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 399
+        width: 181
+        height: 290
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4ec811ef30ad0b70800000000000000
+      internalID: 8866919437582257738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_02
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 399
+        width: 181
+        height: 290
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 554120fff501b0290800000000000000
+      internalID: -7923221114941991851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_03
+      rect:
+        serializedVersion: 2
+        x: 362
+        y: 399
+        width: 181
+        height: 290
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08a7ea8f2be5e3270800000000000000
+      internalID: 8232121291649219200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_04
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 399
+        width: 181
+        height: 290
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8573580b3a54bf150800000000000000
+      internalID: 5907391905570043736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_05
+      rect:
+        serializedVersion: 2
+        x: 724
+        y: 399
+        width: 181
+        height: 290
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67f8fa7122923ffe0800000000000000
+      internalID: -1156535452901077130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_06
+      rect:
+        serializedVersion: 2
+        x: 905
+        y: 399
+        width: 181
+        height: 290
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3bd8ec55db7300060800000000000000
+      internalID: 6917590313969028531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_07
+      rect:
+        serializedVersion: 2
+        x: 1086
+        y: 399
+        width: 181
+        height: 290
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f582d74f9f511b3a0800000000000000
+      internalID: -6651511011356628897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_08
+      rect:
+        serializedVersion: 2
+        x: 1267
+        y: 399
+        width: 181
+        height: 290
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56e216e8a6e7283d0800000000000000
+      internalID: -3205860988614005147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_09
+      rect:
+        serializedVersion: 2
+        x: 1448
+        y: 399
+        width: 181
+        height: 290
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9cd28a68e1a34570800000000000000
+      internalID: 8449775345468628126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_10
+      rect:
+        serializedVersion: 2
+        x: 1629
+        y: 399
+        width: 181
+        height: 290
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bac1264b586882000800000000000000
+      internalID: 11406907883527339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_11
+      rect:
+        serializedVersion: 2
+        x: 1810
+        y: 399
+        width: 181
+        height: 290
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2df75936f9fb07f60800000000000000
+      internalID: 8030128826893041618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_12
+      rect:
+        serializedVersion: 2
+        x: 1991
+        y: 399
+        width: 181
+        height: 290
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e78ee2bfa01012020800000000000000
+      internalID: 2315132830120601726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_01
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 34
+        width: 181
+        height: 300
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f249c05d1f49b76a0800000000000000
+      internalID: -6450398274895702993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_02
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 34
+        width: 181
+        height: 300
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d97a9565be9e9560800000000000000
+      internalID: 7322464546081896913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_03
+      rect:
+        serializedVersion: 2
+        x: 362
+        y: 34
+        width: 181
+        height: 300
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3d74aaed394453d0800000000000000
+      internalID: -3218867303384580802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_04
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 34
+        width: 181
+        height: 300
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e08e6676b06d1d460800000000000000
+      internalID: 7264823018393102350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_05
+      rect:
+        serializedVersion: 2
+        x: 724
+        y: 34
+        width: 181
+        height: 300
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58a070ae06301caa0800000000000000
+      internalID: -6142624701978572155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_06
+      rect:
+        serializedVersion: 2
+        x: 905
+        y: 34
+        width: 181
+        height: 300
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29a57554da3d91af0800000000000000
+      internalID: -425075948663645550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_07
+      rect:
+        serializedVersion: 2
+        x: 1086
+        y: 34
+        width: 181
+        height: 300
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d319be2279e0fba80800000000000000
+      internalID: -8449018333635047107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_08
+      rect:
+        serializedVersion: 2
+        x: 1267
+        y: 34
+        width: 181
+        height: 300
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69b3e90f38d1a80b0800000000000000
+      internalID: -5725731523733341290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_09
+      rect:
+        serializedVersion: 2
+        x: 1448
+        y: 34
+        width: 181
+        height: 300
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98409c3f30f0dd350800000000000000
+      internalID: 6043002784650429577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_10
+      rect:
+        serializedVersion: 2
+        x: 1629
+        y: 34
+        width: 181
+        height: 300
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 303275a76be1ffe70800000000000000
+      internalID: 9151066736925549315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_11
+      rect:
+        serializedVersion: 2
+        x: 1810
+        y: 34
+        width: 181
+        height: 300
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65512ed20baf62b90800000000000000
+      internalID: -7266845314124737194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_12
+      rect:
+        serializedVersion: 2
+        x: 1991
+        y: 34
+        width: 181
+        height: 300
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 609218058f68548b0800000000000000
+      internalID: -5168576596277122810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Run_01: -6450398274895702993
+      Run_02: 7322464546081896913
+      Run_03: -3218867303384580802
+      Run_04: 7264823018393102350
+      Run_05: -6142624701978572155
+      Run_06: -425075948663645550
+      Run_07: -8449018333635047107
+      Run_08: -5725731523733341290
+      Run_09: 6043002784650429577
+      Run_10: 9151066736925549315
+      Run_11: -7266845314124737194
+      Run_12: -5168576596277122810
+      Walk_01: 8866919437582257738
+      Walk_02: -7923221114941991851
+      Walk_03: 8232121291649219200
+      Walk_04: 5907391905570043736
+      Walk_05: -1156535452901077130
+      Walk_06: 6917590313969028531
+      Walk_07: -6651511011356628897
+      Walk_08: -3205860988614005147
+      Walk_09: 8449775345468628126
+      Walk_10: 11406907883527339
+      Walk_11: 8030128826893041618
+      Walk_12: 2315132830120601726
+      Ziri_MovementFrames_v3_0: -6677366751180290142
+      Ziri_MovementFrames_v3_1: -4841630065098160637
+      Ziri_MovementFrames_v3_10: -2462277177428898428
+      Ziri_MovementFrames_v3_11: -602811057114075277
+      Ziri_MovementFrames_v3_12: 399230826545884681
+      Ziri_MovementFrames_v3_13: 7148852122838736473
+      Ziri_MovementFrames_v3_14: 3581126165436467057
+      Ziri_MovementFrames_v3_15: 5990024683243078184
+      Ziri_MovementFrames_v3_16: 4575866343480229231
+      Ziri_MovementFrames_v3_17: 1349321112443385345
+      Ziri_MovementFrames_v3_18: 6294142577138869734
+      Ziri_MovementFrames_v3_19: 4629661811315607691
+      Ziri_MovementFrames_v3_2: -4747012311196431141
+      Ziri_MovementFrames_v3_20: -7137672116962510966
+      Ziri_MovementFrames_v3_21: 7614936833182947770
+      Ziri_MovementFrames_v3_22: -302241915177617130
+      Ziri_MovementFrames_v3_23: 3780673546580023882
+      Ziri_MovementFrames_v3_24: -2500735277417300415
+      Ziri_MovementFrames_v3_25: -4766499214633095216
+      Ziri_MovementFrames_v3_26: 9203020361588047892
+      Ziri_MovementFrames_v3_27: 752376017572494850
+      Ziri_MovementFrames_v3_28: -5513380336175176927
+      Ziri_MovementFrames_v3_29: 6702349234522805245
+      Ziri_MovementFrames_v3_3: 4313246864989979347
+      Ziri_MovementFrames_v3_30: -2498013272323895184
+      Ziri_MovementFrames_v3_31: 8581058512165604097
+      Ziri_MovementFrames_v3_32: 6844683574533315359
+      Ziri_MovementFrames_v3_33: 4848860857725326032
+      Ziri_MovementFrames_v3_34: 6400041214861042376
+      Ziri_MovementFrames_v3_35: -4132137740917222019
+      Ziri_MovementFrames_v3_36: -2599622280304262820
+      Ziri_MovementFrames_v3_37: 3159905028011334963
+      Ziri_MovementFrames_v3_38: -6041913219615589117
+      Ziri_MovementFrames_v3_39: -2617418331463781738
+      Ziri_MovementFrames_v3_4: 3477425024722868172
+      Ziri_MovementFrames_v3_40: 8080995024170513768
+      Ziri_MovementFrames_v3_41: 5007819037032254599
+      Ziri_MovementFrames_v3_42: 4800972018414907067
+      Ziri_MovementFrames_v3_43: -6739018554243507341
+      Ziri_MovementFrames_v3_44: 2308649455878562072
+      Ziri_MovementFrames_v3_45: -2304344859827386006
+      Ziri_MovementFrames_v3_46: -7679135634492334241
+      Ziri_MovementFrames_v3_47: -5557349134891161056
+      Ziri_MovementFrames_v3_48: -5007764562850542559
+      Ziri_MovementFrames_v3_49: 8472886290382268995
+      Ziri_MovementFrames_v3_5: -383833436602140149
+      Ziri_MovementFrames_v3_50: 8521042904403626478
+      Ziri_MovementFrames_v3_51: -1547040500498391211
+      Ziri_MovementFrames_v3_52: -4554616108820806256
+      Ziri_MovementFrames_v3_53: -5712363688306238557
+      Ziri_MovementFrames_v3_54: 3092025901548650384
+      Ziri_MovementFrames_v3_55: -6189016030618244217
+      Ziri_MovementFrames_v3_56: 7103342593338373668
+      Ziri_MovementFrames_v3_57: 7837536405382699302
+      Ziri_MovementFrames_v3_58: 6379393250766514811
+      Ziri_MovementFrames_v3_59: 1662194245689252511
+      Ziri_MovementFrames_v3_6: -8326892100201611001
+      Ziri_MovementFrames_v3_60: 4755897602647558223
+      Ziri_MovementFrames_v3_61: -263004657187590889
+      Ziri_MovementFrames_v3_62: 2460628269395318337
+      Ziri_MovementFrames_v3_63: 840333169269785088
+      Ziri_MovementFrames_v3_64: -7628274123977861391
+      Ziri_MovementFrames_v3_65: -8376026570145004670
+      Ziri_MovementFrames_v3_66: 8030118716928552161
+      Ziri_MovementFrames_v3_67: 5261688291184113992
+      Ziri_MovementFrames_v3_68: -8695699934834791124
+      Ziri_MovementFrames_v3_69: -8641771828615425948
+      Ziri_MovementFrames_v3_7: 6876767088763205754
+      Ziri_MovementFrames_v3_70: -2238828850188829862
+      Ziri_MovementFrames_v3_71: 6763802855723482902
+      Ziri_MovementFrames_v3_72: -3648044085575396152
+      Ziri_MovementFrames_v3_73: -4018626575042276661
+      Ziri_MovementFrames_v3_74: -4223837037180776408
+      Ziri_MovementFrames_v3_75: -5904387543371943721
+      Ziri_MovementFrames_v3_76: 6909687642298965308
+      Ziri_MovementFrames_v3_77: 2155840479134087259
+      Ziri_MovementFrames_v3_78: -7381887641791561876
+      Ziri_MovementFrames_v3_79: -455376104629814754
+      Ziri_MovementFrames_v3_8: 2462789835514499507
+      Ziri_MovementFrames_v3_80: -1150281156651754176
+      Ziri_MovementFrames_v3_81: -4940632724258523798
+      Ziri_MovementFrames_v3_82: 1138588444891393948
+      Ziri_MovementFrames_v3_83: -5986324697989116566
+      Ziri_MovementFrames_v3_84: -893622138147831419
+      Ziri_MovementFrames_v3_85: -3903257842209695920
+      Ziri_MovementFrames_v3_9: 5843445069962567906
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

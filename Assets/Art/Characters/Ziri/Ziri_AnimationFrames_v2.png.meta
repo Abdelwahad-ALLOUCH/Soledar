@@ -1,0 +1,1517 @@
+fileFormatVersion: 2
+guid: c82f840656b9d7a45bf579788fa65259
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 132977589271138007
+    second: Ziri_AnimationFrames_v2_0
+  - first:
+      213: -4137009310015018699
+    second: Ziri_AnimationFrames_v2_1
+  - first:
+      213: 891812787728467101
+    second: Ziri_AnimationFrames_v2_2
+  - first:
+      213: -8460813144615283559
+    second: Ziri_AnimationFrames_v2_3
+  - first:
+      213: 3498625303296736571
+    second: Ziri_AnimationFrames_v2_4
+  - first:
+      213: -3225147210606349475
+    second: Ziri_AnimationFrames_v2_5
+  - first:
+      213: -88841956740238436
+    second: Ziri_AnimationFrames_v2_6
+  - first:
+      213: 379783681885626786
+    second: Ziri_AnimationFrames_v2_7
+  - first:
+      213: 167433255907485898
+    second: Ziri_AnimationFrames_v2_8
+  - first:
+      213: 8994701509762689387
+    second: Ziri_AnimationFrames_v2_9
+  - first:
+      213: -61681992410119211
+    second: Ziri_AnimationFrames_v2_10
+  - first:
+      213: 5056894396163830594
+    second: Ziri_AnimationFrames_v2_11
+  - first:
+      213: 7153438277122700207
+    second: Ziri_AnimationFrames_v2_12
+  - first:
+      213: -2925071396389577376
+    second: Ziri_AnimationFrames_v2_13
+  - first:
+      213: -4646275123857734425
+    second: Ziri_AnimationFrames_v2_14
+  - first:
+      213: 1055475992425122081
+    second: Ziri_AnimationFrames_v2_15
+  - first:
+      213: -6290876531121942802
+    second: Ziri_AnimationFrames_v2_16
+  - first:
+      213: 2050842423144984871
+    second: Ziri_AnimationFrames_v2_17
+  - first:
+      213: -8967801211719195394
+    second: Ziri_AnimationFrames_v2_18
+  - first:
+      213: 2900227819405754778
+    second: Ziri_AnimationFrames_v2_19
+  - first:
+      213: 8330052306684640697
+    second: Ziri_AnimationFrames_v2_20
+  - first:
+      213: -4240833939940639772
+    second: Ziri_AnimationFrames_v2_21
+  - first:
+      213: -6259424454641867146
+    second: Ziri_AnimationFrames_v2_22
+  - first:
+      213: -6889337590216795996
+    second: Ziri_AnimationFrames_v2_23
+  - first:
+      213: 4268084911758486495
+    second: Ziri_AnimationFrames_v2_24
+  - first:
+      213: 3555077437940850925
+    second: Ziri_AnimationFrames_v2_25
+  - first:
+      213: -195819928006117957
+    second: Ziri_AnimationFrames_v2_26
+  - first:
+      213: -7469083266825618592
+    second: Ziri_AnimationFrames_v2_27
+  - first:
+      213: 7791004403593786682
+    second: Ziri_AnimationFrames_v2_28
+  - first:
+      213: 1635497981417690760
+    second: Ziri_AnimationFrames_v2_29
+  - first:
+      213: -2431230060621090840
+    second: Ziri_AnimationFrames_v2_30
+  - first:
+      213: -3323191791415113677
+    second: Ziri_AnimationFrames_v2_31
+  - first:
+      213: 295466433513624843
+    second: Ziri_AnimationFrames_v2_32
+  - first:
+      213: -4325965399855037663
+    second: Ziri_AnimationFrames_v2_33
+  - first:
+      213: 5760945632094525168
+    second: Ziri_AnimationFrames_v2_34
+  - first:
+      213: -3715189442147078319
+    second: Ziri_AnimationFrames_v2_35
+  - first:
+      213: -8305751090353657280
+    second: Ziri_AnimationFrames_v2_36
+  - first:
+      213: -8225319707402225667
+    second: Ziri_AnimationFrames_v2_37
+  - first:
+      213: 6672500476696408227
+    second: Ziri_AnimationFrames_v2_38
+  - first:
+      213: -8737326391041996600
+    second: Ziri_AnimationFrames_v2_39
+  - first:
+      213: 3390245481264596502
+    second: Ziri_AnimationFrames_v2_40
+  - first:
+      213: 7905215772088691491
+    second: Ziri_AnimationFrames_v2_41
+  - first:
+      213: 6192414499414029782
+    second: Ziri_AnimationFrames_v2_42
+  - first:
+      213: 2708150962686817936
+    second: Ziri_AnimationFrames_v2_43
+  - first:
+      213: 6400093342832169287
+    second: Ziri_AnimationFrames_v2_44
+  - first:
+      213: -626587478324400673
+    second: Ziri_AnimationFrames_v2_45
+  - first:
+      213: -1247517825107211133
+    second: Ziri_AnimationFrames_v2_46
+  - first:
+      213: 5834359426169252300
+    second: Ziri_AnimationFrames_v2_47
+  - first:
+      213: 5415376356925998612
+    second: Ziri_AnimationFrames_v2_48
+  - first:
+      213: 7934911421865226039
+    second: Ziri_AnimationFrames_v2_49
+  - first:
+      213: 1343237380401908768
+    second: Ziri_AnimationFrames_v2_50
+  - first:
+      213: 6157564407216168688
+    second: Ziri_AnimationFrames_v2_51
+  - first:
+      213: 6782851423603389585
+    second: Ziri_AnimationFrames_v2_52
+  - first:
+      213: -6396286232286707562
+    second: Ziri_AnimationFrames_v2_53
+  - first:
+      213: 650144746223025314
+    second: Ziri_AnimationFrames_v2_54
+  - first:
+      213: 8627463866555687130
+    second: Ziri_AnimationFrames_v2_55
+  - first:
+      213: 5505996122057818078
+    second: Ziri_AnimationFrames_v2_56
+  - first:
+      213: 1501504632153712395
+    second: Ziri_AnimationFrames_v2_57
+  - first:
+      213: 6946702978377548582
+    second: Ziri_AnimationFrames_v2_58
+  - first:
+      213: 7502393247425951199
+    second: Ziri_AnimationFrames_v2_59
+  - first:
+      213: -6869479166700912602
+    second: Ziri_AnimationFrames_v2_60
+  - first:
+      213: -773909855415229149
+    second: Ziri_AnimationFrames_v2_61
+  - first:
+      213: 8144447271226187591
+    second: Ziri_AnimationFrames_v2_62
+  - first:
+      213: -588294622059514491
+    second: Ziri_AnimationFrames_v2_63
+  - first:
+      213: 1380591869714765281
+    second: Ziri_AnimationFrames_v2_64
+  - first:
+      213: 177651573208279029
+    second: Ziri_AnimationFrames_v2_65
+  - first:
+      213: 2643343900307045143
+    second: Ziri_AnimationFrames_v2_66
+  - first:
+      213: -2055577118252986804
+    second: Ziri_AnimationFrames_v2_67
+  - first:
+      213: -8878071497603656219
+    second: Ziri_AnimationFrames_v2_68
+  - first:
+      213: -397186803056822389
+    second: Ziri_AnimationFrames_v2_69
+  - first:
+      213: 9192733066197446984
+    second: Ziri_AnimationFrames_v2_70
+  - first:
+      213: -729869210112240188
+    second: Ziri_AnimationFrames_v2_71
+  - first:
+      213: -8500414521778648086
+    second: Ziri_AnimationFrames_v2_72
+  - first:
+      213: -1712361082622213146
+    second: Ziri_AnimationFrames_v2_73
+  - first:
+      213: -1085099692706370187
+    second: Ziri_AnimationFrames_v2_74
+  - first:
+      213: 1047471268768704679
+    second: Ziri_AnimationFrames_v2_75
+  - first:
+      213: 8553478992624740492
+    second: Ziri_AnimationFrames_v2_76
+  - first:
+      213: -3795992590240543872
+    second: Ziri_AnimationFrames_v2_77
+  - first:
+      213: -6748266646535575107
+    second: Ziri_AnimationFrames_v2_78
+  - first:
+      213: 8127317020934776070
+    second: Ziri_AnimationFrames_v2_79
+  - first:
+      213: -4732020030187460869
+    second: Ziri_AnimationFrames_v2_80
+  - first:
+      213: -1332890338202241145
+    second: Ziri_AnimationFrames_v2_81
+  - first:
+      213: 4291811542255186556
+    second: Ziri_AnimationFrames_v2_82
+  - first:
+      213: -132844609449966089
+    second: Ziri_AnimationFrames_v2_83
+  - first:
+      213: 6153148776581740219
+    second: Ziri_AnimationFrames_v2_84
+  - first:
+      213: -4995580428827635698
+    second: Ziri_AnimationFrames_v2_85
+  - first:
+      213: -1593976224408839233
+    second: Ziri_AnimationFrames_v2_86
+  - first:
+      213: 6161932552204544089
+    second: Ziri_AnimationFrames_v2_87
+  - first:
+      213: -6887643290956229824
+    second: Ziri_AnimationFrames_v2_88
+  - first:
+      213: -1231372845437912212
+    second: Ziri_AnimationFrames_v2_89
+  - first:
+      213: -4004427055080208197
+    second: Ziri_AnimationFrames_v2_90
+  - first:
+      213: -5595908446461763909
+    second: Ziri_AnimationFrames_v2_91
+  - first:
+      213: 491118832205485985
+    second: Ziri_AnimationFrames_v2_92
+  - first:
+      213: -749152736893706004
+    second: Ziri_AnimationFrames_v2_93
+  - first:
+      213: -5965951080101654624
+    second: Ziri_AnimationFrames_v2_94
+  - first:
+      213: 8773741433191643995
+    second: Ziri_AnimationFrames_v2_95
+  - first:
+      213: 8695306966335063134
+    second: Ziri_AnimationFrames_v2_96
+  - first:
+      213: -8100509102471006612
+    second: Ziri_AnimationFrames_v2_97
+  - first:
+      213: -1453280782758768224
+    second: Ziri_AnimationFrames_v2_98
+  - first:
+      213: -8239110405729569870
+    second: Ziri_AnimationFrames_v2_99
+  - first:
+      213: 5133242665850122509
+    second: Ziri_AnimationFrames_v2_100
+  - first:
+      213: -2176770151032247618
+    second: Ziri_AnimationFrames_v2_101
+  - first:
+      213: -8920396805979164841
+    second: Ziri_AnimationFrames_v2_102
+  - first:
+      213: 957869260336725349
+    second: Ziri_AnimationFrames_v2_103
+  - first:
+      213: -8434350687423140325
+    second: Ziri_AnimationFrames_v2_104
+  - first:
+      213: -5707222006056645828
+    second: Ziri_AnimationFrames_v2_105
+  - first:
+      213: -1643237962665443205
+    second: Ziri_AnimationFrames_v2_106
+  - first:
+      213: 3168455775992575108
+    second: Ziri_AnimationFrames_v2_107
+  - first:
+      213: 301649693473043357
+    second: Ziri_AnimationFrames_v2_108
+  - first:
+      213: -1607256695350497823
+    second: Ziri_AnimationFrames_v2_109
+  - first:
+      213: 5569126858780524838
+    second: Ziri_AnimationFrames_v2_110
+  - first:
+      213: -3369906847292146824
+    second: Ziri_AnimationFrames_v2_111
+  - first:
+      213: -3736033151254410462
+    second: Ziri_AnimationFrames_v2_112
+  - first:
+      213: 878694972440849080
+    second: Ziri_AnimationFrames_v2_113
+  - first:
+      213: 4922303857850130257
+    second: Ziri_AnimationFrames_v2_114
+  - first:
+      213: 7235717343236297613
+    second: Ziri_AnimationFrames_v2_115
+  - first:
+      213: -1562268348601743616
+    second: Ziri_AnimationFrames_v2_116
+  - first:
+      213: 2854143074402053741
+    second: Ziri_AnimationFrames_v2_117
+  - first:
+      213: 824354665720451368
+    second: Ziri_AnimationFrames_v2_118
+  - first:
+      213: -1513257679600081526
+    second: Ziri_AnimationFrames_v2_119
+  - first:
+      213: -4267338514015993139
+    second: Ziri_AnimationFrames_v2_120
+  - first:
+      213: -8540635654663480473
+    second: Ziri_AnimationFrames_v2_121
+  - first:
+      213: 4039377536118636803
+    second: Ziri_AnimationFrames_v2_122
+  - first:
+      213: -218913815920641621
+    second: Ziri_AnimationFrames_v2_123
+  - first:
+      213: -1783066455568515681
+    second: Ziri_AnimationFrames_v2_124
+  - first:
+      213: -1655435971046438294
+    second: Ziri_AnimationFrames_v2_125
+  - first:
+      213: -8983348727058443613
+    second: Ziri_AnimationFrames_v2_126
+  - first:
+      213: 3700282616627204946
+    second: Ziri_AnimationFrames_v2_127
+  - first:
+      213: -1897092631725001855
+    second: Ziri_AnimationFrames_v2_128
+  - first:
+      213: 7578390137727712817
+    second: Ziri_AnimationFrames_v2_129
+  - first:
+      213: -1642727463577511773
+    second: Ziri_AnimationFrames_v2_130
+  - first:
+      213: -1524690390523302752
+    second: Ziri_AnimationFrames_v2_131
+  - first:
+      213: 8796550344554046744
+    second: Ziri_AnimationFrames_v2_132
+  - first:
+      213: -3910959059823821170
+    second: Ziri_AnimationFrames_v2_133
+  - first:
+      213: -179966127856834791
+    second: Ziri_AnimationFrames_v2_134
+  - first:
+      213: -6320304156446527345
+    second: Ziri_AnimationFrames_v2_135
+  - first:
+      213: 7652098565192881942
+    second: Ziri_AnimationFrames_v2_136
+  - first:
+      213: 5879503468983742092
+    second: Ziri_AnimationFrames_v2_137
+  - first:
+      213: 4268830877143421121
+    second: Ziri_AnimationFrames_v2_138
+  - first:
+      213: 8683874923336345296
+    second: Ziri_AnimationFrames_v2_139
+  - first:
+      213: 3561011611140071004
+    second: Ziri_AnimationFrames_v2_140
+  - first:
+      213: -1078801739436014845
+    second: Ziri_AnimationFrames_v2_141
+  - first:
+      213: 3274281999920088107
+    second: Ziri_AnimationFrames_v2_142
+  - first:
+      213: 2026968182108393753
+    second: Ziri_AnimationFrames_v2_143
+  - first:
+      213: 7068900129111255896
+    second: Ziri_AnimationFrames_v2_144
+  - first:
+      213: 7591605855420076202
+    second: Ziri_AnimationFrames_v2_145
+  - first:
+      213: -4065445899363058172
+    second: Ziri_AnimationFrames_v2_146
+  - first:
+      213: -897315316376224471
+    second: Ziri_AnimationFrames_v2_147
+  - first:
+      213: -2031068804039316233
+    second: Ziri_AnimationFrames_v2_148
+  - first:
+      213: -8525698866442241400
+    second: Ziri_AnimationFrames_v2_149
+  - first:
+      213: -4808488639048538796
+    second: Ziri_AnimationFrames_v2_150
+  - first:
+      213: 6533090764518872521
+    second: Ziri_AnimationFrames_v2_151
+  - first:
+      213: -664065126870598018
+    second: Ziri_AnimationFrames_v2_152
+  - first:
+      213: 8424625909340284120
+    second: Ziri_AnimationFrames_v2_153
+  - first:
+      213: -8757257262886323070
+    second: Ziri_AnimationFrames_v2_154
+  - first:
+      213: -4334460045245918216
+    second: Ziri_AnimationFrames_v2_155
+  - first:
+      213: 2972025959861722929
+    second: Ziri_AnimationFrames_v2_156
+  - first:
+      213: -4918537825844808331
+    second: Ziri_AnimationFrames_v2_157
+  - first:
+      213: 1298673339703662121
+    second: Ziri_AnimationFrames_v2_158
+  - first:
+      213: -4133885253936991350
+    second: Ziri_AnimationFrames_v2_159
+  - first:
+      213: -5516357496493595165
+    second: Ziri_AnimationFrames_v2_160
+  - first:
+      213: 5492307687931826290
+    second: Ziri_AnimationFrames_v2_161
+  - first:
+      213: 3451549721773631257
+    second: Ziri_AnimationFrames_v2_162
+  - first:
+      213: 812765519495637837
+    second: Ziri_AnimationFrames_v2_163
+  - first:
+      213: 6504455526384900958
+    second: Ziri_AnimationFrames_v2_164
+  - first:
+      213: 7478035458310592157
+    second: Ziri_AnimationFrames_v2_165
+  - first:
+      213: 7918435391912236725
+    second: Ziri_AnimationFrames_v2_166
+  - first:
+      213: -1988706732468533033
+    second: Ziri_AnimationFrames_v2_167
+  - first:
+      213: -2326388019025718622
+    second: Ziri_AnimationFrames_v2_168
+  - first:
+      213: 7079396636036553688
+    second: Ziri_AnimationFrames_v2_169
+  - first:
+      213: -4005381931809250798
+    second: Ziri_AnimationFrames_v2_170
+  - first:
+      213: -5896583254352942891
+    second: Ziri_AnimationFrames_v2_171
+  - first:
+      213: 806524082217346637
+    second: Ziri_AnimationFrames_v2_172
+  - first:
+      213: -9119256805216326581
+    second: Ziri_AnimationFrames_v2_173
+  - first:
+      213: -3353998150678290487
+    second: Ziri_AnimationFrames_v2_174
+  - first:
+      213: -137940823276652317
+    second: Ziri_AnimationFrames_v2_175
+  - first:
+      213: -4577567896862426532
+    second: Ziri_AnimationFrames_v2_176
+  - first:
+      213: -7040727598125898058
+    second: Ziri_AnimationFrames_v2_177
+  - first:
+      213: 338268447860774784
+    second: Ziri_AnimationFrames_v2_178
+  - first:
+      213: -213362790341758736
+    second: Ziri_AnimationFrames_v2_179
+  - first:
+      213: 4645449541169740844
+    second: Ziri_AnimationFrames_v2_180
+  - first:
+      213: -454460050721177818
+    second: Ziri_AnimationFrames_v2_181
+  - first:
+      213: 5261623979532535750
+    second: Ziri_AnimationFrames_v2_182
+  - first:
+      213: 1378806849314581713
+    second: Ziri_AnimationFrames_v2_183
+  - first:
+      213: -1046184313413796863
+    second: Ziri_AnimationFrames_v2_184
+  - first:
+      213: -7580683413493352409
+    second: Ziri_AnimationFrames_v2_185
+  - first:
+      213: 503767462033908280
+    second: Ziri_AnimationFrames_v2_186
+  - first:
+      213: -3748223829842778693
+    second: Ziri_AnimationFrames_v2_187
+  - first:
+      213: 877284758011137519
+    second: Ziri_AnimationFrames_v2_188
+  - first:
+      213: 8160527003861740848
+    second: Ziri_AnimationFrames_v2_189
+  - first:
+      213: -7028784004066093573
+    second: Ziri_AnimationFrames_v2_190
+  - first:
+      213: -4926706948937205263
+    second: Ziri_AnimationFrames_v2_191
+  - first:
+      213: -7796865825711958838
+    second: Ziri_AnimationFrames_v2_192
+  - first:
+      213: -1278638897502003002
+    second: Ziri_AnimationFrames_v2_193
+  - first:
+      213: -1819170799745492099
+    second: Ziri_AnimationFrames_v2_194
+  - first:
+      213: -1758663038685374477
+    second: Ziri_AnimationFrames_v2_195
+  - first:
+      213: 6278382082052163169
+    second: Ziri_AnimationFrames_v2_196
+  - first:
+      213: 260159381980395816
+    second: Ziri_AnimationFrames_v2_197
+  - first:
+      213: -5122126704355997404
+    second: Ziri_AnimationFrames_v2_198
+  - first:
+      213: 4740991166117319671
+    second: Ziri_AnimationFrames_v2_199
+  - first:
+      213: -7766273978784707704
+    second: Ziri_AnimationFrames_v2_200
+  - first:
+      213: 8913902012910639078
+    second: Ziri_AnimationFrames_v2_201
+  - first:
+      213: 19595114204621880
+    second: Ziri_AnimationFrames_v2_202
+  - first:
+      213: 1517716114125545697
+    second: Ziri_AnimationFrames_v2_203
+  - first:
+      213: 3240114867430129782
+    second: Ziri_AnimationFrames_v2_204
+  - first:
+      213: -7462340721719824170
+    second: Ziri_AnimationFrames_v2_205
+  - first:
+      213: -4459332652706798454
+    second: Ziri_AnimationFrames_v2_206
+  - first:
+      213: -2756498017462300822
+    second: Idle_01
+  - first:
+      213: -6714146255402601037
+    second: Idle_02
+  - first:
+      213: -4914351600739261391
+    second: Idle_03
+  - first:
+      213: 8045593241502845221
+    second: Idle_04
+  - first:
+      213: 457006308311335959
+    second: Idle_05
+  - first:
+      213: -1006470023562271296
+    second: Idle_06
+  - first:
+      213: 8866919437582257738
+    second: Walk_01
+  - first:
+      213: -7923221114941991851
+    second: Walk_02
+  - first:
+      213: 8232121291649219200
+    second: Walk_03
+  - first:
+      213: 5907391905570043736
+    second: Walk_04
+  - first:
+      213: -1156535452901077130
+    second: Walk_05
+  - first:
+      213: 6917590313969028531
+    second: Walk_06
+  - first:
+      213: -6651511011356628897
+    second: Walk_07
+  - first:
+      213: -3205860988614005147
+    second: Walk_08
+  - first:
+      213: -6450398274895702993
+    second: Run_01
+  - first:
+      213: 7322464546081896913
+    second: Run_02
+  - first:
+      213: -3218867303384580802
+    second: Run_03
+  - first:
+      213: 7264823018393102350
+    second: Run_04
+  - first:
+      213: -6142624701978572155
+    second: Run_05
+  - first:
+      213: -425075948663645550
+    second: Run_06
+  - first:
+      213: -8449018333635047107
+    second: Run_07
+  - first:
+      213: -5725731523733341290
+    second: Run_08
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Idle_01
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 627
+        width: 170
+        height: 210
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6f471d58a3feb9d0800000000000000
+      internalID: -2756498017462300822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Idle_02
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 627
+        width: 170
+        height: 210
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b575b4cd8f82d2a0800000000000000
+      internalID: -6714146255402601037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Idle_03
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 627
+        width: 170
+        height: 210
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1346098a147bccbb0800000000000000
+      internalID: -4914351600739261391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Idle_04
+      rect:
+        serializedVersion: 2
+        x: 915
+        y: 627
+        width: 170
+        height: 210
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5298f0ffc60b7af60800000000000000
+      internalID: 8045593241502845221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Idle_05
+      rect:
+        serializedVersion: 2
+        x: 1115
+        y: 627
+        width: 170
+        height: 210
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 714820be0dc975600800000000000000
+      internalID: 457006308311335959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Idle_06
+      rect:
+        serializedVersion: 2
+        x: 1313
+        y: 627
+        width: 170
+        height: 210
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c5ed7898dc4802f0800000000000000
+      internalID: -1006470023562271296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_01
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 337
+        width: 170
+        height: 205
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4ec811ef30ad0b70800000000000000
+      internalID: 8866919437582257738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_02
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 337
+        width: 170
+        height: 205
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 554120fff501b0290800000000000000
+      internalID: -7923221114941991851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_03
+      rect:
+        serializedVersion: 2
+        x: 525
+        y: 337
+        width: 170
+        height: 205
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08a7ea8f2be5e3270800000000000000
+      internalID: 8232121291649219200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_04
+      rect:
+        serializedVersion: 2
+        x: 725
+        y: 337
+        width: 170
+        height: 205
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8573580b3a54bf150800000000000000
+      internalID: 5907391905570043736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_05
+      rect:
+        serializedVersion: 2
+        x: 925
+        y: 337
+        width: 170
+        height: 205
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67f8fa7122923ffe0800000000000000
+      internalID: -1156535452901077130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_06
+      rect:
+        serializedVersion: 2
+        x: 1125
+        y: 337
+        width: 170
+        height: 205
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3bd8ec55db7300060800000000000000
+      internalID: 6917590313969028531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_07
+      rect:
+        serializedVersion: 2
+        x: 1325
+        y: 337
+        width: 170
+        height: 205
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f582d74f9f511b3a0800000000000000
+      internalID: -6651511011356628897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walk_08
+      rect:
+        serializedVersion: 2
+        x: 1525
+        y: 337
+        width: 170
+        height: 205
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56e216e8a6e7283d0800000000000000
+      internalID: -3205860988614005147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_01
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 42
+        width: 170
+        height: 205
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f249c05d1f49b76a0800000000000000
+      internalID: -6450398274895702993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_02
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 42
+        width: 170
+        height: 205
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d97a9565be9e9560800000000000000
+      internalID: 7322464546081896913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_03
+      rect:
+        serializedVersion: 2
+        x: 525
+        y: 42
+        width: 170
+        height: 205
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3d74aaed394453d0800000000000000
+      internalID: -3218867303384580802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_04
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 42
+        width: 170
+        height: 205
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e08e6676b06d1d460800000000000000
+      internalID: 7264823018393102350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_05
+      rect:
+        serializedVersion: 2
+        x: 925
+        y: 42
+        width: 170
+        height: 205
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58a070ae06301caa0800000000000000
+      internalID: -6142624701978572155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_06
+      rect:
+        serializedVersion: 2
+        x: 1125
+        y: 42
+        width: 170
+        height: 205
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29a57554da3d91af0800000000000000
+      internalID: -425075948663645550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_07
+      rect:
+        serializedVersion: 2
+        x: 1325
+        y: 42
+        width: 170
+        height: 205
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d319be2279e0fba80800000000000000
+      internalID: -8449018333635047107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_08
+      rect:
+        serializedVersion: 2
+        x: 1525
+        y: 42
+        width: 170
+        height: 205
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69b3e90f38d1a80b0800000000000000
+      internalID: -5725731523733341290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Idle_01: -2756498017462300822
+      Idle_02: -6714146255402601037
+      Idle_03: -4914351600739261391
+      Idle_04: 8045593241502845221
+      Idle_05: 457006308311335959
+      Idle_06: -1006470023562271296
+      Run_01: -6450398274895702993
+      Run_02: 7322464546081896913
+      Run_03: -3218867303384580802
+      Run_04: 7264823018393102350
+      Run_05: -6142624701978572155
+      Run_06: -425075948663645550
+      Run_07: -8449018333635047107
+      Run_08: -5725731523733341290
+      Walk_01: 8866919437582257738
+      Walk_02: -7923221114941991851
+      Walk_03: 8232121291649219200
+      Walk_04: 5907391905570043736
+      Walk_05: -1156535452901077130
+      Walk_06: 6917590313969028531
+      Walk_07: -6651511011356628897
+      Walk_08: -3205860988614005147
+      Ziri_AnimationFrames_v2_0: 132977589271138007
+      Ziri_AnimationFrames_v2_1: -4137009310015018699
+      Ziri_AnimationFrames_v2_10: -61681992410119211
+      Ziri_AnimationFrames_v2_100: 5133242665850122509
+      Ziri_AnimationFrames_v2_101: -2176770151032247618
+      Ziri_AnimationFrames_v2_102: -8920396805979164841
+      Ziri_AnimationFrames_v2_103: 957869260336725349
+      Ziri_AnimationFrames_v2_104: -8434350687423140325
+      Ziri_AnimationFrames_v2_105: -5707222006056645828
+      Ziri_AnimationFrames_v2_106: -1643237962665443205
+      Ziri_AnimationFrames_v2_107: 3168455775992575108
+      Ziri_AnimationFrames_v2_108: 301649693473043357
+      Ziri_AnimationFrames_v2_109: -1607256695350497823
+      Ziri_AnimationFrames_v2_11: 5056894396163830594
+      Ziri_AnimationFrames_v2_110: 5569126858780524838
+      Ziri_AnimationFrames_v2_111: -3369906847292146824
+      Ziri_AnimationFrames_v2_112: -3736033151254410462
+      Ziri_AnimationFrames_v2_113: 878694972440849080
+      Ziri_AnimationFrames_v2_114: 4922303857850130257
+      Ziri_AnimationFrames_v2_115: 7235717343236297613
+      Ziri_AnimationFrames_v2_116: -1562268348601743616
+      Ziri_AnimationFrames_v2_117: 2854143074402053741
+      Ziri_AnimationFrames_v2_118: 824354665720451368
+      Ziri_AnimationFrames_v2_119: -1513257679600081526
+      Ziri_AnimationFrames_v2_12: 7153438277122700207
+      Ziri_AnimationFrames_v2_120: -4267338514015993139
+      Ziri_AnimationFrames_v2_121: -8540635654663480473
+      Ziri_AnimationFrames_v2_122: 4039377536118636803
+      Ziri_AnimationFrames_v2_123: -218913815920641621
+      Ziri_AnimationFrames_v2_124: -1783066455568515681
+      Ziri_AnimationFrames_v2_125: -1655435971046438294
+      Ziri_AnimationFrames_v2_126: -8983348727058443613
+      Ziri_AnimationFrames_v2_127: 3700282616627204946
+      Ziri_AnimationFrames_v2_128: -1897092631725001855
+      Ziri_AnimationFrames_v2_129: 7578390137727712817
+      Ziri_AnimationFrames_v2_13: -2925071396389577376
+      Ziri_AnimationFrames_v2_130: -1642727463577511773
+      Ziri_AnimationFrames_v2_131: -1524690390523302752
+      Ziri_AnimationFrames_v2_132: 8796550344554046744
+      Ziri_AnimationFrames_v2_133: -3910959059823821170
+      Ziri_AnimationFrames_v2_134: -179966127856834791
+      Ziri_AnimationFrames_v2_135: -6320304156446527345
+      Ziri_AnimationFrames_v2_136: 7652098565192881942
+      Ziri_AnimationFrames_v2_137: 5879503468983742092
+      Ziri_AnimationFrames_v2_138: 4268830877143421121
+      Ziri_AnimationFrames_v2_139: 8683874923336345296
+      Ziri_AnimationFrames_v2_14: -4646275123857734425
+      Ziri_AnimationFrames_v2_140: 3561011611140071004
+      Ziri_AnimationFrames_v2_141: -1078801739436014845
+      Ziri_AnimationFrames_v2_142: 3274281999920088107
+      Ziri_AnimationFrames_v2_143: 2026968182108393753
+      Ziri_AnimationFrames_v2_144: 7068900129111255896
+      Ziri_AnimationFrames_v2_145: 7591605855420076202
+      Ziri_AnimationFrames_v2_146: -4065445899363058172
+      Ziri_AnimationFrames_v2_147: -897315316376224471
+      Ziri_AnimationFrames_v2_148: -2031068804039316233
+      Ziri_AnimationFrames_v2_149: -8525698866442241400
+      Ziri_AnimationFrames_v2_15: 1055475992425122081
+      Ziri_AnimationFrames_v2_150: -4808488639048538796
+      Ziri_AnimationFrames_v2_151: 6533090764518872521
+      Ziri_AnimationFrames_v2_152: -664065126870598018
+      Ziri_AnimationFrames_v2_153: 8424625909340284120
+      Ziri_AnimationFrames_v2_154: -8757257262886323070
+      Ziri_AnimationFrames_v2_155: -4334460045245918216
+      Ziri_AnimationFrames_v2_156: 2972025959861722929
+      Ziri_AnimationFrames_v2_157: -4918537825844808331
+      Ziri_AnimationFrames_v2_158: 1298673339703662121
+      Ziri_AnimationFrames_v2_159: -4133885253936991350
+      Ziri_AnimationFrames_v2_16: -6290876531121942802
+      Ziri_AnimationFrames_v2_160: -5516357496493595165
+      Ziri_AnimationFrames_v2_161: 5492307687931826290
+      Ziri_AnimationFrames_v2_162: 3451549721773631257
+      Ziri_AnimationFrames_v2_163: 812765519495637837
+      Ziri_AnimationFrames_v2_164: 6504455526384900958
+      Ziri_AnimationFrames_v2_165: 7478035458310592157
+      Ziri_AnimationFrames_v2_166: 7918435391912236725
+      Ziri_AnimationFrames_v2_167: -1988706732468533033
+      Ziri_AnimationFrames_v2_168: -2326388019025718622
+      Ziri_AnimationFrames_v2_169: 7079396636036553688
+      Ziri_AnimationFrames_v2_17: 2050842423144984871
+      Ziri_AnimationFrames_v2_170: -4005381931809250798
+      Ziri_AnimationFrames_v2_171: -5896583254352942891
+      Ziri_AnimationFrames_v2_172: 806524082217346637
+      Ziri_AnimationFrames_v2_173: -9119256805216326581
+      Ziri_AnimationFrames_v2_174: -3353998150678290487
+      Ziri_AnimationFrames_v2_175: -137940823276652317
+      Ziri_AnimationFrames_v2_176: -4577567896862426532
+      Ziri_AnimationFrames_v2_177: -7040727598125898058
+      Ziri_AnimationFrames_v2_178: 338268447860774784
+      Ziri_AnimationFrames_v2_179: -213362790341758736
+      Ziri_AnimationFrames_v2_18: -8967801211719195394
+      Ziri_AnimationFrames_v2_180: 4645449541169740844
+      Ziri_AnimationFrames_v2_181: -454460050721177818
+      Ziri_AnimationFrames_v2_182: 5261623979532535750
+      Ziri_AnimationFrames_v2_183: 1378806849314581713
+      Ziri_AnimationFrames_v2_184: -1046184313413796863
+      Ziri_AnimationFrames_v2_185: -7580683413493352409
+      Ziri_AnimationFrames_v2_186: 503767462033908280
+      Ziri_AnimationFrames_v2_187: -3748223829842778693
+      Ziri_AnimationFrames_v2_188: 877284758011137519
+      Ziri_AnimationFrames_v2_189: 8160527003861740848
+      Ziri_AnimationFrames_v2_19: 2900227819405754778
+      Ziri_AnimationFrames_v2_190: -7028784004066093573
+      Ziri_AnimationFrames_v2_191: -4926706948937205263
+      Ziri_AnimationFrames_v2_192: -7796865825711958838
+      Ziri_AnimationFrames_v2_193: -1278638897502003002
+      Ziri_AnimationFrames_v2_194: -1819170799745492099
+      Ziri_AnimationFrames_v2_195: -1758663038685374477
+      Ziri_AnimationFrames_v2_196: 6278382082052163169
+      Ziri_AnimationFrames_v2_197: 260159381980395816
+      Ziri_AnimationFrames_v2_198: -5122126704355997404
+      Ziri_AnimationFrames_v2_199: 4740991166117319671
+      Ziri_AnimationFrames_v2_2: 891812787728467101
+      Ziri_AnimationFrames_v2_20: 8330052306684640697
+      Ziri_AnimationFrames_v2_200: -7766273978784707704
+      Ziri_AnimationFrames_v2_201: 8913902012910639078
+      Ziri_AnimationFrames_v2_202: 19595114204621880
+      Ziri_AnimationFrames_v2_203: 1517716114125545697
+      Ziri_AnimationFrames_v2_204: 3240114867430129782
+      Ziri_AnimationFrames_v2_205: -7462340721719824170
+      Ziri_AnimationFrames_v2_206: -4459332652706798454
+      Ziri_AnimationFrames_v2_21: -4240833939940639772
+      Ziri_AnimationFrames_v2_22: -6259424454641867146
+      Ziri_AnimationFrames_v2_23: -6889337590216795996
+      Ziri_AnimationFrames_v2_24: 4268084911758486495
+      Ziri_AnimationFrames_v2_25: 3555077437940850925
+      Ziri_AnimationFrames_v2_26: -195819928006117957
+      Ziri_AnimationFrames_v2_27: -7469083266825618592
+      Ziri_AnimationFrames_v2_28: 7791004403593786682
+      Ziri_AnimationFrames_v2_29: 1635497981417690760
+      Ziri_AnimationFrames_v2_3: -8460813144615283559
+      Ziri_AnimationFrames_v2_30: -2431230060621090840
+      Ziri_AnimationFrames_v2_31: -3323191791415113677
+      Ziri_AnimationFrames_v2_32: 295466433513624843
+      Ziri_AnimationFrames_v2_33: -4325965399855037663
+      Ziri_AnimationFrames_v2_34: 5760945632094525168
+      Ziri_AnimationFrames_v2_35: -3715189442147078319
+      Ziri_AnimationFrames_v2_36: -8305751090353657280
+      Ziri_AnimationFrames_v2_37: -8225319707402225667
+      Ziri_AnimationFrames_v2_38: 6672500476696408227
+      Ziri_AnimationFrames_v2_39: -8737326391041996600
+      Ziri_AnimationFrames_v2_4: 3498625303296736571
+      Ziri_AnimationFrames_v2_40: 3390245481264596502
+      Ziri_AnimationFrames_v2_41: 7905215772088691491
+      Ziri_AnimationFrames_v2_42: 6192414499414029782
+      Ziri_AnimationFrames_v2_43: 2708150962686817936
+      Ziri_AnimationFrames_v2_44: 6400093342832169287
+      Ziri_AnimationFrames_v2_45: -626587478324400673
+      Ziri_AnimationFrames_v2_46: -1247517825107211133
+      Ziri_AnimationFrames_v2_47: 5834359426169252300
+      Ziri_AnimationFrames_v2_48: 5415376356925998612
+      Ziri_AnimationFrames_v2_49: 7934911421865226039
+      Ziri_AnimationFrames_v2_5: -3225147210606349475
+      Ziri_AnimationFrames_v2_50: 1343237380401908768
+      Ziri_AnimationFrames_v2_51: 6157564407216168688
+      Ziri_AnimationFrames_v2_52: 6782851423603389585
+      Ziri_AnimationFrames_v2_53: -6396286232286707562
+      Ziri_AnimationFrames_v2_54: 650144746223025314
+      Ziri_AnimationFrames_v2_55: 8627463866555687130
+      Ziri_AnimationFrames_v2_56: 5505996122057818078
+      Ziri_AnimationFrames_v2_57: 1501504632153712395
+      Ziri_AnimationFrames_v2_58: 6946702978377548582
+      Ziri_AnimationFrames_v2_59: 7502393247425951199
+      Ziri_AnimationFrames_v2_6: -88841956740238436
+      Ziri_AnimationFrames_v2_60: -6869479166700912602
+      Ziri_AnimationFrames_v2_61: -773909855415229149
+      Ziri_AnimationFrames_v2_62: 8144447271226187591
+      Ziri_AnimationFrames_v2_63: -588294622059514491
+      Ziri_AnimationFrames_v2_64: 1380591869714765281
+      Ziri_AnimationFrames_v2_65: 177651573208279029
+      Ziri_AnimationFrames_v2_66: 2643343900307045143
+      Ziri_AnimationFrames_v2_67: -2055577118252986804
+      Ziri_AnimationFrames_v2_68: -8878071497603656219
+      Ziri_AnimationFrames_v2_69: -397186803056822389
+      Ziri_AnimationFrames_v2_7: 379783681885626786
+      Ziri_AnimationFrames_v2_70: 9192733066197446984
+      Ziri_AnimationFrames_v2_71: -729869210112240188
+      Ziri_AnimationFrames_v2_72: -8500414521778648086
+      Ziri_AnimationFrames_v2_73: -1712361082622213146
+      Ziri_AnimationFrames_v2_74: -1085099692706370187
+      Ziri_AnimationFrames_v2_75: 1047471268768704679
+      Ziri_AnimationFrames_v2_76: 8553478992624740492
+      Ziri_AnimationFrames_v2_77: -3795992590240543872
+      Ziri_AnimationFrames_v2_78: -6748266646535575107
+      Ziri_AnimationFrames_v2_79: 8127317020934776070
+      Ziri_AnimationFrames_v2_8: 167433255907485898
+      Ziri_AnimationFrames_v2_80: -4732020030187460869
+      Ziri_AnimationFrames_v2_81: -1332890338202241145
+      Ziri_AnimationFrames_v2_82: 4291811542255186556
+      Ziri_AnimationFrames_v2_83: -132844609449966089
+      Ziri_AnimationFrames_v2_84: 6153148776581740219
+      Ziri_AnimationFrames_v2_85: -4995580428827635698
+      Ziri_AnimationFrames_v2_86: -1593976224408839233
+      Ziri_AnimationFrames_v2_87: 6161932552204544089
+      Ziri_AnimationFrames_v2_88: -6887643290956229824
+      Ziri_AnimationFrames_v2_89: -1231372845437912212
+      Ziri_AnimationFrames_v2_9: 8994701509762689387
+      Ziri_AnimationFrames_v2_90: -4004427055080208197
+      Ziri_AnimationFrames_v2_91: -5595908446461763909
+      Ziri_AnimationFrames_v2_92: 491118832205485985
+      Ziri_AnimationFrames_v2_93: -749152736893706004
+      Ziri_AnimationFrames_v2_94: -5965951080101654624
+      Ziri_AnimationFrames_v2_95: 8773741433191643995
+      Ziri_AnimationFrames_v2_96: 8695306966335063134
+      Ziri_AnimationFrames_v2_97: -8100509102471006612
+      Ziri_AnimationFrames_v2_98: -1453280782758768224
+      Ziri_AnimationFrames_v2_99: -8239110405729569870
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -50257,6 +50257,8 @@ MonoBehaviour:
   playerHealth: {fileID: 940843349}
   heartPrefab: {fileID: 6166924211895706002, guid: 395b8d88466a4b544a4f580a0ce47a4d, type: 3}
   heartsParent: {fileID: 845585694}
+  filledColor: {r: 0.937, g: 0.894, b: 0.808, a: 1}
+  emptyColor: {r: 0.431, g: 0.388, b: 0.325, a: 0.65}
 --- !u!114 &431131601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -50377,7 +50379,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenu
   panel: {fileID: 1398157932}
   resumeButton: {fileID: 1547101898}
+  abilitiesButton: {fileID: 0}
+  abilitiesPanel: {fileID: 0}
+  mainMenuButton: {fileID: 0}
   quitButton: {fileID: 1130762702}
+  defaultSelection: {fileID: 0}
+  mainMenuScene: MainMenu
 --- !u!114 &431131607
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52195,6 +52202,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   promptText: {fileID: 1489126351}
+  promptBacking: {fileID: 0}
 --- !u!114 &940843351
 MonoBehaviour:
   m_ObjectHideFlags: 0

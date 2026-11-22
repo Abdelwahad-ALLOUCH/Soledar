@@ -850,3 +850,16 @@ The pause menu only had Resume / Main Menu / Quit, so unlocked abilities were in
 
 *Next: single-region room map driven by `discoveredRooms`.*
 
+
+### Player character: Ziri animation (2026-11-22)
+
+The player sprite was a single static image; Ziri now animates from a supplied frame sheet (Idle 6, Walk 8, Run 8).
+
+- `Assets/Animations/Ziri/`: 22 extracted frames (Ziri_Idle_01..06, Ziri_Walk_01..08, Ziri_Run_01..08), three clips (`Ziri_Idle.anim`, `Ziri_Walk.anim`, `Ziri_Run.anim`) and `Ziri.controller`. The controller drives state from a `Speed` float: Idle→Walk >0.3, Walk/Idle→Run >9, Run→Walk <9, Walk/Run→Idle <0.3; 0.05 s transitions, no exit time; Idle 8 fps, Walk 12 fps, Run 14 fps, looping with the last key repeating frame 1. Run effectively plays during dash/knockback (speed 16); Walk for normal locomotion (speed 6). No sprint mechanic was added.
+- `Scripts/Player/ZiriAnimationDriver.cs`: reads `Rigidbody2D.linearVelocity.x` into `Speed` (damped), attached to the player alongside the Animator. `ZiriVisual.cs` keeps its animator hook and facing mirror and skips the idle bob when animated.
+- `Player.prefab`: the old `ZiriVisual` child was collapsed onto the player root — SpriteRenderer now carries the animated sprite (from `Ziri_IdleFrames_v3`) with the Animator + driver, so the art, collider, ground check and attack point share one transform. The static sprite GUID was replaced.
+- Editor helpers: `Scripts/Editor/ZiriFrameExtractor.cs` (matte extraction) and `Scripts/Editor/ZiriAnimationSetup.cs` (import settings, clips, controller, prefab wiring).
+
+**Verified (play mode, SunkenMedina):** player spawns and animates in Idle; setting velocity to 6 switches to Walk with the correct clip and advancing frames; setting velocity to 16 switches to Run; `Speed` follows `Rigidbody2D.linearVelocity.x`; facing mirrors via `PlayerMovement.FacingDirection`; console clean (no CS/runtime errors). A 800×700 in-game capture of each state was saved to `Temp/`.
+
+**Limitations:** Run was only exercised synthetically via rigidbody velocity (no dash/knockback trigger in the test); gamepad not tested on hardware; the default SpriteRenderer sprite comes from the v3 idle sheet while the Animator supplies per-frame sprites; the legacy `ZiriVisual` child path is no longer used but the component remains for fallback bobbing.

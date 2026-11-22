@@ -1,8 +1,9 @@
 using UnityEngine;
 
 /// <summary>Presentation-only controller for Ziri. Gameplay remains owned by
-/// PlayerMovement; this component only mirrors facing and gives the static
-/// source sprite a subtle idle life until frame animations are authored.
+/// PlayerMovement; this component mirrors facing, drives the Idle/Walk/Run
+/// animator from horizontal speed, and falls back to a subtle bob on the old
+/// static sprite if no animator is assigned.
 ///
 /// IMPORTANT: this component lives on the "ZiriVisual" child of the Player,
 /// not on the Player root. The root is driven by a Rigidbody2D, so writing a
@@ -16,9 +17,13 @@ public class ZiriVisual : MonoBehaviour
 {
     [SerializeField] private float idleBobAmount = 0.03f;
     [SerializeField] private float idleBobSpeed = 2f;
+    [SerializeField] private Animator animator;
+
+    private static readonly int SpeedParameter = Animator.StringToHash("Speed");
 
     private PlayerMovement movement;
     private SpriteRenderer spriteRenderer;
+    private Rigidbody2D body;
     private Vector3 baseLocalPosition;
     private bool initialized;
 
@@ -26,6 +31,7 @@ public class ZiriVisual : MonoBehaviour
     {
         movement = GetComponentInParent<PlayerMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        body = GetComponentInParent<Rigidbody2D>();
         baseLocalPosition = transform.localPosition;
         initialized = true;
 
@@ -49,6 +55,14 @@ public class ZiriVisual : MonoBehaviour
 
         if (movement != null)
             spriteRenderer.flipX = movement.FacingDirection < 0;
+
+        // Frame animation owns the vertical motion; the bob would fight it.
+        if (animator != null)
+        {
+            float speed = body != null ? Mathf.Abs(body.linearVelocity.x) : 0f;
+            animator.SetFloat(SpeedParameter, speed);
+            return;
+        }
 
         // Only bob when this Transform is not the playing physics body.
         if (GetComponent<Rigidbody2D>() != null) return;
